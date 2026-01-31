@@ -55,3 +55,10 @@ doc/md/_site/
 *.swo
 *~
 .idea/
+
+# Large media files (use Git LFS or external storage)
+assets/video/*.MOV
+assets/video/*.mov
+assets/video/*.mp4
+assets/video/*.avi
+assets/video/*.mkv
