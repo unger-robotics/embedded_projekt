@@ -151,6 +151,31 @@ include/hw/   → Hardware config SSOT (pins, counts, SPI params, timing)
 - **Bridge**: Python 3.10+, type hints, async/await
 - **Dashboard**: TypeScript strict mode, React 18, Tailwind CSS
 
+## Git Workflow
+
+**Remote:** `git@github.com:unger-robotics/embedded_projekt.git`
+
+```bash
+# Initial setup (already done)
+git remote add origin git@github.com:unger-robotics/embedded_projekt.git
+git branch -M main
+git push -u origin main
+
+# Daily workflow
+git pull                              # Fetch and merge
+git add <files>                       # Stage changes
+git commit -m "feat: description"     # Commit
+git push                              # Push to origin
+
+# Commit message prefixes
+# feat:     New feature
+# fix:      Bug fix
+# docs:     Documentation
+# refactor: Code refactoring
+# test:     Tests
+# chore:    Build, config, deps
+```
+
 ## Deployment (Mac → Pi)
 
 ```bash
