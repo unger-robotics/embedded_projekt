@@ -1,0 +1,9 @@
+# vim requirements.txt
+# Ziel: läuft stabil auf macOS + Raspberry Pi OS (Pi 5) + Windows
+# (keine harte Pinning-Falle, aber reproduzierbar genug)
+aiohttp>=3.9,<4.0
+pyserial>=3.5,<4.0
+pyserial-asyncio>=0.6,<1.0
+# optional (nur Dev/Qualität, nicht nötig zum Starten)
+ruff>=0.6,<1.0
+mypy>=1.8,<2.0

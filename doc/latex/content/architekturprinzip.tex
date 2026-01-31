@@ -1,0 +1,524 @@
+% =============================================================================
+% architekturprinzip.tex – Robuste Embedded-Software
+% Einbindung: \input{content/architekturprinzip}
+% =============================================================================
+
+\section{Architekturprinzipien -- Robuste Embedded-Software}
+\label{sec:architekturprinzipien}
+
+% -----------------------------------------------------------------------------
+\subsection{Begriffsrahmen und Zielsetzung}
+\label{subsec:arch-begriffsrahmen}
+
+Die Selection-Panel-Firmware steuert 10--100 Buttons und LEDs über Schieberegister
+(CD4021, 74HC595). Die Architektur muss drei Anforderungen gleichzeitig erfüllen:
+Korrektheit (One-Hot-Invariante), Wartbarkeit (klare Zuständigkeiten), Skalierbarkeit
+(10 $\to$ 100 ohne Code-Änderungen in der Logik).
+
+\begin{table}[H]
+\centering
+\caption{Zentrale Begriffe der Firmware-Architektur}
+\label{tab:arch-begriffe}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Begriff} & \textbf{Definition} \\
+\midrule
+SSOT       & Single Source of Truth -- eine Konfiguration existiert an genau einer Stelle \\
+Invariante & Bedingung, die zu jedem Zeitpunkt gelten muss \\
+One-Hot    & Genau ein Bit gesetzt (oder keins), niemals mehrere \\
+Pipeline   & Sequenz von Verarbeitungsstufen mit definierten Ein-/Ausgängen \\
+Edge       & Zustandsübergang (Flanke), nicht der Zustand selbst \\
+HAL        & Hardware Abstraction Layer -- trennt Hardware-Zugriff von Logik \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{tipbox}[Ziel]
+Stabiler Datenfluss, testbare Logik, keine Seiteneffekte.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{SSOT -- Hardware-Konfiguration ist kein \glqq Detail\grqq}
+\label{subsec:ssot-prinzip}
+
+Wenn Pins, Zählerstände oder SPI-Parameter an mehreren Stellen definiert sind,
+entstehen Inkonsistenzen. Du änderst einen Pin in \code{main.cpp}, vergisst aber
+den Treiber -- das System verhält sich unerklärlich.
+
+\textbf{Regel:} Jede Konfiguration existiert an genau einer Stelle. Alle anderen
+Dateien referenzieren diese Quelle.
+
+\begin{lstlisting}[style=shell,numbers=none,caption={SSOT-Verzeichnisstruktur},label={lst:ssot-struktur}]
+firmware/include/hw/
+|-- board_pins.h    # Pin-Definitionen (SSOT)
+|-- io_counts.h     # Counts, Masks (SSOT)
+`-- spi_params.h    # SPI-Parameter (SSOT)
+\end{lstlisting}
+
+\paragraph{Beispiel aus io\_counts.h}
+
+\begin{lstlisting}[style=arduino,caption={SSOT für Counts und Masken},label={lst:io-counts}]
+#define BTN_COUNT       10
+#define LED_COUNT       10
+
+#define BTN_BYTES       ((BTN_COUNT + 7) / 8)  // = 2
+#define LED_BYTES       ((LED_COUNT + 7) / 8)  // = 2
+
+// Maske fuer ungueltige Bits im letzten Byte
+#define LED_LAST_MASK   0xC0  // Bei 10 LEDs: nur Bit 7+6 gueltig
+\end{lstlisting}
+
+\begin{infobox}[Konsequenz]
+Wenn du von 10 auf 100 Kanäle skalierst, änderst du \code{BTN\_COUNT} und
+\code{LED\_COUNT} an dieser einen Stelle. Die Makros \code{BTN\_BYTES} und
+\code{LED\_LAST\_MASK} berechnen sich automatisch neu.
+\end{infobox}
+
+% -----------------------------------------------------------------------------
+\subsection{Schichtenmodell -- Abhängigkeiten zeigen nach unten}
+\label{subsec:schichtenmodell}
+
+Ohne klare Schichtung entsteht \glqq Spaghetti-Code\grqq: Der Treiber ruft Logik auf,
+die Logik greift auf Hardware zu, die App dupliziert Regeln. Änderungen haben
+unvorhersehbare Auswirkungen.
+
+\textbf{Regel:} Abhängigkeiten sind gerichtet. Höhere Schichten dürfen niedrigere
+nutzen, aber nicht umgekehrt.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  layer/.style={draw, rectangle, minimum width=11cm, minimum height=0.9cm,
+                font=\ttfamily\small, fill=white},
+  label/.style={font=\sffamily\footnotesize, text=MutedText}
+]
+  \node[layer, fill=ArduinoTeal!15] (app) at (0,4) {app/ \hfill Orchestrierung (Loop/Task, Scheduling)};
+  \node[layer, fill=ArduinoTeal!10] (logic) at (0,3) {logic/ \hfill Regeln (Debounce, Selection, Pipeline)};
+  \node[layer, fill=SuccessGreen!10] (drivers) at (0,2) {drivers/ \hfill IC-spezifisch (CD4021 read, HC595 write)};
+  \node[layer, fill=SuccessGreen!15] (hal) at (0,1) {hal/ \hfill SPI-Bus Zugriff (Transfer/Settings)};
+  \node[layer, fill=MutedText!10] (hw) at (0,0) {include/hw/* \hfill SSOT (Pins/Counts/SPI-Params)};
+
+  \draw[-{Stealth}, thick] (app.south west) ++(0.3,0) -- ++(0,-0.15);
+  \draw[-{Stealth}, thick] (logic.south west) ++(0.3,0) -- ++(0,-0.15);
+  \draw[-{Stealth}, thick] (drivers.south west) ++(0.3,0) -- ++(0,-0.15);
+  \draw[-{Stealth}, thick] (hal.south west) ++(0.3,0) -- ++(0,-0.15);
+\end{tikzpicture}
+\caption{Schichtenmodell der Firmware}
+\label{fig:schichtenmodell}
+\end{figure}
+
+\paragraph{Verzeichnisstruktur}
+
+\begin{lstlisting}[style=shell,numbers=none,caption={Firmware-Verzeichnisstruktur},label={lst:firmware-struktur}]
+firmware/src/
+|-- hal/
+|   `-- spi_bus.cpp         # SPI-Initialisierung
+|-- drivers/
+|   |-- cd4021.cpp          # Button-Input (liest Bytes)
+|   `-- hc595.cpp           # LED-Output (schreibt Bytes)
+|-- logic/
+|   |-- debounce.cpp        # Entprellung -> Press-Edges
+|   |-- selection.cpp       # Selection-Policy -> selectedId
+|   `-- io_pipeline.cpp     # Orchestriert Logik-Module
+`-- app/
+    |-- io_loop.cpp         # Arduino-Variante
+    `-- io_task.cpp         # FreeRTOS-Variante
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Schicht-Verantwortlichkeiten}
+\label{tab:schicht-regeln}
+\begin{tabularx}{\textwidth}{@{}l X X@{}}
+\toprule
+\textbf{Schicht} & \textbf{Darf} & \textbf{Darf nicht} \\
+\midrule
+\code{drivers/} & Bytes lesen/schreiben        & Debounce-Entscheidungen treffen \\
+\code{logic/}   & IDs und Zustände verarbeiten & Pins kennen, SPI aufrufen \\
+\code{app/}     & Schichten orchestrieren      & Regeln duplizieren \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{tipbox}[Warum ist das wichtig?]
+Die \code{logic/}-Schicht ist hardware-unabhängig. Du kannst sie auf dem Host-PC
+unit-testen, ohne ESP32, ohne SPI, ohne echte Hardware.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Datenfluss ist eine Pipeline}
+\label{subsec:pipeline}
+
+Wenn IO-Code \glqq verstreut\grqq\ ist -- hier ein LED-Update, dort ein Button-Check --
+wird das System unvorhersehbar. Die One-Hot-Invariante kann brechen, weil zwei
+Codepfade unabhängig LEDs setzen.
+
+\textbf{Regel:} Der gesamte IO-Zyklus folgt einer klaren Sequenz:
+
+\begin{lstlisting}[style=base,numbers=none]
+read(raw) -> normalize/logic(update) -> derive outputs -> write(outputs)
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rectangle, rounded corners=2pt, minimum height=0.8cm,
+              font=\ttfamily\small, fill=white},
+  pipeline/.style={draw, rectangle, rounded corners=3pt, minimum width=10cm,
+                   minimum height=1.8cm, fill=ArduinoTeal!8},
+  arrow/.style={-{Stealth[length=2mm]}, thick}
+]
+  % CD4021
+  \node[box, fill=SuccessGreen!15] (cd4021) at (0,3) {CD4021::read(rawButtons)};
+
+  % Pipeline container
+  \node[pipeline] (pipe) at (0,1.2) {};
+  \node[font=\sffamily\bfseries\small, anchor=north] at (0,2) {io\_pipeline};
+
+  % Pipeline stages
+  \node[box] (debounce) at (-3.5,1.2) {Debounce\\(Edges)};
+  \node[box] (guard) at (0,1.2) {Press-Guard\\(optional)};
+  \node[box] (selection) at (3.5,1.2) {Selection\\(Policy)};
+
+  \draw[arrow] (debounce) -- (guard);
+  \draw[arrow] (guard) -- (selection);
+
+  % selectedId
+  \node[font=\ttfamily\small] (selid) at (0,-0.3) {selectedId};
+
+  % setOneHot
+  \node[box, fill=ArduinoTeal!15] (onehot) at (0,-1.3) {setOneHot(selectedId) $\to$ ledState[]};
+
+  % HC595
+  \node[box, fill=SuccessGreen!15] (hc595) at (0,-2.5) {HC595::write(ledState)};
+
+  % Arrows
+  \draw[arrow] (cd4021) -- (pipe.north);
+  \draw[arrow] (pipe.south) -- (selid);
+  \draw[arrow] (selid) -- (onehot);
+  \draw[arrow] (onehot) -- (hc595);
+\end{tikzpicture}
+\caption{Datenfluss-Pipeline im Selection Panel}
+\label{fig:pipeline}
+\end{figure}
+
+\paragraph{Was passiert in jeder Stufe?}
+
+\begin{enumerate}
+  \item \textbf{CD4021::read()} -- Liest rohe Bytes vom Schieberegister (active-low, 0~=~gedrückt)
+  \item \textbf{Debounce} -- Filtert Prellen, erzeugt stabile Press-Edges
+  \item \textbf{Press-Guard} -- Verhindert versehentliche Doppel-Presses (optional)
+  \item \textbf{Selection} -- Wendet Policy an: \glqq Welche LED soll leuchten?\grqq
+  \item \textbf{setOneHot()} -- Wandelt \code{selectedId} in Byte-Array um
+  \item \textbf{HC595::write()} -- Schiebt Bytes zum Schieberegister
+\end{enumerate}
+
+\begin{warnbox}[Konsequenz]
+LED-Zustände entstehen an genau einer Stelle (\code{setOneHot}). Kein anderer Code
+darf LEDs direkt setzen -- das würde die Pipeline umgehen und könnte One-Hot brechen.
+\end{warnbox}
+
+% -----------------------------------------------------------------------------
+\subsection{One-Hot ist eine systemweite Invariante}
+\label{subsec:one-hot}
+
+Bei einem Panel mit 100~LEDs wäre es fatal, wenn versehentlich zwei LEDs gleichzeitig
+leuchten oder ein ungültiger Index adressiert wird.
+
+\textbf{Regel:} One-Hot ist ein Vertrag:
+\begin{itemize}
+  \item \code{selectedId == 0} $\to$ alle LEDs aus
+  \item \code{selectedId} $\in [1..N]$ $\to$ genau eine LED an
+  \item Andere Zustände sind verboten
+\end{itemize}
+
+\paragraph{Implementierung der Invariante}
+
+\begin{lstlisting}[style=arduino,caption={One-Hot Implementierung},label={lst:one-hot}]
+void setOneHot(uint8_t selectedId, uint8_t* ledState, size_t ledBytes) {
+    // 1. Alle LEDs aus (clear)
+    memset(ledState, 0x00, ledBytes);
+
+    // 2. Genau eine LED setzen (wenn selectedId > 0)
+    if (selectedId >= 1 && selectedId <= LED_COUNT) {
+        uint8_t byteIdx = (selectedId - 1) / 8;
+        uint8_t bitIdx  = 7 - ((selectedId - 1) % 8);  // MSB-first
+        ledState[byteIdx] |= (1 << bitIdx);
+    }
+
+    // 3. Ungueltige Bits im letzten Byte maskieren
+    ledState[ledBytes - 1] &= LED_LAST_MASK;
+}
+\end{lstlisting}
+
+\begin{infobox}[Warum Schritt 3?]
+Bei 10~LEDs brauchst du 2~Bytes (16~Bits), aber nur 10 sind gültig. Die Bits 5--0
+im zweiten Byte könnten durch Bugs oder Speicherfehler gesetzt sein. Die Maske
+garantiert, dass sie niemals an den HC595 gelangen.
+\end{infobox}
+
+\paragraph{Beispiel (10 LEDs, MSB-first)}
+
+\begin{table}[H]
+\centering
+\caption{One-Hot Bit-Mapping für 10 LEDs}
+\label{tab:one-hot-mapping}
+\begin{tabular}{@{}c l l l@{}}
+\toprule
+\textbf{selectedId} & \textbf{Byte[0]} & \textbf{Byte[1]} & \textbf{Hex} \\
+\midrule
+0 (aus) & \code{00000000} & \code{00000000} & \code{0x00 0x00} \\
+1       & \code{10000000} & \code{00000000} & \code{0x80 0x00} \\
+8       & \code{00000001} & \code{00000000} & \code{0x01 0x00} \\
+9       & \code{00000000} & \code{10000000} & \code{0x00 0x80} \\
+10      & \code{00000000} & \code{01000000} & \code{0x00 0x40} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Ereignisse statt Pegel -- Buttons sind Edge-getrieben}
+\label{subsec:edge-driven}
+
+Wenn die Logik auf \glqq Button ist gedrückt\grqq\ (Pegel) reagiert, feuert sie bei
+jedem Scan-Zyklus. Bei \SI{10}{\milli\second} Scan-Intervall wären das 100~Events
+pro Sekunde, solange du die Taste hältst.
+
+\textbf{Regel:} UI-Aktionen basieren auf Press-Edges (Flanken), nicht auf Pegeln.
+
+\begin{lstlisting}[style=base,numbers=none]
+CD4021 (Pegel)      Debounce            Selection
+     |                  |                   |
+  active-low    ->   pressed edges    ->   reagiert nur
+  (0=gedrueckt)     (stabil+Flanke)       auf Edges
+\end{lstlisting}
+
+\paragraph{Debounce-Algorithmus (vereinfacht)}
+
+\begin{lstlisting}[style=arduino,caption={Debounce-Implementierung},label={lst:debounce}]
+typedef struct {
+    uint8_t stable;      // Letzter stabiler Zustand
+    uint8_t counter;     // Zaehler fuer Entprellung
+} DebounceState;
+
+bool debounce_update(DebounceState* state, uint8_t raw, uint8_t threshold) {
+    if (raw == state->stable) {
+        state->counter = 0;
+        return false;  // Keine Aenderung
+    }
+
+    state->counter++;
+    if (state->counter >= threshold) {
+        bool wasPressed = (state->stable != 0);
+        bool isPressed  = (raw != 0);
+        state->stable = raw;
+        state->counter = 0;
+
+        // Press-Edge: war nicht gedrueckt, ist jetzt gedrueckt
+        return (!wasPressed && isPressed);
+    }
+    return false;
+}
+\end{lstlisting}
+
+\begin{tipbox}[Konsequenz]
+Die Selection-Logik sieht nur \glqq Button 7 wurde gerade gedrückt\grqq, nicht
+\glqq Button 7 ist seit \SI{500}{\milli\second} gedrückt\grqq. Das verhindert
+Event-Spam und macht das Verhalten vorhersagbar.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Determinismus -- Timing bleibt stabil}
+\label{subsec:determinismus}
+
+Im Embedded-Kontext kann ein einzelner \code{Serial.printf()} im Hot-Path das
+gesamte Timing zerstören. UART bei \SI{115200}{Baud} braucht etwa \SI{87}{\micro\second}
+pro Zeichen -- bei 50~Zeichen sind das \SI{4,3}{\milli\second}, fast die Hälfte
+eines \SI{10}{\milli\second}-Scan-Intervalls.
+
+\textbf{Regel:} Der Scan-Pfad läuft ohne Blockierungen. Logging erfolgt nur bei
+Zustandsänderungen.
+
+\begin{table}[H]
+\centering
+\caption{Erlaubte und verbotene Operationen im Hot-Path}
+\label{tab:timing-regeln}
+\begin{tabularx}{\textwidth}{@{}X X@{}}
+\toprule
+\textbf{Erlaubt} & \textbf{Verboten} \\
+\midrule
+Logging bei Selection-Change      & Logging pro Scan-Zyklus \\
+\code{vTaskDelayUntil()} (FreeRTOS) & Busy-loops mit \code{delay()} \\
+Kurze SPI-Transfers ($\sim$\SI{10}{\micro\second}) & Lange Wartezeiten im Hot-Path \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Timing-Budget (10 Kanäle)}
+
+\begin{table}[H]
+\centering
+\caption{Timing-Budget pro Scan-Zyklus}
+\label{tab:timing-budget}
+\begin{tabular}{@{}l r@{}}
+\toprule
+\textbf{Operation} & \textbf{Typische Dauer} \\
+\midrule
+CD4021 read (2~Bytes)              & $\sim$\SI{20}{\micro\second} \\
+Debounce + Selection               & $\sim$\SI{5}{\micro\second} \\
+HC595 write (2~Bytes)              & $\sim$\SI{20}{\micro\second} \\
+\midrule
+\textbf{Gesamt pro Zyklus}         & $\sim$\SI{50}{\micro\second} \\
+\textbf{Verfügbar bei \SI{10}{\milli\second} Intervall} & \SI{10000}{\micro\second} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{infobox}[Konsequenz]
+Bei 10~Kanälen hast du reichlich Reserve. Bei 100~Kanälen (13~Bytes,
+$\sim$\SI{130}{\micro\second} Transfer) bleibt das Timing stabil, solange du
+keine blockierenden Operationen einbaust.
+\end{infobox}
+
+% -----------------------------------------------------------------------------
+\subsection{Skalierbarkeit -- Byte-orientiert und maskenbasiert}
+\label{subsec:skalierbarkeit}
+
+Code mit hartkodierten Werten wie \code{uint8\_t buttons[2]} oder Schleifen
+\code{for (int i = 0; i < 10; i++)} muss bei Skalierung manuell angepasst werden.
+
+\textbf{Regel:} Algorithmen arbeiten mit \code{*\_COUNT} und \code{*\_BYTES},
+nicht mit Literalen.
+
+\begin{lstlisting}[style=arduino,caption={Skalierbare vs.\ hartkodierte Implementierung},label={lst:skalierbar}]
+// Schlecht: hartkodiert
+uint8_t ledState[2];
+for (int i = 0; i < 10; i++) { ... }
+
+// Gut: skalierbar
+uint8_t ledState[LED_BYTES];
+for (int i = 0; i < LED_COUNT; i++) { ... }
+\end{lstlisting}
+
+\paragraph{Automatische Berechnung}
+
+\begin{lstlisting}[style=arduino,caption={Automatische Maskenberechnung für 100 Kanäle},label={lst:auto-mask}]
+#define BTN_COUNT   100
+#define BTN_BYTES   ((BTN_COUNT + 7) / 8)  // = 13
+
+#define LED_COUNT   100
+#define LED_BYTES   ((LED_COUNT + 7) / 8)  // = 13
+
+// Maske: Bei 100 LEDs sind im letzten Byte nur Bits 7-4 gueltig (4 LEDs)
+// 100 % 8 = 4 -> Bits 7,6,5,4 -> Maske = 0xF0
+#define LED_LAST_MASK  (0xFF << (8 - (LED_COUNT % 8))) & 0xFF
+\end{lstlisting}
+
+\begin{tipbox}[Konsequenz]
+Die Änderung \code{BTN\_COUNT=10} $\to$ \code{BTN\_COUNT=100} erfordert keine
+Anpassung in der Logik. Arrays, Schleifen und Masken passen sich automatisch an.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Testbarkeit ist ein Architekturziel}
+\label{subsec:testbarkeit}
+
+Wenn Logik und Hardware verwoben sind, kannst du nur am echten Gerät testen.
+Jeder Test braucht Flashen, Verkabeln, manuelles Drücken -- langsam und fehleranfällig.
+
+\textbf{Regel:} Logik muss isoliert testbar sein, Hardware-Pfad end-to-end.
+
+\begin{table}[H]
+\centering
+\caption{Test-Environments in platformio.ini}
+\label{tab:test-environments}
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\textbf{Environment} & \textbf{Typ} & \textbf{Was wird getestet} \\
+\midrule
+\code{seeed\_xiao\_esp32s3\_test} & Unit & Nur \code{logic/} (Debounce, Selection, Pipeline) \\
+\code{seeed\_xiao\_esp32s3\_e2e}  & E2E  & \code{logic/} + \code{drivers/} + \code{hal/} mit echter Hardware \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Unit-Test-Beispiel (Debounce)}
+
+\begin{lstlisting}[style=arduino,caption={Unit-Test für Debounce},label={lst:debounce-test}]
+void test_debounce_filters_noise() {
+    DebounceState state = {0};
+
+    // Simuliere Prellen: 0 -> 1 -> 0 -> 1 -> 1 -> 1
+    TEST_ASSERT_FALSE(debounce_update(&state, 1, 3));  // Zaehler = 1
+    TEST_ASSERT_FALSE(debounce_update(&state, 0, 3));  // Reset
+    TEST_ASSERT_FALSE(debounce_update(&state, 1, 3));  // Zaehler = 1
+    TEST_ASSERT_FALSE(debounce_update(&state, 1, 3));  // Zaehler = 2
+    TEST_ASSERT_TRUE(debounce_update(&state, 1, 3));   // Zaehler = 3 -> Edge!
+}
+\end{lstlisting}
+
+\begin{infobox}[Konsequenz]
+Unit-Tests laufen in Sekunden, nicht Minuten. Du kannst Debounce-Schwellenwerte
+experimentell optimieren, ohne jedes Mal zu flashen.
+\end{infobox}
+
+% -----------------------------------------------------------------------------
+\subsection{Änderungen haben Pflichtfolgen}
+\label{subsec:pflichtfolgen}
+
+\textbf{Regel:} Bestimmte Änderungen erzwingen bestimmte Checks.
+
+\begin{table}[H]
+\centering
+\caption{Pflicht-Checks nach Änderungstyp}
+\label{tab:pflicht-checks}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Änderung} & \textbf{Pflicht} \\
+\midrule
+Pins/SPI/Mapping            & \code{wiring.md} aktualisieren + E2E-Test \\
+Debounce/Selection/Pipeline & Unit-Tests (\code{seeed\_xiao\_esp32s3\_test}) \\
+Treiber/HAL                 & E2E-Test + Timing-Messung \\
+Counts (10 $\to$ 100)       & Unit-Tests + E2E-Test + Timing-Prüfung \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Testbefehle}
+
+\begin{lstlisting}[style=shell,caption={Testbefehle für Unit- und E2E-Tests},label={lst:testbefehle}]
+# Unit-Tests (Logik)
+pio test -e seeed_xiao_esp32s3_test -v
+
+# E2E-Hardware-Test
+pio test -e seeed_xiao_esp32s3_e2e -f test_e2e_hw -v
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+\subsection{Minimal-Checkliste}
+\label{subsec:checkliste}
+
+Bevor du einen Change committest:
+
+\begin{itemize}
+  \item[$\square$] SSOT nur in \code{include/hw/*}
+  \item[$\square$] Datenfluss bleibt: read $\to$ update $\to$ write
+  \item[$\square$] One-Hot entsteht in genau einem Pfad (clear $\to$ set)
+  \item[$\square$] Letztes Byte maskiert (\code{*\_LAST\_MASK})
+  \item[$\square$] \code{logic/} ist hardware-unabhängig
+  \item[$\square$] Unit-Tests grün (\code{seeed\_xiao\_esp32s3\_test})
+  \item[$\square$] Bei HW-relevanten Changes: E2E grün (\code{test\_e2e\_hw})
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+\subsection{Siehe auch}
+\label{subsec:arch-siehe-auch}
+
+Weiterführende Dokumentation:
+
+\begin{itemize}
+  \item \code{firmware/docs/architecture.md} -- Schichtenmodell-Details
+  \item \code{firmware/docs/overview.md} -- Bit-Mapping (MSB-first)
+  \item \code{firmware/docs/wiring.md} -- Hardware-Verdrahtung
+  \item \code{apps/bridge/docs/PROTOCOL.md} -- Serial/WebSocket-Protokoll
+\end{itemize}

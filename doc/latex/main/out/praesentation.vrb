@@ -1,0 +1,29 @@
+\frametitle{Live-Demo}
+\framesubtitle{Hardware-Prototyp + WebSocket-Test}
+
+\textbf{Dashboard \"{o}ffnen (alle Ger\"{a}te):}
+\begin{verbatim}
+http://rover.local:8081/
+\end{verbatim}
+
+\vspace{0.2cm}
+\textbf{WebSocket-Test mit wscat:}
+\begin{verbatim}
+wscat -c ws://rover.local:8081/ws
+> {"type":"setSelection","selected":5}
+\end{verbatim}
+
+\vspace{0.2cm}
+\textbf{Service-Status pr\"{u}fen:}
+\begin{verbatim}
+sudo systemctl status embedded-bridge.service
+\end{verbatim}
+
+\vspace{0.2cm}
+\textbf{Serial-Port pr\"{u}fen:}
+\begin{verbatim}
+ls -la /dev/serial/by-id/ | grep Espressif
+\end{verbatim}
+
+\vspace{0.2cm}
+\highlight{Hardware:} Taster dr\"{u}cken $\rightarrow$ LED leuchtet, Status auf allen Browsern synchron.

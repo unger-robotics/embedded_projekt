@@ -1,0 +1,486 @@
+% =============================================================================
+% Frontend-Backend.tex – React-Stack Grundlagen
+% Einbindung: \input{content/Frontend-Backend}
+% =============================================================================
+
+\section{React-Stack Grundlagen}
+\label{sec:react-stack}
+
+% -----------------------------------------------------------------------------
+\subsection{Begriffsrahmen und Zielsetzung}
+\label{subsec:react-begriffsrahmen}
+
+Du entwickelst das Selection-Panel-Frontend (Browser-UI), das über WebSocket mit
+dem Python-Backend kommuniziert. Der Stack ersetzt manuelles HTML/CSS/JS durch
+ein wartbares, typsicheres System.
+
+\begin{table}[H]
+\centering
+\caption{Zentrale Begriffe des React-Stacks}
+\label{tab:react-begriffe}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Begriff} & \textbf{Definition} \\
+\midrule
+React        & JavaScript-Bibliothek für komponentenbasierte UIs \\
+TypeScript   & JavaScript-Erweiterung mit statischer Typisierung \\
+Vite         & Build-Tool und Entwicklungsserver (sprich: \glqq viit\grqq, französisch für \glqq schnell\grqq) \\
+ESLint       & Statische Code-Analyse (findet Fehler vor Laufzeit) \\
+Prettier     & Code-Formatter (einheitlicher Stil) \\
+React Router & Client-seitige Navigation ohne Seitenneuladen \\
+Tailwind CSS & Utility-First CSS-Framework \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{React -- Komponenten statt DOM-Manipulation}
+\label{subsec:react-komponenten}
+
+Bei klassischem JavaScript manipulierst du das DOM direkt:
+
+\begin{lstlisting}[style=base,numbers=none,caption={Klassische DOM-Manipulation},label={lst:dom-klassisch}]
+// Klassisch: imperativ, fehleranfaellig bei Zustandsaenderungen
+document.getElementById('led-5').classList.add('active');
+document.getElementById('status').textContent = 'LED 5 an';
+\end{lstlisting}
+
+Bei 100~LEDs und komplexen Zuständen wird dieser Ansatz unwartbar. Wenn sich ein
+Wert ändert, musst du manuell alle betroffenen DOM-Elemente aktualisieren.
+
+React kehrt das Prinzip um -- du beschreibst den \emph{gewünschten Zustand},
+React berechnet die nötigen DOM-Änderungen:
+
+\begin{lstlisting}[style=base,numbers=left,caption={React-Komponente (deklarativ)},label={lst:react-komponente}]
+// React: deklarativ, Zustand -> UI-Ableitung
+function LedButton({ id, isActive, onPress }: LedProps) {
+  return (
+    <button
+      className={isActive ? 'led active' : 'led'}
+      onClick={() => onPress(id)}
+    >
+      LED {id}
+    </button>
+  );
+}
+\end{lstlisting}
+
+\paragraph{Kernkonzept -- Komponenten}
+
+Eine Komponente ist eine Funktion, die Props (Eingabeparameter) erhält und JSX
+(HTML-ähnliche Syntax) zurückgibt. Komponenten sind wiederverwendbar und isoliert.
+
+\paragraph{Kernkonzept -- State und Hooks}
+
+Lokaler Zustand wird mit \code{useState} verwaltet:
+
+\begin{lstlisting}[style=base,numbers=left,caption={State-Management mit useState},label={lst:usestate}]
+function LedPanel() {
+  const [activeIds, setActiveIds] = useState<Set<number>>(new Set());
+
+  const handlePress = (id: number) => {
+    setActiveIds(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  return (
+    <div className="grid">
+      {Array.from({ length: 100 }, (_, i) => (
+        <LedButton
+          key={i}
+          id={i}
+          isActive={activeIds.has(i)}
+          onPress={handlePress}
+        />
+      ))}
+    </div>
+  );
+}
+\end{lstlisting}
+
+\begin{infobox}[Konsequenz für Selection Panel]
+Wenn der ESP32 über WebSocket meldet \glqq LED 42 aktiv\grqq, aktualisierst du nur
+den State. React rendert automatisch nur die betroffene Komponente neu -- nicht
+die anderen 99~LEDs.
+\end{infobox}
+
+% -----------------------------------------------------------------------------
+\subsection{TypeScript -- Fehler vor Laufzeit finden}
+\label{subsec:typescript}
+
+JavaScript-Fehler treten erst zur Laufzeit auf:
+
+\begin{lstlisting}[style=base,numbers=none,caption={JavaScript ohne Typisierung},label={lst:js-untyped}]
+// JavaScript: Fehler erst im Browser sichtbar
+function setLedState(id, state) {
+  websocket.send({ led: id, state: state }); // Typo? Falscher Typ?
+}
+setLedState("5", "an"); // Kompiliert, crasht zur Laufzeit
+\end{lstlisting}
+
+TypeScript prüft Typen beim Kompilieren:
+
+\begin{lstlisting}[style=base,numbers=left,caption={TypeScript mit Typisierung},label={lst:ts-typed}]
+// TypeScript: Fehler im Editor, bevor du speicherst
+interface LedCommand {
+  led: number;
+  state: boolean;
+}
+
+function setLedState(id: number, state: boolean): void {
+  const cmd: LedCommand = { led: id, state };
+  websocket.send(JSON.stringify(cmd));
+}
+
+setLedState("5", "an"); // Fehler: string ist nicht number
+setLedState(5, true);   // korrekt
+\end{lstlisting}
+
+\paragraph{Wichtige Typen für dein Projekt}
+
+\begin{lstlisting}[style=base,numbers=left,caption={WebSocket-Nachrichten typisieren},label={lst:ws-types}]
+// WebSocket-Nachrichten typisieren
+type WsMessage =
+  | { type: 'button_press'; id: number }
+  | { type: 'led_update'; id: number; state: boolean }
+  | { type: 'audio_start'; file: string };
+
+// Props fuer Komponenten
+interface LedGridProps {
+  leds: Map<number, boolean>;
+  onLedClick: (id: number) => void;
+}
+\end{lstlisting}
+
+\begin{tipbox}[Konsequenz]
+Der Compiler fängt Tippfehler, falsche Argumentreihenfolgen und fehlende
+Eigenschaften ab. Bei 100~Buttons mit verschiedenen Zuständen reduziert das
+die Debugging-Zeit erheblich.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Vite -- Build-Tool und Entwicklungsserver}
+\label{subsec:vite}
+
+Browser verstehen weder TypeScript noch JSX direkt. Der Code muss transformiert werden:
+
+\begin{lstlisting}[style=base,numbers=none]
+Quellcode (.tsx)  ->  [Transformation]  ->  Browser-Code (.js)
+\end{lstlisting}
+
+Ältere Tools wie Webpack benötigen dafür mehrere Sekunden bis Minuten.
+Vite nutzt ES-Module (native Browser-Imports) und transformiert nur geänderte Dateien:
+
+\begin{lstlisting}[style=shell,caption={Vite-Projekt erstellen},label={lst:vite-init}]
+npm create vite@latest pi-react -- --template react-ts
+cd pi-react
+npm install
+npm run dev   # Startet localhost:5173, Hot Module Replacement
+\end{lstlisting}
+
+\paragraph{Zwei Modi}
+
+\begin{table}[H]
+\centering
+\caption{Vite Build-Modi}
+\label{tab:vite-modi}
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\textbf{Modus} & \textbf{Befehl} & \textbf{Ergebnis} \\
+\midrule
+Entwicklung & \code{npm run dev}   & Lokaler Server mit Live-Reload, Source Maps \\
+Produktion  & \code{npm run build} & Optimierte statische Dateien in \code{dist/} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Konfiguration (vite.config.ts)}
+
+\begin{lstlisting}[style=base,numbers=left,caption={Vite-Konfiguration mit WebSocket-Proxy},label={lst:vite-config}]
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      '/ws': {
+        target: 'ws://localhost:8081',
+        ws: true
+      }
+    }
+  },
+  build: {
+    outDir: 'dist'  // Standard-Output
+  }
+});
+\end{lstlisting}
+
+\begin{infobox}[Konsequenz]
+Änderungen im Code erscheinen in unter \SI{100}{\milli\second} im Browser.
+Nach \code{npm run build} liegen statische Dateien in \code{dist/} bereit,
+die dein Python-Backend ausliefert.
+\end{infobox}
+
+% -----------------------------------------------------------------------------
+\subsection{ESLint + Prettier -- Code-Qualität automatisieren}
+\label{subsec:eslint-prettier}
+
+Inkonsistenter Code (Tabs vs.\ Spaces, fehlende Semikolons) erschwert Reviews.
+Potenzielle Bugs bleiben unentdeckt.
+
+\paragraph{ESLint (Analyse)}
+
+ESLint findet problematische Muster:
+
+\begin{lstlisting}[style=shell]
+npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+\end{lstlisting}
+
+\begin{lstlisting}[style=base,numbers=left,caption={ESLint-Konfiguration},label={lst:eslint-config}]
+// eslint.config.js
+export default [
+  {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      'no-unused-vars': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'react-hooks/exhaustive-deps': 'warn'
+    }
+  }
+];
+\end{lstlisting}
+
+\paragraph{Prettier (Formatierung)}
+
+Prettier erzwingt einheitlichen Stil:
+
+\begin{lstlisting}[style=shell]
+npm install -D prettier eslint-config-prettier
+\end{lstlisting}
+
+\begin{lstlisting}[style=json,caption={Prettier-Konfiguration},label={lst:prettier-config}]
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5"
+}
+\end{lstlisting}
+
+\paragraph{Integration in VS Code}
+
+\begin{lstlisting}[style=json,caption={VS Code Settings},label={lst:vscode-settings}]
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}
+\end{lstlisting}
+
+\begin{tipbox}[Konsequenz]
+Beim Speichern formatiert Prettier automatisch, ESLint markiert Probleme.
+Das eliminiert Style-Diskussionen und fängt häufige Fehler früh ab.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{React Router -- Client-seitige Navigation}
+\label{subsec:react-router}
+
+Bei klassischen Webseiten lädt jeder Seitenwechsel die komplette Seite neu.
+Der WebSocket würde dabei getrennt.
+
+React Router wechselt Komponenten, ohne die Seite neu zu laden:
+
+\begin{lstlisting}[style=shell]
+npm install react-router-dom
+\end{lstlisting}
+
+\begin{lstlisting}[style=base,numbers=left,caption={React Router Setup},label={lst:router-setup}]
+// App.tsx
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <nav>
+        <Link to="/">Dashboard</Link>
+        <Link to="/config">Konfiguration</Link>
+        <Link to="/debug">Debug</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/config" element={<ConfigPanel />} />
+        <Route path="/debug" element={<DebugView />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+\end{lstlisting}
+
+\begin{warnbox}[Wichtig für Selection Panel]
+Der WebSocket-Hook lebt oberhalb des Routers, sodass die Verbindung bei
+Navigation bestehen bleibt:
+\end{warnbox}
+
+\begin{lstlisting}[style=base,numbers=left,caption={WebSocket-Context oberhalb des Routers},label={lst:ws-context}]
+function App() {
+  const ws = useWebSocket('ws://localhost:8081/ws');
+
+  return (
+    <WebSocketContext.Provider value={ws}>
+      <BrowserRouter>
+        {/* Routes hier */}
+      </BrowserRouter>
+    </WebSocketContext.Provider>
+  );
+}
+\end{lstlisting}
+
+Du kannst zwischen Dashboard, Konfiguration und Debug-Ansicht wechseln,
+ohne die ESP32-Verbindung zu verlieren.
+
+% -----------------------------------------------------------------------------
+\subsection{Tailwind CSS -- Utility-First Styling}
+\label{subsec:tailwind}
+
+Traditionelles CSS erfordert separate Dateien und erfundene Klassennamen:
+
+\begin{lstlisting}[style=base,numbers=none]
+/* styles.css - waechst unkontrolliert */
+.led-button { ... }
+.led-button-active { ... }
+.led-button-disabled { ... }
+\end{lstlisting}
+
+Tailwind bietet vordefinierte Utility-Klassen direkt im Markup:
+
+\begin{lstlisting}[style=shell]
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+\end{lstlisting}
+
+\begin{lstlisting}[style=base,numbers=left,caption={Tailwind-Konfiguration},label={lst:tailwind-config}]
+// tailwind.config.js
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        'led-active': '#22c55e',
+        'led-inactive': '#374151'
+      }
+    }
+  }
+};
+\end{lstlisting}
+
+\paragraph{Anwendung}
+
+\begin{lstlisting}[style=base,numbers=left,caption={Tailwind-Klassen in React},label={lst:tailwind-react}]
+// Statt CSS-Klassen zu erfinden: direkte Utilities
+function LedButton({ isActive }: { isActive: boolean }) {
+  return (
+    <button className={`
+      w-12 h-12 rounded-full
+      transition-colors duration-150
+      ${isActive
+        ? 'bg-led-active shadow-lg shadow-green-500/50'
+        : 'bg-led-inactive hover:bg-gray-600'}
+    `}>
+    </button>
+  );
+}
+\end{lstlisting}
+
+\paragraph{Grid für 100 LEDs}
+
+\begin{lstlisting}[style=base,numbers=none]
+<div className="grid grid-cols-10 gap-2 p-4">
+  {leds.map((led, i) => <LedButton key={i} isActive={led} />)}
+</div>
+\end{lstlisting}
+
+\begin{infobox}[Konsequenz]
+Kein Wechsel zwischen Dateien, keine CSS-Spezifitätskonflikte. Die Bundle-Größe
+bleibt klein, weil Tailwind nur genutzte Klassen einbindet.
+\end{infobox}
+
+% -----------------------------------------------------------------------------
+\subsection{Zusammenspiel im Selection-Panel-Projekt}
+\label{subsec:react-zusammenspiel}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rectangle, rounded corners=2pt, minimum height=1.2cm,
+              font=\ttfamily\footnotesize, fill=white, align=center},
+  container/.style={draw, rectangle, rounded corners=3pt, minimum width=13cm,
+                    minimum height=4cm, font=\sffamily\small},
+  arrow/.style={-{Stealth[length=2mm]}, thick},
+  label/.style={font=\sffamily\scriptsize, text=MutedText}
+]
+  % DEV Container
+  \node[container, fill=ArduinoTeal!8] (dev) at (0,4) {};
+  \node[font=\sffamily\bfseries, anchor=north west] at (-6.3,5.8) {Entwicklung (Mac)};
+
+  \node[box] (vscode) at (-4,4.2) {VS Code\\+ Extensions};
+  \node[box] (vite) at (0,4.2) {Vite Dev\\Server :5173};
+  \node[box] (lint) at (4,4.2) {ESLint/\\Prettier};
+
+  \draw[arrow] (vscode) -- (vite);
+  \draw[arrow] (lint) -- (vite);
+
+  \node[box] (bridge-dev) at (-4,2.5) {bridge.py\\:8081};
+  \node[box, minimum width=2cm] (esp-dev) at (2,2.5) {ESP32-S3};
+
+  \draw[arrow, dashed] (vite.south) -- node[right, label] {proxy /ws} (bridge-dev.north);
+  \draw[arrow] (bridge-dev) -- node[above, label] {USB-CDC} (esp-dev);
+
+  % PROD Container
+  \node[container, fill=RaspberryRed!8, minimum height=2.5cm] (prod) at (0,-0.5) {};
+  \node[font=\sffamily\bfseries, anchor=north west] at (-6.3,0.8) {Produktion (Raspberry Pi)};
+
+  \node[box] (bridge-prod) at (-3,-0.5) {bridge.py\\:8081};
+  \node[box, minimum width=2cm] (esp-prod) at (3,-0.5) {ESP32-S3};
+
+  \node[label, anchor=east] at (0,-0.2) {liefert dist/};
+  \node[label, anchor=east] at (0,-0.8) {WebSocket /ws};
+
+  \draw[arrow] (bridge-prod) -- node[above, label] {USB-CDC} (esp-prod);
+\end{tikzpicture}
+\caption{Entwicklungs- und Produktionsumgebung}
+\label{fig:dev-prod-setup}
+\end{figure}
+
+\paragraph{Deployment-Workflow}
+
+\begin{lstlisting}[style=shell,caption={Frontend-Deployment},label={lst:frontend-deploy}]
+# Auf dem Mac
+cd apps/dashboard
+npm run build          # Erzeugt dist/
+
+# Auf den Pi kopieren
+rsync -avh --delete \
+  ./apps/dashboard/dist/ \
+  pi@rover:/home/pi/embedded_projekt/apps/dashboard/dist/
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+\subsection{Siehe auch}
+\label{subsec:react-siehe-auch}
+
+Weiterführende Dokumentation:
+
+\begin{itemize}
+  \item \code{apps/dashboard/docs/DEVELOPER.md} -- Frontend-Entwicklung
+  \item \code{apps/dashboard/docs/USER\_GUIDE.md} -- Benutzerhandbuch
+  \item \code{apps/bridge/docs/PROTOCOL.md} -- WebSocket-Events
+  \item \code{apps/bridge/docs/WORKFLOW.md} -- Pi-Deployment
+\end{itemize}

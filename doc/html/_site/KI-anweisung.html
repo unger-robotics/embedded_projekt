@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>KI-anweisung.mathjax_tmp</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="main-container">
+<h1 id="ki">KI</h1>
+<ul>
+<li><p><strong>Prüfe</strong> den Inhalt, identifiziere
+Inkonsistenzen/Fehler und liefere eine vollständig überarbeitete,
+konsistente Version.</p></li>
+<li><p>Abgleich der Doku mit der tatsächlichen Implementierung</p></li>
+<li><p>Überarbeite <strong>Prompt</strong> (prägnant,
+eindeutig):</p></li>
+<li><p><strong>Erkläre</strong> das Thema nach
+<strong>Bloch-Standard</strong>: (Technische Exzellenz × Didaktische
+Klarheit; konsistent in „du“-Form, „wir“ nur für gemeinsame
+Herleitung)</p></li>
+<li><p>fundamentale <strong>Grundlagen</strong> für
+Embedded-Programmierung</p></li>
+<li><p><strong>Prinzipien:</strong> Arbeite nach <em>Simple is
+best</em>, <em>Teile und herrsche</em>, <em>keine Redundanz</em> und
+gängiger Engineering-Praxis; trenne strikt <strong>Inhalt</strong>,
+<strong>Design</strong> und <strong>Code</strong>.</p></li>
+<li><p><strong>Doku:</strong> Erstelle/aktualisiere technische Doku +
+Projektmanagement-Doku in <strong>GFM (UTF-8)</strong>; liefere
+vollständig und strukturiert.</p></li>
+<li><p>Prüfe den <strong>Markdown-Text</strong>, formatiere ihn
+vollständig in GFM (UTF-8) und gib die komplette Ausgabe aus.</p></li>
+<li><p><strong>LaTeX:</strong> Erzeuge LaTeX-Fragmente <strong>ohne
+Präambel</strong>, passend zur main_template.tex und
+techdoc.cls</p></li>
+<li><p><strong>Vortrag:</strong> Erstelle eine kurze, klare
+Präsentationsstruktur (Agenda → Kernaussagen → Demo → Architektur → Next
+Steps) und liefere Folientexte.</p></li>
+<li><p><strong>Git:</strong> Definiere Repo-Standards:
+Branch/PR-Workflow, Naming, Tags/Releases, CI/Checks,
+Code-Review-Regeln.</p></li>
+<li><p><strong>Commit-Message:</strong> Erzeuge Commit-Message(s) im
+<strong>Conventional Commits</strong>-Format passend zu den
+Änderungen.</p></li>
+<li><p><strong>KiCad 8 Projekt:</strong> Erstelle ein vollständiges
+KiCad-8-Projekt (Schematic + PCB) nach dem aktuellen Workflow
+<strong>Schaltplan → PCB</strong> (ohne Netzlisten-Import); liefere die
+Projektstruktur und alle nötigen Dateien inkl.
+Symbolen/Footprints-Zuordnung, ERC/DRC-fähig.</p></li>
+</ul>
+<hr />
+<h1 id="code">Code</h1>
+<p><strong>Code:</strong> Refaktoriere ohne Funktionsänderung: entferne
+Redundanzen, erzwinge konsistente Projektstandards (minimal, wartbar,
+skalierbar, nicht-blockierend), verbessere Lesbarkeit; Kommentare
+erklären <strong>warum</strong> (nicht nur <strong>was</strong>).</p>
+<p><strong>Code-Kommentare &amp; README:</strong> Der Code funktioniert;
+verbessere die Lesbarkeit. Schreibe Kommentare, die
+<strong>warum</strong> etwas so gelöst ist (nicht nur
+<strong>was</strong> passiert). Beachte: <em>Simple is best</em>,
+<em>Teile und herrsche</em>, <em>keine Redundanz</em>,
+<em>Engineering-Praxis</em>. Erstelle zusätzlich eine passende,
+vollständige <code>README.md</code>.</p>
+<p><strong>Firmware-Guide:</strong> Erstelle
+<code>docs/firmware-guide.md</code> als vollständigen,
+GFM/Pandoc-tauglichen Leitfaden (UTF-8) inkl. Mermaid-Diagrammen;
+behandle: Embedded vs. Desktop, Arduino C++ (C++11/GCC 8.4 Limits),
+Embedded-Dogmen (kein Heap/keine Blockierung), Code-Struktur
+(Includes→<code>loop()</code>), Syntax (Typwahl <code>uint8_t</code>,
+<code>static/const/constexpr</code>, <code>inline</code>,
+Pointer/Refs/Arrays, Bit-Ops), Arduino-APIs (pinMode/SPI/PWM), Ablauf-
+&amp; Datenflussdiagramme für den konkreten Code sowie
+FreeRTOS-Architektur.</p>
+<p><strong>Glossar</strong>: Erkläre alle Fachbegriffe alphabetisch
+sortiert.</p>
+<ul>
+<li><p><strong>CSS:</strong> Analysiere Responsiveness; optimiere Layout
+für <strong>Fullscreen ohne Scrollen</strong>; definiere ein
+konsistentes, professionelles Farbschema (Arduino, Raspberry Pi 5) und
+setze es systematisch um.</p></li>
+<li><p><strong>UI (Interaktives Auswahlpanel):</strong> Implementiere
+das Auswahlpanel getrennt nach <strong>HTML/CSS/JS</strong> (keine
+Inline-Styles), modular und erweiterbar.</p></li>
+</ul>
+<h2
+id="react-typescript-vite-eslintprettier-react-router-tailwind">React +
+TypeScript + Vite + eslint/prettier + react-router + Tailwind</h2>
+<h3 id="react">React</h3>
+<p><strong>React</strong> ist eine JavaScript-Bibliothek für
+<strong>Benutzeroberflächen (UI)</strong>. Du baust die Oberfläche aus
+<strong>Komponenten</strong> (z. B. Button, Statusanzeige,
+Dashboard-Kachel). React rendert diese Komponenten effizient, wenn sich
+Daten/State ändern.</p>
+<p><strong>Beispiel:</strong> <code>ButtonPanel</code>, das bei
+Tastendruck den Zustand (<code>pressed</code>) aktualisiert und die
+Ansicht automatisch neu zeichnet.</p>
+<h3 id="typescript">TypeScript</h3>
+<p><strong>TypeScript (TS)</strong> ist <strong>JavaScript mit
+Typen</strong>. Du definierst z. B., dass <code>ledId</code> eine Zahl
+ist oder dass ein WebSocket-Event ein bestimmtes Format hat.</p>
+<p><strong>Nutzen:</strong></p>
+<ul>
+<li>weniger Laufzeitfehler (vieles fällt beim Kompilieren auf)</li>
+<li>bessere Autovervollständigung in VS Code</li>
+<li>saubere Schnittstellen (z. B. für dein JSON-Protokoll ESP32 ↔︎ Pi ↔︎
+Browser)</li>
+</ul>
+<h3 id="vite">Vite</h3>
+<p><strong>Vite</strong> ist ein <strong>Build-Tool/Dev-Server</strong>
+für Frontend-Projekte:</p>
+<ul>
+<li>startet lokal sehr schnell</li>
+<li>liefert “Hot Reload” (Änderung speichern → Browser aktualisiert
+sofort)</li>
+<li>baut am Ende eine optimierte Produktionsversion (minified
+assets)</li>
+</ul>
+<h3 id="uistyling">UI/Styling</h3>
+<ul>
+<li><strong>CSS direkt</strong> geht immer.</li>
+<li><strong>Tailwind CSS</strong> (schnell konsistente UI bauen).</li>
+</ul>
+<h3 id="routing">Routing</h3>
+<ul>
+<li><strong>react-router</strong> Wenn du mehrere Seiten willst (z. B.
+“Dashboard”, “Settings”)</li>
+</ul>
+<h3 id="daten-vom-piesp32">Daten vom Pi/ESP32</h3>
+<p>Wenn du mit deinem Pi-Service redest:</p>
+<ul>
+<li><strong>WebSocket</strong> (live Status/Events)</li>
+<li>oder <strong>HTTP/REST</strong> (Konfiguration, Listen, Dateien) Das
+geht mit Bordmitteln (<code>fetch</code>, <code>WebSocket</code>) – kein
+Extra zwingend nötig.</li>
+</ul>
+<h3 id="qualität-wartbarkeit">Qualität / Wartbarkeit</h3>
+<ul>
+<li><strong>ESLint</strong> + <strong>Prettier</strong>
+(Format/Regeln)</li>
+<li><strong>Vitest</strong> (Tests)</li>
+</ul>
+<hr />
+<h3 id="lokale-web-apps-entwickeln">1) Lokale Web-Apps entwickeln</h3>
+<ul>
+<li>Dashboards (z. B. für dein Selection-Panel)</li>
+<li>Visualisierung von Button/LED-States</li>
+<li>Audio/Bild/Video-UI im Browser</li>
+<li>Konfigurationsseiten (Mapping, Profile, Debug-Ansicht)</li>
+</ul>
+<h3 id="als-lokale-oberfläche-für-deinen-raspberry-pi-service">2) Als
+lokale Oberfläche für deinen Raspberry Pi-Service</h3>
+<p>Typisches Setup:</p>
+<ul>
+<li>Pi läuft als Server (Python aiohttp / Node) und bietet
+WebSocket/HTTP</li>
+<li>Dein Mac (oder Pi selbst) zeigt die React-Webseite im Browser</li>
+<li>Ideal für: Live-Status, Logs, “One-Hot”-Validierung,
+Reconnect-Handling</li>
+</ul>
+<h3 id="als-statische-website-bauen-und-irgendwo-hosten">3) Als
+“statische” Website bauen und irgendwo hosten</h3>
+<p>Vite erzeugt am Ende einen <code>dist/</code>-Ordner. Den kannst
+du:</p>
+<ul>
+<li>auf dem Pi via nginx/Static-Server ausliefern</li>
+</ul>
+<hr />
+<p>erstelle Single-Page-App (SPA) Dashboard im Browser ziel
+Embedded-Entwicklung (Farbdesign: Arduino, Raspi 5)</p>
+<p>starte mit <strong>(A) Dashboard im Browser</strong> html, css,
+js</p>
+<p>weiter, frage mich vorher <strong>(B) Dashboard im Browser</strong>
+saubere Projektstruktur (React + TS + Vite, eslint/prettier,
+react-router, Tailwind) inkl. WebSocket-Event-Typen in TypeScript.</p>
+<p>Zielgruppe: Entwickler und Benutzer und Admins erstelle je README.md/
+DEVELOPER.md / PROTOCOL.md / WORKFLOW.md</p>
+<hr />
+<h1 id="readme">README</h1>
+<h2 id="lizenz">Lizenz</h2>
+<p>MIT License</p>
+<h2 id="autor-maintainer">Autor &amp; Maintainer</h2>
+<p>Jan Unger</p>
+<h2 id="credits">Credits</h2>
+<p>Unterstützt durch KI-Tools (Claude 4.5, ChatGPT 5.2).</p>
+<h1 id="präsentation">Präsentation</h1>
+<p><strong>letzte Folie</strong> „Credits“</p>
+<p>Autor: Jan Unger</p>
+<p>Unterstützung: Claude 4.5, ChatGPT 5.2 (Text-/Code-Vorschläge)</p>
+<p>Stand: 2026-01-08</p>
+<h1 id="dokumentation">Dokumentation</h1>
+<h2 id="autor">Autor</h2>
+<p>Jan Unger</p>
+<h2 id="tools-credits">Tools / Credits</h2>
+<p>Claude 4.5, ChatGPT 5.2 (Unterstützung bei Formulierung und
+Code-Vorschlägen)</p>
+<p>Stand: 2026-01-08</p>
+</div>
+</body>
+</html>

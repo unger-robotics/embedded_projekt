@@ -1,0 +1,316 @@
+% =============================================================================
+% embedded-glossar.tex – Glossar Embedded-Entwicklung
+% =============================================================================
+
+\section{Glossar: Embedded-Entwicklung}
+
+Begriffe und Abkürzungen für dieses Projekt (ESP32-S3, CD4021, 74HC595, PlatformIO).
+
+% -----------------------------------------------------------------------------
+\subsection*{A}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Active-Low]
+Signal-Konvention: Aktiv = LOW (0), Inaktiv = HIGH (1).\\
+\textit{Im Projekt:} CD4021-Buttons sind active-low (gedrückt = 0).
+
+\item[ACK]
+Acknowledge – Bestätigung einer empfangenen Nachricht.\\
+\textit{Im Projekt:} Bridge sendet ACK nach erfolgreichem Kommando.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{B}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Baudrate]
+Übertragungsgeschwindigkeit in Bit/s.\\
+\textit{Im Projekt:} USB-CDC, Baudrate wird ignoriert (921600 nominal).
+
+\item[Bit-Mapping]
+Zuordnung von IDs zu Bit-Positionen.\\
+\textit{Im Projekt:} MSB-first für Buttons und LEDs.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{C}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[CD4021]
+8-Bit Parallel-In/Serial-Out Schieberegister.\\
+\textit{Im Projekt:} Liest Button-Zustände (Active-Low).
+
+\item[COBS]
+Consistent Overhead Byte Stuffing – Framing-Verfahren.\\
+\textit{Im Projekt:} Für Serial-Protokoll zwischen ESP32 und Pi.
+
+\item[CRC]
+Cyclic Redundancy Check – Prüfsumme für Datenintegrität.\\
+\textit{Im Projekt:} CRC-16 CCITT für Serial-Frames.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{D}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Debounce]
+Entprellen von mechanischen Tastern.\\
+\textit{Im Projekt:} \SI{50}{\milli\second} Debounce-Zeit, Edge-basiert.
+
+\item[Datenfluss]
+Verarbeitungssequenz: \code{read → update → write}\\
+\textit{Im Projekt:} CD4021 → Logic → HC595
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{E}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Edge]
+Flanke: Übergang von einem Zustand zum anderen.
+\begin{itemize}[nosep, leftmargin=1.5em]
+\item \textbf{Rising Edge:} 0 → 1
+\item \textbf{Falling Edge:} 1 → 0
+\end{itemize}
+\textit{Im Projekt:} Press-Edge = Taste wird gedrückt.
+
+\item[E2E-Test]
+End-to-End Test mit echter Hardware.\\
+\textit{Im Projekt:} \code{test\_e2e\_hw} prüft SPI, Timing, Mapping.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{F}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[FreeRTOS]
+Real-Time Operating System für Mikrocontroller.\\
+\textit{Im Projekt:} Optional, für Task-basierte Architektur.
+
+\item[Frame]
+Datenpaket mit Header, Payload, CRC.\\
+\textit{Im Projekt:} COBS-kodiert über Serial.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{G}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[GPIO]
+General Purpose Input/Output – universelle Pins.
+
+\item[Guard]
+Zeitfenster, das erneute Aktionen blockiert.\\
+\textit{Im Projekt:} Press-Guard verhindert Doppel-Klicks.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{H}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[HAL]
+Hardware Abstraction Layer – Hardware-Abstraktion.\\
+\textit{Im Projekt:} \code{src/hal/} für SPI-Zugriff.
+
+\item[HC595]
+74HC595: 8-Bit Schieberegister mit Latch.\\
+\textit{Im Projekt:} Steuert LEDs (Active-High).
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{I}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[ISR]
+Interrupt Service Routine – Interrupt-Handler.\\
+\textit{Regel:} Kurz halten, keine langen Operationen.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{L}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Latch]
+Speichert Daten für stabile Ausgabe.\\
+\textit{Im Projekt:} HC595 RCK-Pin triggert Latch.
+
+\item[LSB / MSB]
+\begin{itemize}[nosep, leftmargin=1.5em]
+\item \textbf{LSB:} Least Significant Bit (niedrigstes Bit)
+\item \textbf{MSB:} Most Significant Bit (höchstes Bit)
+\end{itemize}
+\textit{Im Projekt:} MSB-first für Buttons und LEDs.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{M}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Maske]
+Bitmuster zum Selektieren/Filtern von Bits.
+\begin{lstlisting}[style=arduino,numbers=none]
+value & mask;   // Bits auslesen
+value |= mask;  // Bits setzen
+value &= ~mask; // Bits loeschen
+\end{lstlisting}
+
+\item[MISO / MOSI]
+\begin{itemize}[nosep, leftmargin=1.5em]
+\item \textbf{MISO:} Master In, Slave Out (Daten zum Master)
+\item \textbf{MOSI:} Master Out, Slave In (Daten zum Slave)
+\end{itemize}
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{O}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[OE]
+Output Enable – Aktiviert Ausgänge (meist active-low).\\
+\textit{Im Projekt:} HC595 OE = LOW → LEDs aktiv.
+
+\item[One-Hot]
+Genau ein Bit gesetzt (oder keins).\\
+\textit{Im Projekt:} Immer nur eine LED aktiv.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{P}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Pipeline]
+Datenfluss durch mehrere Verarbeitungsstufen.\\
+\textit{Im Projekt:} read → debounce → selection → write
+
+\item[Polling]
+Regelmäßiges Abfragen eines Zustands.\\
+\textit{Im Projekt:} \SI{10}{\milli\second} Scan-Intervall.
+
+\item[Pull-up / Pull-down]
+Widerstand, der Pin auf definierten Pegel zieht.\\
+\textit{Im Projekt:} Pull-ups für CD4021-Inputs.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{R}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[RTOS]
+Real-Time Operating System.\\
+\textit{Im Projekt:} Optional FreeRTOS.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{S}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Scan-Zyklus]
+Ein Durchlauf: Lesen → Verarbeiten → Schreiben.
+
+\item[SPI]
+Serial Peripheral Interface – synchroner Bus.\\
+\textit{Im Projekt:}
+\begin{itemize}[nosep, leftmargin=1.5em]
+\item CD4021: Mode 1, \SI{500}{\kilo\hertz}
+\item HC595: Mode 0, \SI{1}{\mega\hertz}
+\end{itemize}
+
+\item[SSOT]
+Single Source of Truth – eine Quelle für Daten.\\
+\textit{Im Projekt:} Hardware-Parameter nur in \code{include/hw/}.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{T}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Task]
+Ausführungseinheit in FreeRTOS.\\
+\textit{Im Projekt:} \code{io\_task} für IO-Verarbeitung.
+
+\item[Timing]
+Zeitliche Abfolge von Signalen.\\
+\textit{Kritisch:} Zu schnell/langsam → Fehler.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{U}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Unit-Test]
+Test einer einzelnen Komponente.\\
+\textit{Im Projekt:} Tests für Debounce, Selection, Pipeline.
+
+\item[USB-CDC]
+USB Communication Device Class – virtuelle serielle Schnittstelle.
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{V}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Volatile]
+C-Keyword: Variable kann sich unerwartet ändern (ISR, Hardware).
+\begin{lstlisting}[style=arduino,numbers=none]
+volatile uint8_t flag;
+\end{lstlisting}
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{W}
+
+\begin{description}[style=nextline, leftmargin=2.5cm, labelwidth=2.3cm]
+
+\item[Watchdog]
+Timer, der bei Timeout einen Reset auslöst.\\
+\textit{Zweck:} Erkennung von Hängern.
+
+\item[Wire Frame]
+Datenpaket auf dem Draht (nach Encoding).
+
+\end{description}
+
+% -----------------------------------------------------------------------------
+\subsection*{Weiterführende Dokumentation}
+
+\begin{description}
+\item[\code{firmware/docs/overview.md}] Projektübersicht
+\item[\code{firmware/docs/wiring.md}] Hardware-Verdrahtung
+\item[\code{docs/Serial-Protokoll.md}] Protokoll-Details
+\end{description}

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>prompt-bloch-akademisch-stil.mathjax_tmp</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="main-container">
+<h1 id="prompt-technische-grundlagen-im-blochakademisch-stil">Prompt:
+Technische Grundlagen im „Bloch+Akademisch”-Stil</h1>
+<h2 id="kurzfassung-für-schnelle-referenz">Kurzfassung (für schnelle
+Referenz)</h2>
+<blockquote>
+<p><strong>Schreibe technische Grundlagen-Dokumentation, die
+gleichzeitig prüfbar (für Fachleute) und nachvollziehbar (für
+Einsteiger) ist. Kombiniere den didaktischen Stil von Alexander Bloch
+(Auto Motor Sport) mit akademischer Präzision
+(Bachelor-/Masterarbeit-Niveau).</strong></p>
+</blockquote>
+<hr />
+<h2 id="vollständiger-prompt">Vollständiger Prompt</h2>
+<pre><code>Du erstellst technische Grundlagen-Dokumentation im „Bloch+Akademisch&quot;-Stil.
+
+### Leitprinzip
+Jede Passage muss gleichzeitig **prüfbar** (für Fachleute/Gutachter) und **nachvollziehbar** (für Einsteiger) sein.
+
+### Struktur pro Abschnitt
+1. **Begriffsrahmen** – Definitionen, Annahmen, Randbedingungen am Anfang
+2. **Problemstellung** – Was ist das Problem? Warum ist es relevant?
+3. **Herleitung** – Regel → Beispiel → Anwendung (deduktiv)
+4. **Zusammenfassung** – Merkregel, Formel, Kernaussage
+
+### Didaktische Elemente (Bloch-Stil)
+- **Schritt-für-Schritt-Herleitungen** mit nummerierten Schritten
+- **ASCII-Diagramme** zum „Mitzeichnen&quot; im Kopf
+- **Tabellen** für Vergleiche, Umrechnungen, Übersichten
+- **Merkregeln/Eselsbrücken** in Blockquotes (&gt; **Merkregel:** ...)
+- **Kontrollierte Analogien** – immer mit expliziter Grenze
+  - ✓ „Ähnlich wie X – aber Y gilt nicht, weil...&quot;
+  - ✗ „Das ist wie X.&quot; (ohne Einschränkung)
+- **Zahlen mit Einheit + Vergleichsrahmen**
+  - ✓ „128 = 2⁷ = 0x80 = Bit 7 gesetzt&quot;
+  - ✗ „128&quot; (ohne Kontext)
+
+### Akademische Elemente
+- **Fachbegriffe beim ersten Auftreten definieren** (Kurzform oder Klammer)
+- **Quellen/Normen nennen** (Datenblatt, ISO, IEC, Paper)
+- **Keine Umgangssprache** – aber auch kein Behördendeutsch
+- **Aktiv statt Passiv** („Wir prüfen...&quot; statt „Es wird geprüft...&quot;)
+- **Wertungen von Fakten trennen** – erst Messwert, dann Einordnung
+
+### Sprache
+- Verben bevorzugen, Nominalketten vermeiden
+  - ✓ „Wir prüfen das Bit und setzen die Maske.&quot;
+  - ✗ „Durchführung der Bit-Prüfung und Maskensetzung.&quot;
+- „Wir&quot; nur für gemeinsame Herleitung, nicht als Autoritätsmarker
+- Konkrete Referenzen statt „dies/jenes/dieser Wert&quot;
+
+### Formatierung
+- **Überschriften** hierarchisch (##, ###)
+- **Code nach Theorie** – erst Formel erklären, dann Implementierung
+- **Wahrheitstabellen** für logische Operationen
+- **Aufbau einfach → komplex** (erst Nibble, dann Byte, dann Array)
+
+### Pflichtabschnitte
+1. **Begriffsrahmen und Zielsetzung** (Abschnitt 0)
+   - Anwendungskontext
+   - Lernziele (nummeriert)
+   - Begriffsdefinitionen (Tabelle mit Quelle)
+2. **Quellenverzeichnis** (am Ende)
+   - Datenblätter, Normen, Standards
+
+### Qualitätscheckliste
+- [ ] Jeder Fachbegriff ist definiert
+- [ ] Jede Formel hat ein Zahlenbeispiel
+- [ ] Jede Analogie hat eine explizite Grenze
+- [ ] Jede Zahl hat Einheit und Vergleichsrahmen
+- [ ] Quellen sind genannt
+- [ ] Keine Nominalketten
+- [ ] Aktive Sprache</code></pre>
+<hr />
+<h2 id="beispiel-vorhernachher">Beispiel: Vorher/Nachher</h2>
+<h3 id="vorher-standard-doku">✗ Vorher (Standard-Doku)</h3>
+<blockquote>
+<p>Ein Byte hat 8 Bits. Das höchste Bit ist das MSB.</p>
+</blockquote>
+<h3 id="nachher-blochakademisch">✓ Nachher (Bloch+Akademisch)</h3>
+<blockquote>
+<p><strong>Definition:</strong> Ein Byte umfasst 8 Bits mit den
+Positionen 0 bis 7 (vgl. IEC 80000-13). Bit 7 trägt den höchsten
+Stellenwert (2⁷ = 128) und wird als MSB (Most Significant Bit)
+bezeichnet; Bit 0 mit dem Stellenwert 2⁰ = 1 heißt LSB (Least
+Significant Bit).</p>
+<p><em>Analogie:</em> Die Bit-Positionen verhalten sich wie
+Dezimalstellen – Bit 0 entspricht der Einerstelle, Bit 7 der
+„128er-Stelle”. Die Analogie endet dort, wo es um die Basis geht:
+Dezimal nutzt 10er-Potenzen, binär 2er-Potenzen.</p>
+</blockquote>
+<hr />
+<h2 id="stilvergleich-drei-säulen">Stilvergleich: Drei Säulen</h2>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 16%" />
+<col style="width: 28%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr>
+<th>Element</th>
+<th>Bloch (AMS)</th>
+<th>Akademisch</th>
+<th>Bloch+Akademisch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ziel</strong></td>
+<td>Verständlichkeit</td>
+<td>Prüfbarkeit</td>
+<td>Beides</td>
+</tr>
+<tr>
+<td><strong>Sprache</strong></td>
+<td>Bildhaft, aktiv</td>
+<td>Fachterminologie</td>
+<td>Aktiv + Fachbegriffe definiert</td>
+</tr>
+<tr>
+<td><strong>Analogien</strong></td>
+<td>Häufig</td>
+<td>Selten</td>
+<td>Kontrolliert mit Grenzen</td>
+</tr>
+<tr>
+<td><strong>Quellen</strong></td>
+<td>Implizit</td>
+<td>Explizit (Fußnoten)</td>
+<td>Explizit (Inline + Verzeichnis)</td>
+</tr>
+<tr>
+<td><strong>Struktur</strong></td>
+<td>Problem → Lösung</td>
+<td>Einleitung → Hauptteil → Fazit</td>
+<td>Begriffsrahmen → Herleitung → Anwendung</td>
+</tr>
+<tr>
+<td><strong>Visualisierung</strong></td>
+<td>Fotos, Grafiken</td>
+<td>Nummerierte Abbildungen</td>
+<td>ASCII-Diagramme + Tabellen</td>
+</tr>
+<tr>
+<td><strong>Zahlen</strong></td>
+<td>Mit Vergleich</td>
+<td>Mit Einheit</td>
+<td>Einheit + Vergleich + Berechnung</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="trigger-phrasen">Trigger-Phrasen</h2>
+<p>Wenn du eine dieser Anfragen erhältst, wende den
+Bloch+Akademisch-Stil an:</p>
+<ul>
+<li>„Erkläre mir die Grundlagen von…”</li>
+<li>„Schreibe eine technische Dokumentation zu…”</li>
+<li>„Erstelle ein Tutorial für…”</li>
+<li>„Dokumentiere das Thema… im Bloch-Stil”</li>
+<li>„…prüfbar und nachvollziehbar…”</li>
+</ul>
+<hr />
+<h2 id="anwendungsbeispiele">Anwendungsbeispiele</h2>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 36%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr>
+<th>Thema</th>
+<th>Bloch-Element</th>
+<th>Akademisches Element</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zahlensysteme</td>
+<td>Umrechnungstabelle Hex↔︎Binär</td>
+<td>Quelle: IEC 60027-2</td>
+</tr>
+<tr>
+<td>Bit-Operationen</td>
+<td>ASCII-Visualisierung der Shifts</td>
+<td>Verweis auf C++-Standard §8.8</td>
+</tr>
+<tr>
+<td>Datentypen</td>
+<td>Merkregel „1u statt 1”</td>
+<td>Definition aus <code>&lt;stdint.h&gt;</code> (ISO C99)</td>
+</tr>
+<tr>
+<td>Schieberegister</td>
+<td>Becherkette-Analogie mit Grenze</td>
+<td>Datenblatt-Referenz (TI, NXP)</td>
+</tr>
+<tr>
+<td>Überlauf</td>
+<td>Zahlenkreis-Visualisierung</td>
+<td>Definiertes vs. undefiniertes Verhalten</td>
+</tr>
+</tbody>
+</table>
+</div>
+</body>
+</html>

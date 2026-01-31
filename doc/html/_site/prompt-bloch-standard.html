@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>prompt-bloch-standard.mathjax_tmp</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+  
+  <script>
+  window.MathJax = {
+    loader: {
+      load: ['[tex]/ams']
+    },
+    tex: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      packages: {'[+]': ['ams']},
+      macros: {
+        dd: '{\\,\\mathrm{d}}',
+        degC: '{^{\\circ}\\!\\mathrm{C}}',
+        Ohm: '{\\,\\Omega}',
+        ohm: '{\\,\\Omega}',
+        degree: '{^{\\circ}}'
+      }
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre','code','kbd','samp']
+    }
+  };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div class="main-container">
+<h1
+id="kommunikationsprinzipien-checkliste-bloch-standard">Kommunikationsprinzipien
+– Checkliste „Bloch-Standard“</h1>
+<p><em>(Technische Exzellenz × Didaktische Klarheit; konsistent in
+„du“-Form, „wir“ nur für gemeinsame Herleitung)</em></p>
+<h3 id="ziel-und-rahmen">0) Ziel und Rahmen</h3>
+<p><strong>Prinzip:</strong> Jede Passage muss gleichzeitig
+<strong>prüfbar</strong> (für Fachleute) und
+<strong>nachvollziehbar</strong> (für Einsteiger) sein.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Ein Thema pro
+Abschnitt</strong> (keine Themenmischung).</label></li>
+<li><label><input type="checkbox" /><strong>Begriffe, Annahmen,
+Randbedingungen</strong> stehen am Anfang (z. B. Temperatur,
+SoC-Fenster, Messmethode).</label></li>
+<li><label><input type="checkbox" /><strong>Didaktik-Form:</strong>
+<em>Regel → Beispiel → Anwendung</em> (deduktiv) oder <em>Beobachtung →
+Daten → Regel</em> (induktiv).</label></li>
+</ul>
+<hr />
+<h3 id="ansprache-und-rollenbild-führend-ohne-ego">1) Ansprache und
+Rollenbild (führend, ohne Ego)</h3>
+<p><strong>Prinzip:</strong> Du führst durch Komplexität, ohne Meinungen
+zu „verkaufen“.</p>
+<ul class="task-list">
+<li><p><label><input type="checkbox" /><strong>Aktiv statt
+Passiv</strong>, wenn es um Handlungen/Schritte geht.</label></p>
+<ul>
+<li><em>Schlecht:</em> „Es wurde geprüft …“</li>
+<li><em>Besser:</em> „Wir prüfen …, indem wir … messen.“</li>
+</ul></li>
+<li><p><label><input type="checkbox" /><strong>„Wir“ nur als
+Denkprozess</strong>, nicht als Autoritätsmarker.</label></p>
+<ul>
+<li><em>Besser:</em> „Wenn wir die Kennlinie betrachten, sehen wir
+…“</li>
+</ul></li>
+<li><p><label><input type="checkbox" /><strong>Wertungen trennen von
+Fakten:</strong> erst Messwert, dann Einordnung mit
+Kriterium.</label></p>
+<ul>
+<li><em>Bsp:</em>
+„<span class="math math-inline">$a=4,2,\mathrm{m/s^2}$</span>; das liegt
+über dem Referenzbereich
+<span class="math math-inline">$3,0\text{–}3,8,\mathrm{m/s^2}$</span>.“</li>
+</ul></li>
+</ul>
+<hr />
+<h3 id="sprache-präzise-prozessnah-ohne-behördenton">2) Sprache:
+präzise, prozessnah, ohne Behördenton</h3>
+<p><strong>Prinzip:</strong> Fachbegriffe für Genauigkeit, Verben für
+Abläufe.</p>
+<ul class="task-list">
+<li><p><label><input type="checkbox" /><strong>Verben
+bevorzugen</strong>, Nominalketten vermeiden.</label></p>
+<ul>
+<li><em>Schlecht:</em> „Durchführung der Überprüfung …“</li>
+<li><em>Besser:</em> „Wir prüfen … und protokollieren …“</li>
+</ul></li>
+<li><p><label><input type="checkbox" /><strong>Fachbegriff beim ersten
+Auftreten kurz verankern</strong> (Definition oder Kontext).</label></p>
+<ul>
+<li><em>Bsp:</em> „Rekuperation (Rückgewinnung von Bremsenergie als
+elektrische Energie) …“</li>
+</ul></li>
+<li><p><label><input type="checkbox" /><strong>Konkrete Referenzen statt
+„dies/jenes“</strong> (was genau ist „dieser Wert“?).</label></p></li>
+</ul>
+<hr />
+<h3 id="struktur-im-absatz-whiteboard-prinzip">3) Struktur im Absatz:
+Whiteboard-Prinzip</h3>
+<p><strong>Prinzip:</strong> Leser:innen sollen den Gedankengang im Kopf
+„mitzeichnen“ können.</p>
+<ul class="task-list">
+<li><p><label><input type="checkbox" /><strong>Mini-Dramaturgie pro
+Abschnitt:</strong> <em>Problem → Messgröße/Modell → Schlussfolgerung →
+Konsequenz</em>.</label></p></li>
+<li><p><label><input type="checkbox" /><strong>Zwischenergebnisse
+explizit machen</strong> (1–2 Sätze), nicht nur
+Endresultat.</label></p></li>
+<li><p><label><input type="checkbox" /><strong>Abbildungen werden
+geführt, nicht nur referenziert.</strong></label></p>
+<ul>
+<li><em>Statt:</em> „Siehe Abb. 3.“</li>
+<li><em>Besser:</em> „Im Diagramm unten erkennt man bei
+<span class="math math-inline">$80,%$</span> SoC den Knick; ab dort
+fällt die Leistung um …“</li>
+</ul></li>
+</ul>
+<hr />
+<h3 id="zahlen-einheiten-vergleichsrahmen">4) Zahlen, Einheiten,
+Vergleichsrahmen</h3>
+<p><strong>Prinzip:</strong> Zahlen sind erst dann aussagekräftig, wenn
+Einheit, Bezug und Vergleich klar sind.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Jeder Messwert mit Einheit
+und Bezugsgröße</strong> (z. B. pro
+<span class="math math-inline">$100,\mathrm{km}$</span>, bei
+<span class="math math-inline">$20,^\circ\mathrm{C}$</span>,
+Lastpunkt).</label></li>
+<li><label><input type="checkbox" /><strong>Vergleich angeben:</strong>
+Referenz, Norm, Zielwert oder vorher/nachher.</label></li>
+<li><label><input type="checkbox" /><strong>Bandbreiten statt
+Punktwerte</strong>, wenn Streuung relevant ist (Min–Max oder Mittelwert
+± Streuung).</label></li>
+</ul>
+<hr />
+<h3 id="anschaulichkeit-mit-kontrollierten-analogien">5) Anschaulichkeit
+mit kontrollierten Analogien</h3>
+<p><strong>Prinzip:</strong> Analogien helfen, dürfen aber keine falsche
+Sicherheit erzeugen.</p>
+<ul class="task-list">
+<li><p><label><input type="checkbox" /><strong>Analogie nur, wenn sie
+ein konkretes Verständnisproblem löst.</strong></label></p></li>
+<li><p><label><input type="checkbox" /><strong>Grenze der Analogie in
+einem Halbsatz nennen.</strong></label></p>
+<ul>
+<li><em>Bsp:</em> „Spannung ist <em>ähnlich</em> wie Druck und Strom wie
+Durchfluss – aber elektrische Felder verhalten sich nicht wie
+Flüssigkeiten.“</li>
+</ul></li>
+</ul>
+<hr />
+<h3 id="evidenz-unsicherheit-redlichkeit">6) Evidenz, Unsicherheit,
+Redlichkeit</h3>
+<p><strong>Prinzip:</strong> Vertrauen entsteht durch nachvollziehbare
+Quellenlage und klare Grenzen.</p>
+<ul class="task-list">
+<li><p><label><input type="checkbox" /><strong>Quelle/Datengrundlage
+nennen</strong> (Messung, Datenblatt, Paper, Norm).</label></p></li>
+<li><p><label><input type="checkbox" /><strong>Unsicherheit transparent
+machen:</strong> Messfehler, Konfidenz, Störgrößen,
+Annahmen.</label></p>
+<ul>
+<li><em>Bsp:</em> „Die Aussage gilt für
+<span class="math math-inline">$5\text{–}25,^\circ\mathrm{C}$</span>;
+außerhalb davon fehlen Messdaten.“</li>
+</ul></li>
+<li><p><label><input type="checkbox" /><strong>Keine Wertungsadjektive
+ohne Kriterium.</strong></label></p>
+<ul>
+<li><em>Schlecht:</em> „extrem gut“</li>
+<li><em>Besser:</em> „<span class="math math-inline">$c_w=0,21$</span>;
+das liegt unter typischen Serienwerten von etwa
+<span class="math math-inline">$0,24\text{–}0,30$</span>
+(Vergleichsrahmen erforderlich).“</li>
+</ul></li>
+</ul>
+<hr />
+<h3 id="stil-hygiene-konsistenz">7) Stil-Hygiene (Konsistenz)</h3>
+<p><strong>Prinzip:</strong> Einheitliche Konventionen reduzieren
+kognitive Last.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Einheitliche
+Ansprache</strong> (du als Checkliste; „wir“ nur für
+Herleitung).</label></li>
+<li><label><input type="checkbox" /><strong>Begriffe/Abkürzungen
+konsistent</strong> (SoC, <span class="math math-inline">$c_w$</span>,
+kWh, etc.).</label></li>
+<li><label><input type="checkbox" /><strong>Keine Slang-Labels</strong>
+(z. B. statt „Kill-List“: „Wortfilter: Adjektive durch Messkriterien
+ersetzen“).</label></li>
+</ul>
+<hr />
+<h2 id="review-bloch-standard-10-punkte">Review: Bloch-Standard (10
+Punkte)</h2>
+<ol type="1">
+<li><strong>Ein Thema?</strong> Pro Abschnitt genau 1 Kernfrage.</li>
+<li><strong>Ziel + Rahmen genannt?</strong> Randbedingungen/Annahmen
+stehen am Anfang (z. B. Temperatur, SoC, Messaufbau).</li>
+<li><strong>Aktiv + klarer Akteur?</strong> Kein Passiv, außer wenn der
+Akteur irrelevant ist.</li>
+<li><strong>Begriff sauber?</strong> Jeder neue Fachbegriff ist beim
+ersten Auftauchen kurz verankert.</li>
+<li><strong>Zahlen komplett?</strong> Jeder Wert hat Einheit +
+Bezugsgröße (z. B. pro
+<span class="math math-inline">$100,\mathrm{km}$</span>).</li>
+<li><strong>Vergleich vorhanden?</strong> Referenz/Ziel/Norm oder
+Vorher-Nachher genannt.</li>
+<li><strong>Herleitung sichtbar?</strong> Mindestens 1 Zwischenschritt:
+Problem → Daten/Modell → Schluss → Konsequenz.</li>
+<li><strong>Unsicherheit ehrlich?</strong> Streuung/Bandbreite oder
+Messfehler/Limitierung genannt, wenn relevant.</li>
+<li><strong>Wertungen eliminiert?</strong> Keine „gut/schlecht/krass“
+ohne Kriterium; Einordnung nur mit Maßstab.</li>
+<li><strong>Konsistenz geprüft?</strong> Ansprache (du/wir),
+Abkürzungen, Notation, Schreibweise überall gleich.</li>
+</ol>
+</div>
+</body>
+</html>

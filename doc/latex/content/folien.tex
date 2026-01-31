@@ -1,0 +1,597 @@
+% ======================================================================
+% content/folien.tex  (OHNE Praeambel)
+% Stand: 2026-01-21 | Version: 2.8.0
+% Aktualisiert: Pfade angepasst an aktuelle Repo-Struktur (apps/*)
+% Farbschema: ArduinoTeal + RaspberryRed
+%
+% Annahmen zur Ordnerstruktur:
+% - Datei liegt in:   ./latex/content/folien.tex
+% - Bilder liegen in: ./latex/images/
+%
+% Konsequenz:
+% - KEIN "images/..." in \includegraphics, sondern nur Dateiname.
+% - \graphicspath ist im praesentation.tex bereits auf ../images/ gesetzt.
+% ======================================================================
+
+% --- Folie 1: Titel (Cover als Hintergrund) ----------------------------
+% In praesentation.tex definiert.
+
+% --- Folie 2: Hardware-Prototyp ----------------------------------------
+\begin{frame}{Hardware-Prototyp v2}
+\framesubtitle{10 Taster \textbullet\ 10 LEDs \textbullet\ Aufger\"{a}umtes Layout}
+
+\begin{columns}[c,onlytextwidth]
+\column{0.48\textwidth}
+\centering
+\fbox{\includegraphics[width=0.95\linewidth,height=4.5cm,keepaspectratio]{prototyp-v2-front.png}}
+\vspace{0.1cm}
+
+{\small\textbf{Best\"{u}ckungsseite} -- ESP32 + ICs}
+
+\column{0.48\textwidth}
+\centering
+\fbox{\includegraphics[width=0.95\linewidth,height=4cm,keepaspectratio]{schaltplan.pdf}}
+\vspace{0.1cm}
+
+{\small\textbf{KiCad} -- Schaltplan}
+\end{columns}
+
+\vspace{0.2cm}
+\highlight{Komponenten:} ESP32-S3 XIAO \textbullet\ 2$\times$ 74HC595 \textbullet\ 2$\times$ CD4021BE \textbullet\ 10 LEDs \textbullet\ 10 Taster
+\end{frame}
+
+% --- Folie 2.5: Blockdiagramm Prototyp ---------------------------------
+\begin{frame}{Schieberegister-Architektur}
+\framesubtitle{Prototyp 10$\times$ -- 6 GPIO-Pins f\"{u}r 20 IOs}
+
+\begin{center}
+\includegraphics[width=0.85\linewidth,height=0.5\textheight,keepaspectratio]{prototyp-10x.png}%
+
+\end{center}
+
+\vspace{-0.2em}
+
+\begin{columns}[T]
+\column{0.48\textwidth}
+\small
+\textbf{\textcolor{ArduinoTeal}{Komponenten}}
+\begin{itemize}\setlength{\itemsep}{0pt}
+  \item \textcolor{ArduinoTeal}{ESP32-S3 XIAO} -- Mikrocontroller
+  \item \textcolor{RaspberryRed}{2$\times$ 74HC595} -- LED-Ausgabe (Active-High)
+  \item \textcolor{SuccessGreen}{2$\times$ CD4021BE} -- Taster-Eingabe (Active-Low)
+\end{itemize}
+
+\column{0.48\textwidth}
+\small
+\textbf{\textcolor{ArduinoTeal}{Signale (SPI-\"{a}hnlich)}}
+\begin{itemize}\setlength{\itemsep}{0pt}
+  \item \textcolor{SignalData}{Data}: MOSI $\rightarrow$ 74HC595 SER, MISO $\leftarrow$ CD4021 Q8
+  \item \textcolor{SignalClock}{Clock}: SCK gemeinsam (SRCLK/CLK)
+  \item \textcolor{SignalLatch}{Strobes}: RCK (595 Latch), P/S (4021 Load/Shift)
+\end{itemize}
+\end{columns}
+\end{frame}
+
+% --- Folie 2.7: Prototyp-Evolution -------------------------------------
+\begin{frame}{Prototyp-Evolution}
+\framesubtitle{v1 $\rightarrow$ v2: Von der Idee zum aufger\"{a}umten Layout}
+
+\begin{columns}[c,onlytextwidth]
+\column{0.48\textwidth}
+\centering
+\fbox{\includegraphics[width=0.95\linewidth,height=2.5cm,keepaspectratio]{prototyp-v1-front.png}}%
+
+\vspace{0.1cm}
+
+{\small\textbf{v1 Best\"{u}ckung} -- Sockel ohne ICs}
+
+\vspace{0.2cm}
+\fbox{\includegraphics[width=0.95\linewidth,height=2.5cm,keepaspectratio]{prototyp-v1-back.png}}%
+
+\vspace{0.1cm}
+
+{\small\textbf{v1 L\"{o}tseite}}
+
+\column{0.48\textwidth}
+\centering
+\fbox{\includegraphics[width=0.95\linewidth,height=2.5cm,keepaspectratio]{prototyp-v2-front.png}}
+\vspace{0.1cm}
+
+{\small\textbf{v2 Best\"{u}ckung}}
+
+\vspace{0.2cm}
+
+\fbox{\includegraphics[width=0.95\linewidth,height=2.5cm,keepaspectratio]{prototyp-v2-back.png}}%
+
+\vspace{0.1cm}
+
+{\small\textbf{v2 L\"{o}tseite}}
+\end{columns}
+\end{frame}
+
+% --- Folie 3: Web-Dashboard --------------------------------------------
+\begin{frame}{Web-Dashboard}
+\framesubtitle{React-Frontend \textbullet\ WebSocket \textbullet\ Multi-Device}
+
+\begin{center}
+\fbox{\includegraphics[width=0.85\linewidth,height=5cm,keepaspectratio]{web-dashboard2.png}}%
+
+\end{center}
+
+\vspace{0.2cm}
+\begin{columns}[T,onlytextwidth]
+\column{0.24\textwidth}\centering
+\textbf{Zugriff}\\{\small \texttt{rover.local:8081}}
+
+\column{0.24\textwidth}\centering
+\textbf{Multi-Device}\\{\small iMac, iPad, iPhone}
+
+\column{0.24\textwidth}\centering
+\textbf{React + Vite}\\{\small TypeScript, HMR}
+
+\column{0.24\textwidth}\centering
+\textbf{Synchron}\\{\small WebSocket Broadcast}
+\end{columns}
+\end{frame}
+
+% --- Folie 4: Was ist das? ---------------------------------------------
+\begin{frame}{Was ist das Selection Panel?}
+\framesubtitle{Physische Auswahl $\rightarrow$ Digitale Reaktion}
+
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{Anwendungsfall}
+\begin{itemize}
+  \item Prototyp: 10 physische Taster
+  \item Vollausbau: 100 Taster geplant
+  \item LED zeigt aktive Auswahl an
+  \item Web-Dashboard visualisiert Status
+\end{itemize}
+
+\column{0.48\textwidth}
+\textbf{Policy: \glqq{}LowestIdWins\grqq{}}
+\begin{itemize}
+  \item Neuer Tastendruck $\rightarrow$ \textbf{sofortiger Wechsel}
+  \item Bei Mehrfachdruck: niedrigste ID gewinnt
+  \item \textbf{One-hot LED:} Immer max.\ 1 LED aktiv
+  \item Selection $=0$ $\rightarrow$ alle LEDs aus
+\end{itemize}
+\end{columns}
+
+\vspace{0.3cm}
+\highlight{Merksatz:} Bei gleichzeitigem Druck gewinnt die niedrigste ID -- deterministisch und vorhersagbar.
+\end{frame}
+
+% --- Folie 5: Systemarchitektur ----------------------------------------
+\begin{frame}{Systemarchitektur -- \"{U}berblick}
+\framesubtitle{Drei Ebenen: Controller \textbullet\ Bridge \textbullet\ Dashboard}
+
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, minimum width=3.2cm, minimum height=1.2cm, align=center},
+  arrow/.style={->, thick, >=stealth}
+]
+  \node[box, fill=ArduinoTeal!20] (esp) at (0,0) {\textbf{ESP32-S3}\\Firmware};
+  \node[box, fill=RaspberryRed!20] (pi) at (5,0) {\textbf{Raspberry Pi 5}\\Bridge};
+  \node[box, fill=SuccessGreen!20] (browser) at (10,0) {\textbf{Web-Browser}\\React};
+
+  \draw[arrow, <->] (esp) -- node[above, font=\footnotesize] {USB-CDC} node[below, font=\footnotesize] {COBS + CRC16} (pi);
+  \draw[arrow, <->] (pi) -- node[above, font=\footnotesize] {WebSocket} node[below, font=\footnotesize] {:8081 / JSON} (browser);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.3cm}
+\begin{table}
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Komponente} & \textbf{Aufgabe} \\
+\midrule
+\textcolor{ArduinoTeal}{ESP32-S3 XIAO} & Taster scannen, LEDs steuern (10$\times$ Prototyp / 100$\times$ Vollausbau) \\
+\textcolor{RaspberryRed}{Raspberry Pi 5} & Protokoll-Bridge (\texttt{apps/bridge/bridge.py}), WebSocket-Server \\
+\textcolor{SuccessGreen}{Browser (React)} & Auswahl visualisieren, WebSocket-Client \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{frame}
+
+% --- Folie 6: Hardware + CD4021 Timing ---------------------------------
+\begin{frame}{Hardware -- Schieberegister}
+\framesubtitle{Skalierbar: 6 GPIO-Pins f\"{u}r $n \times 8$ IOs}
+
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\textbf{Warum Schieberegister?}
+\begin{itemize}
+  \item Prototyp: 20 IOs mit \textbf{6 GPIO-Pins}
+  \item Vollausbau: $13 \times 8 = 104$ Kan\"{a}le (100 genutzt)
+  \item Kaskadierbar, g\"{u}nstig und robust
+\end{itemize}
+
+\vspace{0.2cm}
+\textbf{Pinbelegung ESP32-S3 (gemeinsamer SPI)}
+\begin{table}
+\footnotesize
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Signal} & \textbf{Pin} & \textbf{Funktion} \\
+\midrule
+SCK  & D8  & SPI Clock (gemeinsam) \\
+MOSI & D10 & 74HC595 SER \\
+MISO & D9  & CD4021BE Q8 \\
+RCK  & D0  & 74HC595 Latch \\
+OE   & D2  & 74HC595 Enable (Active-Low) \\
+P/S  & D1  & CD4021BE Parallel/Shift \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\column{0.50\textwidth}
+\centering
+\includegraphics[width=0.98\linewidth,height=4.5cm,keepaspectratio]{CD4021-timing.png}%
+
+
+\vspace{0.1cm}
+{\small\textbf{CD4021BE Timing-Diagramm}}
+\end{columns}
+\end{frame}
+
+% --- Folie 7: Firmware -------------------------------------------------
+\begin{frame}{Firmware -- Modulare FreeRTOS-Architektur}
+\framesubtitle{Schichtentrennung: HAL \textbullet\ Drivers \textbullet\ Logic \textbullet\ App}
+
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\textbf{\textcolor{ArduinoTeal}{IO-Task} (Core 0, Prio 1)}
+\begin{itemize}
+  \item Polling alle $10\,\mathrm{ms}$ ($100\,\mathrm{Hz}$)
+  \item Debouncing pro Taste ($50\,\mathrm{ms}$)
+  \item Selection via IoPipeline (LowestIdWins)
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{\textcolor{ArduinoDark}{Serial-Task} (Core 1, Prio 1)}
+\begin{itemize}
+  \item COBS-Framing (0x00 Delimiter)
+  \item CRC-16 CCITT-FALSE
+  \item ACK f\"{u}r Host-Kommandos (optional via Flag)
+\end{itemize}
+
+\column{0.50\textwidth}
+\textbf{Schichtenmodell}
+\begin{table}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Schicht} & \textbf{Inhalt} \\
+\midrule
+\textcolor{ArduinoTeal}{app/} & io\_task, serial\_task \\
+\textcolor{ArduinoDark}{logic/} & debounce, selection, io\_pipeline \\
+\textcolor{RaspberryRed}{drivers/} & cd4021, hc595 \\
+\textcolor{SuccessGreen}{hal/} & spi\_bus + Mutex \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.2cm}
+\textbf{SPI-Konfiguration}
+\begin{itemize}
+  \item CD4021BE: MODE1, $500\,\mathrm{kHz}$
+  \item 74HC595: MODE0, $1\,\mathrm{MHz}$
+  \item Mutex f\"{u}r Thread-Safety
+\end{itemize}
+\end{columns}
+\end{frame}
+
+% --- Folie 8: Protokoll ------------------------------------------------
+\begin{frame}{Serial-Protokoll}
+\framesubtitle{ESP32 $\leftrightarrow$ Raspberry Pi \"{u}ber USB-CDC}
+
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{Frame-Aufbau (COBS-kodiert)}
+\begin{table}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Feld} & \textbf{Gr\"{o}\ss e} \\
+\midrule
+Magic ('SP') & 2 Bytes \\
+Version & 2 Bytes \\
+Type & 1 Byte \\
+Flags & 1 Byte \\
+Sequence & 2 Bytes (LE) \\
+Length & 2 Bytes (LE) \\
+Payload & 0--256 Bytes \\
+CRC-16 & 2 Bytes (LE) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.2cm}
+\textbf{Header:} 10 Bytes + Payload + 2 Bytes CRC
+
+\column{0.48\textwidth}
+\textbf{Nachrichtentypen (Firmware)}
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \texttt{0x01 HELLO} -- Konfiguration (10 Bytes)
+  \item \texttt{0x12 SELECTION\_STATE} -- Kanalwechsel (8 Bytes)
+  \item \texttt{0x20 CMD\_SET\_SELECTION} -- Host-Befehl (4 Bytes)
+  \item \texttt{0x30 ACK} -- Best\"{a}tigung (0 Bytes)
+\end{itemize}
+
+\vspace{0.2cm}
+\textbf{ACK/Retry (Host $\rightarrow$ ESP32)}
+\begin{itemize}
+  \item Jede TX bekommt eine \texttt{seq} (1..65535, 0 wird \"{u}bersprungen)
+  \item Parameter: \texttt{--ack-timeout} (typ.\ $0.6\,\mathrm{s}$), \texttt{--retries} (typ.\ 4)
+  \item Bei Timeout: \texttt{warn} (code=20), bei Fail: \texttt{error} (code=21)
+\end{itemize}
+\end{columns}
+\end{frame}
+
+% --- Folie 9: Server ---------------------------------------------------
+\begin{frame}[fragile]{Raspberry Pi Bridge}
+\framesubtitle{Python 3 + aiohttp + pyserial-asyncio}
+
+\textbf{Technologie-Stack:}
+\begin{itemize}
+  \item \textbf{aiohttp:} Async HTTP/WebSocket-Server
+  \item \textbf{pyserial-asyncio:} Async Serial I/O
+  \item \textbf{COBS/CRC:} Frame-Kodierung/-Pr\"{u}fung
+  \item \textbf{systemd:} Autostart als Service (optional mit \texttt{flock})
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{Datenfluss bei Tastendruck:}
+\begin{enumerate}
+  \item \textcolor{ArduinoTeal}{ESP32} sendet \texttt{SELECTION\_STATE} (z.\,B.\ \texttt{selected=3}, \texttt{source=local\_btn})
+  \item \textcolor{RaspberryRed}{Bridge} speichert State, broadcastet JSON an alle Browser
+  \item \textcolor{SuccessGreen}{Browser} empf\"{a}ngt \verb|{"type":"selection","selected":3,"source":"local_btn"}|
+\end{enumerate}
+
+\vspace{0.3cm}
+\textbf{Datenfluss bei Browser-Klick:}
+\begin{enumerate}
+  \item \textcolor{SuccessGreen}{Browser} sendet \verb|{"type":"setSelection","selected":5}|
+  \item \textcolor{RaspberryRed}{Bridge} sendet \texttt{CMD\_SET\_SELECTION} mit \texttt{seq} an ESP32
+  \item \textcolor{ArduinoTeal}{ESP32} antwortet (optional) mit \texttt{ACK}, danach \texttt{SELECTION\_STATE}
+  \item \textcolor{RaspberryRed}{Bridge} broadcastet neuen State an alle Browser
+\end{enumerate}
+\end{frame}
+
+% --- Folie 10: Dashboard -----------------------------------------------
+\begin{frame}{Dashboard -- Implementierung}
+\framesubtitle{React + TypeScript \textbullet\ WebSocket \textbullet\ Statusleiste}
+
+\begin{columns}[T,onlytextwidth]
+\column{0.50\textwidth}
+\textbf{Features}
+\begin{itemize}
+  \item \textbf{React + Vite:} HMR, TypeScript
+  \item \textbf{WebSocket:} Auto-Reconnect (z.\,B.\ $1\,\mathrm{s}$)
+  \item \textbf{Build (PROD):} Output nach \texttt{apps/dashboard/dist/}
+  \item \textbf{Dev-Proxy:} zu \texttt{rover.local:8081}
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{Farbschema (10 Kan\"{a}le)}
+\begin{itemize}
+  \item Wei\ss\ (1--2), Blau (3--4)
+  \item Rot (5--6), Gelb (7--8)
+  \item Gr\"{u}n (9--10), zyklisch erweiterbar
+\end{itemize}
+
+\column{0.50\textwidth}
+\textbf{Statusleiste-Anzeige}
+\begin{table}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Feld} & \textbf{Bedeutung} \\
+\midrule
+IN  & Eingangsbits (Active-Low) \\
+OUT & Ausgangsbits (Active-High) \\
+sel & Aktuell gew\"{a}hlter Kanal \\
+src & Quelle (local\_btn / host\_cmd) \\
+tMs & Timestamp (ms seit Boot) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.2cm}
+\textbf{Bedienung}
+\begin{itemize}
+  \item Klick auf Kanal-Tile $\rightarrow$ \texttt{setSelection}
+  \item \glqq{}Alle aus\grqq{} $\rightarrow$ \texttt{selected=0}
+\end{itemize}
+\end{columns}
+\end{frame}
+
+% --- Folie 11: Tests ---------------------------------------------------
+\begin{frame}{Getestete Funktionen}
+\framesubtitle{End-to-End verifiziert -- Prototyp voll funktionsf\"{a}hig}
+
+\begin{columns}[T,onlytextwidth]
+\column{0.48\textwidth}
+\textbf{\textcolor{ArduinoTeal}{Firmware (ESP32)}}
+\begin{itemize}
+  \item Modulare Architektur (HAL/Drivers/Logic/App)
+  \item SPI-Bus mit Mutex (Thread-safe)
+  \item Debouncing: $50\,\mathrm{ms}$ stabil
+  \item Selection: One-hot LED-Ansteuerung (LowestIdWins)
+  \item COBS/CRC16 Frame-Handling
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{\textcolor{RaspberryRed}{Bridge (Raspberry Pi)}}
+\begin{itemize}
+  \item Async Serial (pyserial-asyncio)
+  \item ACK/Retry f\"{u}r Host-Kommandos (parametrierbar)
+  \item WebSocket Broadcast funktioniert
+  \item State-Recovery bei Reconnect
+\end{itemize}
+
+\column{0.48\textwidth}
+\textbf{\textcolor{SuccessGreen}{Dashboard (React)}}
+\begin{itemize}
+  \item 10-Kanal-Visualisierung
+  \item WebSocket-Verbindung stabil
+  \item Statusleiste zeigt Live-Daten
+  \item Build-Pipeline (Vite $\rightarrow$ \texttt{apps/dashboard/dist/})
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{\textcolor{SuccessGreen}{Hardware-Prototyp}}
+\begin{itemize}
+  \item 10 Taster funktionsf\"{a}hig
+  \item 10 LEDs funktionsf\"{a}hig
+  \item Bit-Mapping korrekt (MSB-first)
+  \item CD4021BE + 74HC595 stabil
+\end{itemize}
+\end{columns}
+\end{frame}
+
+% --- Folie 12: Demo (ohne Embedded-Multimedia) --------------------------
+\begin{frame}{Demo (End-to-End)}
+\framesubtitle{Tasterdruck $\rightarrow$ LED \& WebSocket-Update}
+
+\begin{center}
+\fbox{\includegraphics[width=11cm,height=4cm,keepaspectratio]{video-thumbnail.png}}%
+
+\end{center}
+
+\vspace{0.2cm}
+\begin{enumerate}\small
+  \item Button $k$ wird gedr\"{u}ckt $\rightarrow$ \textcolor{ArduinoTeal}{ESP32} setzt \texttt{selected=k} (LowestIdWins).
+  \item \textcolor{ArduinoTeal}{ESP32} sendet \texttt{SELECTION\_STATE} \"{u}ber USB-CDC (COBS + CRC16).
+  \item \textcolor{RaspberryRed}{Bridge} broadcastet JSON \"{u}ber \texttt{/ws} an alle Browser.
+\end{enumerate}
+\end{frame}
+
+% --- Folie 13: Live-Demo -----------------------------------------------
+\begin{frame}[fragile]{Live-Demo}
+\framesubtitle{Hardware-Prototyp + WebSocket-Test}
+
+\textbf{Dashboard \"{o}ffnen (alle Ger\"{a}te):}
+\begin{verbatim}
+http://rover.local:8081/
+\end{verbatim}
+
+\vspace{0.2cm}
+\textbf{WebSocket-Test mit wscat:}
+\begin{verbatim}
+wscat -c ws://rover.local:8081/ws
+> {"type":"setSelection","selected":5}
+\end{verbatim}
+
+\vspace{0.2cm}
+\textbf{Service-Status pr\"{u}fen:}
+\begin{verbatim}
+sudo systemctl status embedded-bridge.service
+\end{verbatim}
+
+\vspace{0.2cm}
+\textbf{Serial-Port pr\"{u}fen:}
+\begin{verbatim}
+ls -la /dev/serial/by-id/ | grep Espressif
+\end{verbatim}
+
+\vspace{0.2cm}
+\highlight{Hardware:} Taster dr\"{u}cken $\rightarrow$ LED leuchtet, Status auf allen Browsern synchron.
+\end{frame}
+
+% --- Folie 14: Ausblick + Vollausbau -----------------------------------
+\begin{frame}{Ausblick: Vollausbau 100$\times$}
+\framesubtitle{Skalierung von 10 auf 100 Kan\"{a}le}
+
+\begin{columns}[c,onlytextwidth]
+\column{0.55\textwidth}
+\centering
+\includegraphics[width=0.98\linewidth,height=5.5cm,keepaspectratio]{vollausbau-100x.png}%
+
+
+\column{0.45\textwidth}
+\textbf{\"{A}nderungen f\"{u}r 100$\times$}
+\begin{itemize}
+  \item 13$\times$ 74HC595 (statt 2$\times$)
+  \item 13$\times$ CD4021BE (statt 2$\times$)
+  \item \texttt{BTN\_COUNT = 100}
+  \item \texttt{LED\_COUNT = 100}
+  \item Gleiche Firmware/Bridge (nur Konfiguration)
+\end{itemize}
+
+\vspace{0.3cm}
+\textbf{St\"{u}ckliste (100$\times$)}
+\begin{table}
+\footnotesize
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Bauteil} & \textbf{Anzahl} \\
+\midrule
+74HC595 & 13$\times$ \\
+CD4021BE & 13$\times$ \\
+LED $5\,\mathrm{mm}$ & 100$\times$ \\
+Taster & 100$\times$ \\
+R $330\,\Omega$ -- $3\,\mathrm{k\Omega}$ (LED) & 100$\times$ \\
+R $10\,\mathrm{k\Omega}$ (Pull-up) & 100$\times$ \\
+C $100\,\mathrm{nF}$ & 26$\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{columns}
+\end{frame}
+
+% --- Folie 15: Zusammenfassung -----------------------------------------
+\begin{frame}{Zusammenfassung}
+\framesubtitle{Modulare Architektur, skalierbar und robust}
+
+\begin{table}
+\centering
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Phase} & \textbf{Inhalt} & \textbf{Status} \\
+\midrule
+1 & Infrastruktur \& Toolchain & \textcolor{SuccessGreen}{$\checkmark$} \\
+2 & Hardware-Prototyp (10$\times$) & \textcolor{SuccessGreen}{$\checkmark$} \\
+3 & ESP32 Firmware (FreeRTOS) & \textcolor{SuccessGreen}{$\checkmark$} \\
+4 & Serial-Protokoll (COBS + CRC16) & \textcolor{SuccessGreen}{$\checkmark$} \\
+5 & Raspberry Pi Bridge & \textcolor{SuccessGreen}{$\checkmark$} \\
+6 & React-Frontend & \textcolor{SuccessGreen}{$\checkmark$} \\
+7 & Hardware-Integration (10$\times$) & \textcolor{SuccessGreen}{$\checkmark$} \\
+8 & Hardware-Skalierung (100$\times$) & \textcolor{RaspberryRed}{$\blacktriangleleft$} N\"{a}chste Phase \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.3cm}
+\highlight{Kernbotschaft:} ESP32 f\"{u}r Echtzeit-I/O, Pi als Protokoll-Bridge, Browser f\"{u}r UI. Skalierung 10 $\rightarrow$ 100 durch Konfiguration.
+
+\vspace{0.2cm}
+\textbf{\"{U}bertragbarkeit:} Voting-Systeme, Quiz-Panels, Museumsinstallationen.
+\end{frame}
+
+% --- Folie 16: Credits -------------------------------------------------
+\begin{frame}{Credits}
+\framesubtitle{Projektbeteiligte und Werkzeuge}
+
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={draw=ArduinoTeal, rounded corners=8pt, minimum width=10cm, minimum height=1.2cm, align=center, fill=ArduinoTeal!5},
+  label/.style={font=\small\bfseries, text=ArduinoDark}
+]
+  \node[box, draw=RaspberryRed, fill=RaspberryRed!5] (ki) at (0, 0.8) {%
+    \textcolor{RaspberryRed}{\textbf{Claude Opus 4.5}} \textbullet\ \textcolor{RaspberryRed}{\textbf{ChatGPT 5.2}}\\[0.1cm]
+    {\small\color{MutedText}Text- und Code-Vorschl\"{a}ge}
+  };
+  \node[label, anchor=east] at (-5.5, 0.8) {KI-Unterst\"{u}tzung};
+
+  \node[box, draw=SuccessGreen, fill=SuccessGreen!5] (hinweis) at (0, -1.0) {%
+    {\small\color{DarkText}Technische Pr\"{u}fung durch den Autor}
+  };
+  \node[label, anchor=east] at (-5.5, -1.0) {Qualit\"{a}tssicherung};
+\end{tikzpicture}
+\end{center}
+\end{frame}

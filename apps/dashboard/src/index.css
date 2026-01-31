@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+:root {
+  --arduino-teal: #00979d;
+  --raspi-red: #c51a4a;
+}

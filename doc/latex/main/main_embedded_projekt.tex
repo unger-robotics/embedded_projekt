@@ -1,0 +1,157 @@
+% =============================================================================
+% main.tex – Selection Panel Firmware: Technische Dokumentation
+% =============================================================================
+% Architektur-Entscheidung: main.tex bleibt ein reiner Orchestrator.
+% Inhalt liegt in content/*.tex → Single Responsibility, einfachere Wartung.
+% =============================================================================
+\documentclass{techdoc}
+% Optionen für Ausgabevarianten (Kompilierung identisch, Rendering unterschiedlich):
+% \documentclass[print]{techdoc}  % Links unsichtbar → sauberer Ausdruck
+% \documentclass[draft]{techdoc}  % Overfull-Boxen + TODOs sichtbar → Frühwarnsystem
+
+% =============================================================================
+% METADATEN
+% =============================================================================
+% SSOT-Prinzip: Alle Metadaten zentral, damit Titelseite, Kopfzeilen und
+% PDF-Properties automatisch konsistent bleiben (keine manuelle Synchronisation).
+% -----------------------------------------------------------------------------
+\title{Interaktives Auswahlpanel}
+\subtitle{10× Taster/LED}
+\tagline{\glqq Drücken -- Leuchten\grqq}
+\scope{ESP32-S3 \textbullet\ Raspberry Pi 5 \textbullet\ Web-Dashboard}
+\stack{CD4021BE \textbullet\ 74HC595 \textbullet\ PlatformIO \textbullet\ Python/aiohttp \textbullet\ WebSocket \textbullet\ HTML/JS \textbullet\ systemd}
+\version{2.5.3}
+\date{20.01.2026}
+\author{Jan Unger}
+\credits{Claude Opus 4.5, ChatGPT 5.2}
+\coverimage{cover-embedded-projekt.pdf}
+
+% Bilder liegen in ./images/ und ./covers/
+\graphicspath{{images/}{covers/}}
+
+% Kurzform für Kopfzeile, da vollständiger Titel zu lang wäre.
+\setheadertitle{Interaktives Auswahlpanel}
+
+% PDF-Metadaten für Suchmaschinen und Dokumentenverwaltung.
+\hypersetup{
+  pdftitle={Interaktives Auswahlpanel – 10× Taster/LED},
+  pdfauthor={Jan Unger},
+  pdfsubject={Embedded-Projekt mit ESP32-S3 und Schieberegistern},
+  pdfkeywords={ESP32-S3, Raspberry Pi 5, FreeRTOS, WebSocket, React}
+}
+
+% Externes PDF einbinden → Cover wurde in separatem Tool gestaltet (Designtrennung).
+\usepackage{pdfpages}
+
+% =============================================================================
+% DOKUMENT
+% =============================================================================
+\begin{document}
+
+% Titelseite generieren (nutzt alle oben definierten Metadaten)
+\maketitlepage
+
+% Römische Ziffern im Vorspann → Konvention für Verzeichnisse, damit
+% Seitenzahl 1 erst beim eigentlichen Inhalt beginnt.
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+
+% =============================================================================
+% TEIL I: THEORETISCHE GRUNDLAGEN
+% =============================================================================
+% Gruppierung mit {} → lokaler Scope, damit Formatierungen (z.B. \LARGE)
+% nicht in nachfolgende Abschnitte durchsickern.
+{%
+  \clearpage
+  \vspace*{2cm}
+  \begin{center}
+    {\sffamily\bfseries\LARGE Teil I}\\[0.5em]
+    {\sffamily\bfseries\Huge Theoretische Grundlagen}\\[1em]
+    {\large\color{MutedText} Mikrocontroller, Mindset, Entwicklungsprozess}
+  \end{center}
+  \vspace{1cm}
+  % Manueller TOC-Eintrag, da Teil-Seite kein \section ist.
+  \addcontentsline{toc}{section}{Teil I: Theoretische Grundlagen}
+}
+
+\begin{infobox}[Ziel]
+Dieses Kapitel vermittelt die fundamentalen Konzepte der Embedded-Entwicklung:
+Mikrocontroller-Architektur, ressourcenbewusstes Denken und professionelle
+Entwicklungspraktiken.
+\end{infobox}
+
+\clearpage
+
+% Kapitel 1-3 bauen didaktisch aufeinander auf:
+% Hardware-Verständnis → Denkweise → Werkzeuge
+\input{content/embedded-grundlagen}
+\clearpage
+
+\input{content/embedded_mindset}
+\clearpage
+
+\input{content/embedded-entwicklung}
+\clearpage
+
+% =============================================================================
+% TEIL II: DAS SELECTION-PANEL-PROJEKT
+% =============================================================================
+% Trennung Theorie/Praxis → Leser können Teil I überspringen, wenn
+% Grundlagen bekannt sind.
+{%
+  \clearpage
+  \vspace*{2cm}
+  \begin{center}
+    {\sffamily\bfseries\LARGE Teil II}\\[0.5em]
+    {\sffamily\bfseries\Huge Das Selection-Panel-Projekt}\\[1em]
+    {\large\color{MutedText} Architektur, Protokolle, Web-Integration}
+  \end{center}
+  \vspace{1cm}
+  \addcontentsline{toc}{section}{Teil II: Das Selection-Panel-Projekt}
+}
+
+\begin{infobox}[Projektüberblick]
+Dieser Teil dokumentiert das Selection-Panel-Projekt: Systemarchitektur,
+Kommunikationsprotokolle und Web-Integration. Die Kapitel bauen aufeinander auf
+-- vom Gesamtbild zu den technischen Details.
+\end{infobox}
+
+\clearpage
+
+% Kapitel 4-6: Top-Down-Struktur (Architektur → Protokoll → UI)
+% ermöglicht schrittweises Einarbeiten ohne Vorwärtsreferenzen.
+\input{content/projekt}
+\clearpage
+
+\input{content/Serial-Protokoll}
+\clearpage
+
+\input{content/Frontend-Backend}
+\clearpage
+
+% =============================================================================
+% ANHANG
+% =============================================================================
+% \appendix setzt Zähler auf A, B, C → klare Trennung Hauptteil/Referenzmaterial.
+\appendix
+
+{%
+  \clearpage
+  \vspace*{2cm}
+  \begin{center}
+    {\sffamily\bfseries\Huge Anhang}\\[1em]
+    {\large\color{MutedText} Glossar und Referenzen}
+  \end{center}
+  \vspace{1cm}
+  \addcontentsline{toc}{section}{Anhang}
+}
+
+\clearpage
+
+% Glossar am Ende → Leser können bei Bedarf nachschlagen, ohne den
+% Lesefluss im Haupttext zu unterbrechen.
+\input{content/embedded-glossar}
+
+\end{document}

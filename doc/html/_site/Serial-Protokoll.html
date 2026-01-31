@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>serial-protokoll.mathjax_tmp</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+  
+  <script>
+  window.MathJax = {
+    loader: {
+      load: ['[tex]/ams']
+    },
+    tex: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      packages: {'[+]': ['ams']},
+      macros: {
+        dd: '{\\,\\mathrm{d}}',
+        degC: '{^{\\circ}\\!\\mathrm{C}}',
+        Ohm: '{\\,\\Omega}',
+        ohm: '{\\,\\Omega}',
+        degree: '{^{\\circ}}'
+      }
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre','code','kbd','samp']
+    }
+  };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div class="main-container">
+<h1 id="serial-protokoll-robuste-frames-mit-cobs-crc">Serial-Protokoll:
+Robuste Frames mit COBS + CRC</h1>
+<hr />
+<h2 id="begriffsrahmen-und-zielsetzung">0) Begriffsrahmen und
+Zielsetzung</h2>
+<h3 id="anwendungskontext">Anwendungskontext</h3>
+<p>Der ESP32-S3 kommuniziert mit dem Raspberry Pi über USB-CDC
+(virtueller Serial-Port). Die Herausforderung: Serielle Kommunikation
+ist ein kontinuierlicher Byte-Strom ohne inhärente Nachrichtengrenzen.
+Diese Dokumentation beschreibt das Framing-Protokoll, das zuverlässige,
+bidirektionale Kommunikation mit Fehlererkennung und Retry-Mechanik
+ermöglicht.</p>
+<h3 id="lernziele">Lernziele</h3>
+<p>Nach dem Durcharbeiten dieses Dokuments kannst du:</p>
+<ol type="1">
+<li><strong>Das Framing-Problem erklären</strong> – verstehen, warum ein
+Byte-Strom Nachrichtengrenzen braucht</li>
+<li><strong>COBS anwenden</strong> – das Stuffing-Verfahren von Hand
+durchrechnen und dekodieren</li>
+<li><strong>CRC-16 verstehen</strong> – die Parameter des
+CCITT-FALSE-Polynoms benennen und die Fehlererkennungsrate
+einordnen</li>
+<li><strong>Das Paket-Layout lesen</strong> – Header-Felder und ihre
+Funktion erklären</li>
+<li><strong>Die ACK/Retry-Mechanik nachvollziehen</strong> –
+Timing-Parameter und Fehlerfälle beschreiben</li>
+<li><strong>Den Datenfluss tracen</strong> – den Weg vom Button-Druck
+bis zur Browser-Anzeige verfolgen</li>
+</ol>
+<h3 id="begriffsdefinitionen">Begriffsdefinitionen</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 64%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr>
+<th>Begriff</th>
+<th>Definition</th>
+<th>Quelle/Norm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>USB-CDC</strong></td>
+<td>USB Communication Device Class – emuliert einen seriellen Port über
+USB</td>
+<td>USB-IF CDC 1.2</td>
+</tr>
+<tr>
+<td><strong>Frame</strong></td>
+<td>Ein abgegrenztes Datenpaket mit definiertem Anfang und Ende</td>
+<td>Allgemeine Terminologie</td>
+</tr>
+<tr>
+<td><strong>COBS</strong></td>
+<td>Consistent Overhead Byte Stuffing – Framing mit <code>0x00</code>
+als Delimiter</td>
+<td>Cheshire/Baker (1999)</td>
+</tr>
+<tr>
+<td><strong>CRC-16</strong></td>
+<td>Cyclic Redundancy Check – Prüfsumme zur Fehlererkennung (16
+Bit)</td>
+<td>ITU-T V.41, ISO 3309</td>
+</tr>
+<tr>
+<td><strong>Payload</strong></td>
+<td>Nutzdaten innerhalb eines Frames (ohne Header und CRC)</td>
+<td>Netzwerk-Terminologie</td>
+</tr>
+<tr>
+<td><strong>ACK</strong></td>
+<td>Acknowledgment – Empfangsbestätigung für zuverlässige
+Übertragung</td>
+<td>TCP/IP, ISO 7498</td>
+</tr>
+<tr>
+<td><strong>Delimiter</strong></td>
+<td>Trennzeichen zwischen Frames (hier: <code>0x00</code>)</td>
+<td>Framing-Theorie</td>
+</tr>
+<tr>
+<td><strong>Stuffing</strong></td>
+<td>Transformation der Daten, um reservierte Zeichen zu eliminieren</td>
+<td>HDLC, PPP, COBS</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="das-grundproblem-byte-strom-vs.-nachrichten">1) Das Grundproblem
+– Byte-Strom vs. Nachrichten</h2>
+<h3 id="problemstellung">Problemstellung</h3>
+<p>Wenn du Bytes über eine serielle Leitung schickst, sieht der
+Empfänger nur einen kontinuierlichen Strom ohne Struktur:</p>
+<pre><code>Sender:   [Nachricht A: 5 Bytes][Nachricht B: 3 Bytes][Nachricht C: 7 Bytes]
+Leitung:  0x12 0x34 0x56 0x78 0x9A 0xBC 0xDE 0xF0 0x11 0x22 0x33 0x44 0x55 0x66 0x77
+Empfänger: &quot;Wo fängt Nachricht B an? Wo endet sie?&quot;</code></pre>
+<p>Ohne Framing weiß der Empfänger nicht, wo eine Nachricht endet und
+die nächste beginnt. Drei klassische Lösungsansätze existieren:</p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 36%" />
+<col style="width: 49%" />
+</colgroup>
+<thead>
+<tr>
+<th>Ansatz</th>
+<th>Prinzip</th>
+<th>Nachteil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Feste Länge</td>
+<td>Jede Nachricht hat exakt N Bytes</td>
+<td>Unflexibel, verschwendet Bandbreite</td>
+</tr>
+<tr>
+<td>Längenfeld</td>
+<td>Erstes Byte gibt Länge an</td>
+<td>Synchronisationsverlust bei Byte-Verlust</td>
+</tr>
+<tr>
+<td>Delimiter</td>
+<td>Spezielles Zeichen markiert Ende</td>
+<td>Was, wenn das Zeichen in den Daten vorkommt?</td>
+</tr>
+</tbody>
+</table>
+<h3 id="herleitung-warum-scheitern-die-einfachen-ansätze">Herleitung:
+Warum scheitern die einfachen Ansätze?</h3>
+<p><strong>Feste Länge:</strong> Bei einem Selection-Panel variieren die
+Paketgrößen erheblich – ein <code>HELLO</code>-Paket hat 4 Bytes
+Payload, ein <code>SNAPSHOT</code> kann 26 Bytes haben. Feste Länge
+würde entweder Bandbreite verschwenden oder Flexibilität
+einschränken.</p>
+<p><strong>Längenfeld:</strong> Angenommen, ein Byte geht verloren:</p>
+<pre><code>Gesendet:    [Len=5][A][B][C][D][E][Len=3][X][Y][Z]
+Empfangen:   [Len=5][A][B][C][D][  ][Len=3][X][Y][Z]
+                                  ↑ fehlt
+Interpretation: Len=5 → lese A,B,C,D,Len=3 (5 Bytes) → nächstes Paket beginnt bei X
+Ergebnis: Paket 1 enthält Müll, Paket 2 ist verschoben, alle weiteren ebenfalls</code></pre>
+<p>Der Empfänger verliert die Synchronisation und kann sie ohne externes
+Signal nicht wiedererlangen.</p>
+<p><strong>Delimiter (naiv):</strong> Wählen wir <code>0x00</code> als
+Trennzeichen. Was passiert, wenn die Nutzdaten selbst <code>0x00</code>
+enthalten?</p>
+<pre><code>Gesendet:    [0x12][0x00][0x34][0x00]   ← Delimiter am Ende
+                    ↑
+              Dieses 0x00 ist ein Datenbyte!
+Empfangen:   [0x12][0x00]   ← Empfänger denkt: &quot;Paket fertig!&quot;
+             [0x34][0x00]   ← Zweites (falsches) Paket</code></pre>
+<h3 id="regel">Regel</h3>
+<p><strong>COBS kombiniert Delimiter-Ansatz mit Byte-Stuffing:</strong>
+Das Trennzeichen <code>0x00</code> kann garantiert nicht in den Daten
+vorkommen, weil wir die Daten vor dem Senden transformieren.</p>
+<blockquote>
+<p><strong>Merkregel:</strong> „Delimiter-Framing braucht Stuffing –
+sonst verwechselt der Empfänger Daten mit Grenzen.”</p>
+</blockquote>
+<hr />
+<h2 id="cobs-consistent-overhead-byte-stuffing">2) COBS – Consistent
+Overhead Byte Stuffing</h2>
+<h3 id="problemstellung-1">Problemstellung</h3>
+<p>Wir brauchen ein Verfahren, das jedes <code>0x00</code> in den
+Originaldaten eliminiert, aber die Transformation umkehrbar bleibt. Das
+Verfahren soll effizient sein – möglichst wenig Overhead hinzufügen.</p>
+<h3 id="kernidee">Kernidee</h3>
+<p>COBS ersetzt jede <code>0x00</code> in den Originaldaten durch einen
+„Zeiger” auf die nächste Null (oder das Paketende). Das erste Byte des
+COBS-Blocks ist ebenfalls ein Zeiger.</p>
+<h3 id="herleitung-schritt-für-schritt-kodierung">Herleitung:
+Schritt-für-Schritt-Kodierung</h3>
+<p><strong>Originaldaten:</strong>
+<code>[0x11] [0x22] [0x00] [0x33] [0x00] [0x44]</code></p>
+<p>Wir identifizieren die Segmente zwischen den Nullen:</p>
+<pre><code>Segment 1: [0x11] [0x22]       ← 2 Bytes, dann kommt 0x00
+Segment 2: [0x33]              ← 1 Byte, dann kommt 0x00
+Segment 3: [0x44]              ← 1 Byte, dann kommt Ende</code></pre>
+<p>Jetzt bauen wir die COBS-Kodierung:</p>
+<pre><code>Schritt 1: Segment 1 hat 2 Bytes → Zeiger = 2+1 = 3 (&quot;nach 3 Bytes kommt Ersatz&quot;)
+           [0x03] [0x11] [0x22]
+
+Schritt 2: Segment 2 hat 1 Byte → Zeiger = 1+1 = 2
+           [0x02] [0x33]
+
+Schritt 3: Segment 3 hat 1 Byte → Zeiger = 1+1 = 2 (zeigt auf Ende)
+           [0x02] [0x44]
+
+Ergebnis:  [0x03] [0x11] [0x22] [0x02] [0x33] [0x02] [0x44]</code></pre>
+<p><strong>Visualisierung der Zeiger:</strong></p>
+<pre><code>COBS-kodiert: [0x03] [0x11] [0x22] [0x02] [0x33] [0x02] [0x44]
+               │                   │            │
+               └─ &quot;nach 3 Bytes    └─ &quot;nach 2   └─ &quot;nach 2 Bytes
+                  kommt Ersatz&quot;       Bytes&quot;       kommt Ende&quot;</code></pre>
+<h3 id="anwendung-dekodierung">Anwendung: Dekodierung</h3>
+<p>Der Empfänger dekodiert in umgekehrter Reihenfolge:</p>
+<pre><code>Eingabe: [0x03] [0x11] [0x22] [0x02] [0x33] [0x02] [0x44]
+
+1. Lies Zeiger: 0x03 → kopiere nächste 2 Bytes, füge 0x00 ein
+   Ausgabe bisher: [0x11] [0x22] [0x00]
+
+2. Lies Zeiger: 0x02 → kopiere nächstes 1 Byte, füge 0x00 ein
+   Ausgabe bisher: [0x11] [0x22] [0x00] [0x33] [0x00]
+
+3. Lies Zeiger: 0x02 → kopiere nächstes 1 Byte, Ende erreicht
+   Ausgabe: [0x11] [0x22] [0x00] [0x33] [0x00] [0x44]</code></pre>
+<h3 id="wire-frame-aufbau">Wire-Frame-Aufbau</h3>
+<p>Nach der COBS-Kodierung hängen wir den Delimiter <code>0x00</code>
+an:</p>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│  COBS-kodierte Daten (keine 0x00 enthalten)  │  0x00   │
+│                                              │ Delimiter│
+└─────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="overhead-analyse">Overhead-Analyse</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Szenario</th>
+<th>Original</th>
+<th>COBS</th>
+<th>Overhead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Keine Nullen in 10 Bytes</td>
+<td>10</td>
+<td>11</td>
+<td>+1 Byte (10%)</td>
+</tr>
+<tr>
+<td>Eine Null in 10 Bytes</td>
+<td>10</td>
+<td>11</td>
+<td>+1 Byte (10%)</td>
+</tr>
+<tr>
+<td>Nur Nullen (10× 0x00)</td>
+<td>10</td>
+<td>20</td>
+<td>+10 Bytes</td>
+</tr>
+<tr>
+<td>Typisches Paket (20 Bytes)</td>
+<td>20</td>
+<td>21–22</td>
+<td>+1–2 Bytes</td>
+</tr>
+<tr>
+<td>Worst Case (254× 0x00)</td>
+<td>254</td>
+<td>255</td>
+<td>+1 Byte</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Merkregel:</strong> „COBS kostet maximal 1 Byte pro 254
+Originalbytes – bei typischen Paketen unter 100 Bytes ist der Overhead
+vernachlässigbar.”</p>
+</blockquote>
+<h3 id="sonderfall-zeiger-überlauf">Sonderfall: Zeiger-Überlauf</h3>
+<p>Was passiert bei einem Segment länger als 254 Bytes ohne
+<code>0x00</code>?</p>
+<p>COBS verwendet <code>0xFF</code> als „Fortsetzungs-Zeiger”: Nach 254
+Bytes kommt kein <code>0x00</code>, sondern der nächste Zeiger. Für
+unsere Paketgrößen (max. 268 Bytes) ist dieser Fall selten, aber das
+Protokoll handhabt ihn korrekt.</p>
+<h3 id="zusammenfassung">Zusammenfassung</h3>
+<pre><code>                    COBS-Encode
+Original ──────────────────────────► Keine 0x00 mehr
+         (eliminiert alle Nullen)
+
+                    COBS-Decode
+Empfangen ─────────────────────────► Original
+          (rekonstruiert Nullen)</code></pre>
+<p>Der Empfänger sammelt Bytes bis <code>0x00</code>, dekodiert alles
+davor mit COBS und hat das Original-Paket.</p>
+<hr />
+<h2 id="crc-16-integritätsprüfung">3) CRC-16 – Integritätsprüfung</h2>
+<h3 id="problemstellung-2">Problemstellung</h3>
+<p>Auch mit korrektem Framing können Bytes auf der Leitung verfälscht
+werden – durch elektromagnetische Interferenz (EMI), Timing-Probleme
+oder Buffer-Überläufe. Wir brauchen eine Methode, um solche Fehler zu
+erkennen.</p>
+<h3 id="regel-1">Regel</h3>
+<p>Der Sender berechnet eine Prüfsumme (CRC) über die Daten und hängt
+sie an. Der Empfänger berechnet dieselbe Prüfsumme und vergleicht.
+Stimmen die Werte nicht überein, ist das Paket korrupt.</p>
+<h3 id="crc-16ccitt-false-parameter">CRC-16/CCITT-FALSE Parameter</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Wert</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Polynom</td>
+<td><code>0x1021</code></td>
+<td><span class="math math-inline">$x^{16} + x^{12} + x^5 + 1$</span>
+(CCITT)</td>
+</tr>
+<tr>
+<td>Init</td>
+<td><code>0xFFFF</code></td>
+<td>Startwert der Berechnung</td>
+</tr>
+<tr>
+<td>XorOut</td>
+<td><code>0x0000</code></td>
+<td>Finaler XOR (hier: keiner)</td>
+</tr>
+<tr>
+<td>RefIn</td>
+<td><code>false</code></td>
+<td>Eingabe-Bits nicht gespiegelt</td>
+</tr>
+<tr>
+<td>RefOut</td>
+<td><code>false</code></td>
+<td>Ausgabe-Bits nicht gespiegelt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="herleitung-warum-ccitt-false">Herleitung: Warum
+CCITT-FALSE?</h3>
+<p>Dieses Polynom hat mathematisch nachgewiesene Eigenschaften:</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Fehlertyp</th>
+<th>Erkennungsrate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alle Einzelbitfehler</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Alle Doppelbitfehler</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Alle Fehler mit ungerader Anzahl</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Burst-Fehler ≤ 16 Bit</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Zufällige Fehler (statistisch)</td>
+<td><span class="math math-inline">$1 - 2^{-16} ≈ 99,998\%$</span></td>
+</tr>
+</tbody>
+</table>
+<p><em>Analogie:</em> CRC funktioniert wie eine Quersumme, aber mit
+Polynomrechnung statt Addition. Ähnlich wie die Quersumme einer ISBN
+Tippfehler erkennt, erkennt CRC Übertragungsfehler. Die Analogie endet
+dort, wo es um Burst-Fehler geht: Eine einfache Quersumme erkennt keine
+Vertauschungen, CRC schon.</p>
+<h3 id="anwendung-referenz-implementierung-python">Anwendung:
+Referenz-Implementierung (Python)</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> crc16_ccitt_false(data: <span class="bu">bytes</span>) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Berechnet CRC-16/CCITT-FALSE.</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">        data: Zu prüfende Bytes</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co">        16-Bit CRC-Wert (0x0000–0xFFFF)</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    crc <span class="op">=</span> <span class="bn">0xFFFF</span>  <span class="co"># Init</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> b <span class="kw">in</span> data:</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        crc <span class="op">^=</span> (b <span class="op">&lt;&lt;</span> <span class="dv">8</span>) <span class="op">&amp;</span> <span class="bn">0xFFFF</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">8</span>):</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> crc <span class="op">&amp;</span> <span class="bn">0x8000</span>:</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                crc <span class="op">=</span> ((crc <span class="op">&lt;&lt;</span> <span class="dv">1</span>) <span class="op">^</span> <span class="bn">0x1021</span>) <span class="op">&amp;</span> <span class="bn">0xFFFF</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>                crc <span class="op">=</span> (crc <span class="op">&lt;&lt;</span> <span class="dv">1</span>) <span class="op">&amp;</span> <span class="bn">0xFFFF</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> crc  <span class="co"># XorOut = 0x0000, also keine Änderung</span></span></code></pre></div>
+<p><strong>Zahlenbeispiel:</strong></p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> crc16_ccitt_false(<span class="st">b&quot;123456789&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bn">0x29B1</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> crc16_ccitt_false(<span class="st">b&quot;</span><span class="ch">\x53\x50\x01\x00\x12\x00\x00\x00\x08\x00</span><span class="st">&quot;</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bn">0x3A7E</span>  <span class="co"># Header eines SELECTION_STATE-Pakets</span></span></code></pre></div>
+<h3 id="byte-reihenfolge-im-paket">Byte-Reihenfolge im Paket</h3>
+<p>Der CRC wird als Little-Endian angehängt (Low-Byte zuerst):</p>
+<pre><code>CRC = 0x3A7E → Paket: [...] [0x7E] [0x3A]
+                            Low    High</code></pre>
+<h3 id="zusammenfassung-1">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „CRC ist keine Verschlüsselung – es
+erkennt Fehler, verhindert sie aber nicht.”</p>
+</blockquote>
+<p>Wenn der CRC nicht stimmt, verwirft der Empfänger das Paket. Der
+Sender muss es erneut senden (siehe ACK-Mechanik in Abschnitt 7).</p>
+<hr />
+<h2 id="packet-layout-der-header">4) Packet-Layout – Der Header</h2>
+<h3 id="problemstellung-3">Problemstellung</h3>
+<p>Bevor wir COBS anwenden, müssen wir wissen, wie das „Raw-Packet”
+aussieht. Welche Metadaten brauchen wir zusätzlich zu den Nutzdaten?</p>
+<h3 id="header-struktur-10-bytes">Header-Struktur (10 Bytes)</h3>
+<pre><code>┌────────┬────────────┬───────┬─────────────────────────────────────────┐
+│ Offset │ Feld       │ Größe │ Beschreibung                            │
+├────────┼────────────┼───────┼─────────────────────────────────────────┤
+│ 0      │ magic0     │ 1     │ &#39;S&#39; (0x53) – erstes Magic-Byte          │
+│ 1      │ magic1     │ 1     │ &#39;P&#39; (0x50) – zweites Magic-Byte         │
+│ 2      │ ver_major  │ 1     │ Major-Version (aktuell: 1)              │
+│ 3      │ ver_minor  │ 1     │ Minor-Version (aktuell: 0)              │
+│ 4      │ type       │ 1     │ Message-Typ (siehe Abschnitt 6)         │
+│ 5      │ flags      │ 1     │ Bitflags für ACK, Error, etc.           │
+│ 6–7    │ seq        │ 2     │ Sequenznummer (Little-Endian, 1–65535)  │
+│ 8–9    │ len        │ 2     │ Payload-Länge in Bytes (Little-Endian)  │
+└────────┴────────────┴───────┴─────────────────────────────────────────┘</code></pre>
+<h3 id="gesamtpaket-aufbau">Gesamtpaket-Aufbau</h3>
+<pre><code>┌──────────────────────────────────────────────────────────────────────┐
+│  Header (10 Bytes)  │  Payload (0–256 Bytes)  │  CRC-16 (2 Bytes)    │
+└──────────────────────────────────────────────────────────────────────┘
+│◄──────────────────── CRC-Berechnung ───────────────────────►│</code></pre>
+<h3 id="herleitung-warum-diese-felder">Herleitung: Warum diese
+Felder?</h3>
+<p><strong>Magic Bytes (<code>SP</code> = 0x53 0x50):</strong></p>
+<p>Wenn wir mitten in einem Datenstrom einsteigen oder ein Frame korrupt
+ist, erkennen wir sofort, dass etwas nicht stimmt.</p>
+<p>Die Wahrscheinlichkeit, dass zufällige Daten mit <code>SP</code>
+beginnen:</p>
+<div class="math math-display">$$P(\text{zufällig SP}) = \frac{1}{256} \times \frac{1}{256} = \frac{1}{65536} \approx 0,0015\%$$</div>
+<p><strong>Version (ver_major, ver_minor):</strong></p>
+<p>Ermöglicht Protokoll-Evolution ohne Inkompatibilität.</p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 22%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr>
+<th>Empfangene Version</th>
+<th>Eigene Version</th>
+<th>Aktion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Major stimmt</td>
+<td>–</td>
+<td>Akzeptieren</td>
+</tr>
+<tr>
+<td>Major unterschiedlich</td>
+<td>–</td>
+<td>Verwerfen (inkompatibel)</td>
+</tr>
+<tr>
+<td>Minor höher</td>
+<td>–</td>
+<td>Akzeptieren (abwärtskompatibel)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sequenznummer (seq):</strong></p>
+<p>Identifiziert Pakete eindeutig für die ACK-Zuordnung.</p>
+<ul>
+<li>Bereich: 1–65535 (Wert 0 wird übersprungen)</li>
+<li>Bei Überlauf: 65535 → 1 (nicht 0)</li>
+<li>Jeder Sender hat seinen eigenen Zähler</li>
+</ul>
+<p><strong>Flags-Byte:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Bit</th>
+<th>Maske</th>
+<th>Name</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0x01</td>
+<td><code>ACK_REQ</code></td>
+<td>Sender erwartet Bestätigung</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0x02</td>
+<td><code>IS_ACK</code></td>
+<td>Dieses Paket ist eine Bestätigung</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0x04</td>
+<td><code>IS_ERR</code></td>
+<td>Dieses Paket meldet einen Fehler</td>
+</tr>
+<tr>
+<td>3–7</td>
+<td>–</td>
+<td>Reserved</td>
+<td>Für zukünftige Erweiterungen</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anwendung-beispiel-header-hexadezimal">Anwendung:
+Beispiel-Header (hexadezimal)</h3>
+<pre><code>SELECTION_STATE-Paket, seq=1234, len=8:
+
+53 50 01 00 12 01 D2 04 08 00
+│  │  │  │  │  │  └──┴──────── len = 0x0008 (8 Bytes)
+│  │  │  │  │  │  └──┴──────── seq = 0x04D2 (1234)
+│  │  │  │  │  └────────────── flags = 0x01 (ACK_REQ)
+│  │  │  │  └─────────────────  type = 0x12 (SELECTION_STATE)
+│  │  │  └────────────────────  ver_minor = 0
+│  │  └───────────────────────  ver_major = 1
+│  └──────────────────────────  magic1 = &#39;P&#39;
+└─────────────────────────────  magic0 = &#39;S&#39;</code></pre>
+<h3 id="zusammenfassung-2">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Magic prüft Synchronisation, Version
+prüft Kompatibilität, CRC prüft Integrität.”</p>
+</blockquote>
+<hr />
+<h2 id="sende--und-empfangsprozess">5) Sende- und Empfangsprozess</h2>
+<h3 id="sendeprozess-4-schritte">Sendeprozess (4 Schritte)</h3>
+<pre><code>Schritt 1: Header + Payload zusammenbauen
+┌────────────────────────────────────┐
+│  Header (10 Bytes)  │  Payload     │
+└────────────────────────────────────┘
+
+Schritt 2: CRC-16 über alles berechnen und anhängen (Little-Endian)
+┌────────────────────────────────────┬───────┐
+│  Header (10 Bytes)  │  Payload     │ CRC16 │
+└────────────────────────────────────┴───────┘
+
+Schritt 3: COBS-encode (eliminiert alle 0x00)
+┌──────────────────────────────────────────────┐
+│  COBS-kodierte Daten (keine 0x00 enthalten)  │
+└──────────────────────────────────────────────┘
+
+Schritt 4: Delimiter anhängen und über Serial senden
+┌──────────────────────────────────────────────┬──────┐
+│  COBS-kodierte Daten                         │ 0x00 │
+└──────────────────────────────────────────────┴──────┘</code></pre>
+<h3 id="empfangsprozess-4-schritte">Empfangsprozess (4 Schritte)</h3>
+<pre><code>Schritt 1: Bytes sammeln bis 0x00 (Delimiter)
+┌──────────────────────────────────────────────┬──────┐
+│  Empfangene Bytes                            │ 0x00 │
+└──────────────────────────────────────────────┴──────┘
+
+Schritt 2: COBS-decode (rekonstruiert Original)
+┌────────────────────────────────────┬───────┐
+│  Header + Payload                  │ CRC16 │
+└────────────────────────────────────┴───────┘
+
+Schritt 3: CRC prüfen
+- Berechne CRC über Header + Payload
+- Vergleiche mit empfangenen CRC-Bytes
+- Bei Mismatch: Paket verwerfen
+
+Schritt 4: Header validieren und Payload extrahieren
+- Magic = &quot;SP&quot;? Sonst verwerfen
+- Version kompatibel? Sonst verwerfen
+- len plausibel? Sonst verwerfen
+- Dispatch nach type</code></pre>
+<h3 id="zustandsautomat-des-empfängers">Zustandsautomat des
+Empfängers</h3>
+<pre><code>                    ┌─────────────┐
+                    │   IDLE      │
+                    └──────┬──────┘
+                           │ Byte empfangen (≠ 0x00)
+                           ▼
+                    ┌─────────────┐
+              ┌────►│ COLLECTING  │◄────┐
+              │     └──────┬──────┘     │
+              │            │            │
+    Byte ≠ 0x00            │ 0x00       │ Byte ≠ 0x00
+              │            ▼            │
+              │     ┌─────────────┐     │
+              └─────│  DECODING   │─────┘
+                    └──────┬──────┘
+                           │ Dekodierung + Validierung
+                           ▼
+              ┌────────────┴────────────┐
+              │                         │
+        CRC OK                    CRC Fehler
+              │                         │
+              ▼                         ▼
+       ┌──────────┐              ┌──────────┐
+       │ DISPATCH │              │  DISCARD │
+       └──────────┘              └──────────┘</code></pre>
+<h3 id="zusammenfassung-3">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Senden = Build → CRC → COBS → Delimiter.
+Empfangen = Collect → COBS → CRC → Dispatch.”</p>
+</blockquote>
+<hr />
+<h2 id="message-typen">6) Message-Typen</h2>
+<h3 id="übersicht-der-typen-nach-richtung">Übersicht der Typen nach
+Richtung</h3>
+<p><strong>ESP32 → Pi (Events):</strong></p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 8%" />
+<col style="width: 44%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Hex</th>
+<th>Zweck</th>
+<th>Payload-Größe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HELLO</td>
+<td>0x01</td>
+<td>Fähigkeiten nach Reset melden</td>
+<td>4 Bytes</td>
+</tr>
+<tr>
+<td>BTN_EVENT</td>
+<td>0x10</td>
+<td>Button gedrückt/losgelassen</td>
+<td>8 Bytes</td>
+</tr>
+<tr>
+<td>SNAPSHOT</td>
+<td>0x11</td>
+<td>Kompletter Button/LED-Zustand</td>
+<td>variabel</td>
+</tr>
+<tr>
+<td>SELECTION_STATE</td>
+<td>0x12</td>
+<td>Aktuell gewählter Kanal</td>
+<td>8 Bytes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pi → ESP32 (Commands):</strong></p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 8%" />
+<col style="width: 41%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr>
+<th>Type</th>
+<th>Hex</th>
+<th>Zweck</th>
+<th>Payload-Größe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HELLO_ACK</td>
+<td>0x02</td>
+<td>HELLO bestätigen</td>
+<td>0 Bytes</td>
+</tr>
+<tr>
+<td>CMD_SET_SELECTION</td>
+<td>0x20</td>
+<td>Kanal vom Dashboard setzen</td>
+<td>4 Bytes</td>
+</tr>
+<tr>
+<td>CMD_REQ_SNAPSHOT</td>
+<td>0x23</td>
+<td>Debug-Snapshot anfordern</td>
+<td>0 Bytes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Bidirektional (Control):</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Type</th>
+<th>Hex</th>
+<th>Zweck</th>
+<th>Payload-Größe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACK</td>
+<td>0x30</td>
+<td>Empfangsbestätigung</td>
+<td>0 Bytes</td>
+</tr>
+<tr>
+<td>ERR</td>
+<td>0x50</td>
+<td>Fehler melden</td>
+<td>variabel</td>
+</tr>
+<tr>
+<td>PING</td>
+<td>0x03</td>
+<td>Keepalive-Anfrage</td>
+<td>0 Bytes</td>
+</tr>
+<tr>
+<td>PONG</td>
+<td>0x04</td>
+<td>Keepalive-Antwort</td>
+<td>0 Bytes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="selection_state-das-zentrale-event">SELECTION_STATE – Das
+zentrale Event</h3>
+<p>Dieses Paket synchronisiert den Zustand zwischen ESP32, Pi und
+Browser. Es wird bei jeder Änderung der Auswahl gesendet.</p>
+<p><strong>Payload-Struktur (8 Bytes):</strong></p>
+<pre><code>┌────────┬──────────────────┬───────┬──────────────────────────────────┐
+│ Offset │ Feld             │ Typ   │ Beschreibung                     │
+├────────┼──────────────────┼───────┼──────────────────────────────────┤
+│ 0–1    │ selected_id      │ u16   │ 0 = keiner, 1–100 = Kanal-Nr.    │
+│ 2      │ source           │ u8    │ Auslöser der Änderung            │
+│ 3      │ reserved         │ u8    │ 0x00 (für Erweiterungen)         │
+│ 4–7    │ t_ms             │ u32   │ millis() seit ESP32-Boot         │
+└────────┴──────────────────┴───────┴──────────────────────────────────┘</code></pre>
+<p><strong>Source-Werte:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Wert</th>
+<th>Name</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>local_btn</code></td>
+<td>Physischer Button am Panel gedrückt</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>host_cmd</code></td>
+<td>Dashboard-Klick (via Pi → ESP32)</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>reset</code></td>
+<td>Nach ESP32-Neustart (Initialzustand)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>recover</code></td>
+<td>Wiederherstellung nach Verbindungsabbruch</td>
+</tr>
+</tbody>
+</table>
+<h3 id="zahlenbeispiel-komplettes-selection_state-paket">Zahlenbeispiel:
+Komplettes SELECTION_STATE-Paket</h3>
+<pre><code>Szenario: Button 7 gedrückt, millis()=45678
+
+Payload:
+  selected_id = 7     → 0x07 0x00 (Little-Endian)
+  source = 0          → 0x00
+  reserved = 0        → 0x00
+  t_ms = 45678        → 0x6E 0xB2 0x00 0x00 (Little-Endian)
+
+  Payload-Bytes: 07 00 00 00 6E B2 00 00
+
+Header:
+  magic = &quot;SP&quot;        → 53 50
+  version = 1.0       → 01 00
+  type = 0x12         → 12
+  flags = ACK_REQ     → 01
+  seq = 1234          → D2 04 (Little-Endian)
+  len = 8             → 08 00 (Little-Endian)
+
+  Header-Bytes: 53 50 01 00 12 01 D2 04 08 00
+
+Raw-Paket (vor CRC): 53 50 01 00 12 01 D2 04 08 00 07 00 00 00 6E B2 00 00
+CRC-16 über Raw:     → 0xABCD (Beispiel)
+Mit CRC:             53 50 01 00 12 01 D2 04 08 00 07 00 00 00 6E B2 00 00 CD AB
+
+Nach COBS + Delimiter: [COBS-kodiert] 00</code></pre>
+<hr />
+<h2 id="ackretry-mechanik">7) ACK/Retry-Mechanik</h2>
+<h3 id="problemstellung-4">Problemstellung</h3>
+<p>Bei Commands wie <code>CMD_SET_SELECTION</code> muss der Pi wissen,
+ob der ESP32 das Kommando erhalten und verarbeitet hat. Ohne Bestätigung
+könnte ein verlorenes Paket unbemerkt bleiben.</p>
+<h3 id="regel-2">Regel</h3>
+<p>Request-Response mit Timeout und Retry: Der Sender wartet auf ACK.
+Kommt keines, wiederholt er das Paket.</p>
+<h3 id="erfolgreicher-ablauf">Erfolgreicher Ablauf</h3>
+<pre><code>Pi                                      ESP32
+ │                                        │
+ │─── CMD_SET_SELECTION ─────────────────►│  seq=42, flags=ACK_REQ
+ │         (Timer startet: 600ms)         │
+ │                                        │  (verarbeitet Kommando)
+ │◄────────── ACK ────────────────────────│  seq=42, flags=IS_ACK
+ │         (Timer stoppt, Erfolg)         │
+ │                                        │
+ │◄── SELECTION_STATE ────────────────────│  selected_id=7, source=host_cmd
+ │                                        │</code></pre>
+<h3 id="fehlerfall-mit-retry">Fehlerfall mit Retry</h3>
+<pre><code>Pi                                      ESP32
+ │                                        │
+ │─── CMD_SET_SELECTION ─────────────────►│  seq=43, ACK_REQ
+ │         (Timer: 600ms)                 │
+ │              ...                       │  (Paket verloren / ESP32 busy)
+ │         (Timeout!)                     │
+ │                                        │
+ │─── CMD_SET_SELECTION ─────────────────►│  seq=43, Retry #1
+ │         (Timer: 600ms)                 │
+ │              ...                       │  (noch immer keine Antwort)
+ │         (Timeout!)                     │
+ │                                        │
+ │─── CMD_SET_SELECTION ─────────────────►│  seq=43, Retry #2
+ │              ...                       │
+ │◄────────── ACK ────────────────────────│  (endlich!)
+ │                                        │</code></pre>
+<h3 id="timing-parameter">Timing-Parameter</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Konfiguration in bridge.py</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACK-Timeout</td>
+<td>600 ms</td>
+<td><code>--ack-timeout 0.6</code></td>
+</tr>
+<tr>
+<td>Maximale Retries</td>
+<td>4</td>
+<td><code>--retries 4</code></td>
+</tr>
+<tr>
+<td>Gesamtwartezeit</td>
+<td>3000 ms</td>
+<td>5 × 600 ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Berechnung der Gesamtwartezeit:</strong></p>
+<div class="math math-display">$$T_{\mathrm{max}} = (1 + \text{retries}) \times \text{timeout} = 5 \times 600\,\mathrm{ms} = 3000\,\mathrm{ms}$$</div>
+<h3 id="fehlerbehandlung-nach-retry-erschöpfung">Fehlerbehandlung nach
+Retry-Erschöpfung</h3>
+<p>Nach 5 fehlgeschlagenen Versuchen (1 Original + 4 Retries) meldet die
+Bridge einen Fehler an den Browser:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;error&quot;</span><span class="fu">,</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;code&quot;</span><span class="fu">:</span> <span class="dv">21</span><span class="fu">,</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;message&quot;</span><span class="fu">:</span> <span class="st">&quot;ACK timeout after 5 attempts&quot;</span><span class="fu">,</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;seq&quot;</span><span class="fu">:</span> <span class="dv">43</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="idempotenz">Idempotenz</h3>
+<p>Die Sequenznummer ermöglicht Idempotenz: Wenn der ESP32 dasselbe
+Paket (gleiche <code>seq</code>) mehrfach empfängt, führt er das
+Kommando nur einmal aus und sendet das ACK erneut.</p>
+<h3 id="zusammenfassung-4">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Kein ACK, kein Erfolg. Retry bis zum
+Limit, dann Error.”</p>
+</blockquote>
+<hr />
+<h2 id="datenfluss-vom-button-zum-browser">8) Datenfluss – Vom Button
+zum Browser</h2>
+<h3 id="problemstellung-5">Problemstellung</h3>
+<p>Die Kommunikationskette hat mehrere Stufen mit unterschiedlichen
+Protokollen. Wie fließen die Daten konkret vom physischen Button bis zur
+Browser-Anzeige?</p>
+<h3 id="end-to-end-datenfluss">End-to-End-Datenfluss</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────────────┐
+│ 1. ESP32: CD4021BE liest Button-Matrix (alle 10 ms)                     │
+│    Schieberegister → rawButtons[] → Debounce (50 ms Schwellwert)        │
+│    → Stabile Flanke erkannt: Button 7 gedrückt                          │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 2. ESP32: Baut SELECTION_STATE-Paket                                    │
+│    Header: magic=SP, type=0x12, seq=1234, len=8, flags=ACK_REQ          │
+│    Payload: selected_id=7, source=0 (local_btn), t_ms=45678             │
+│    → CRC-16 berechnen und anhängen                                      │
+│    → COBS-encode, 0x00-Delimiter anhängen                               │
+│    → Über USB-CDC senden                                                │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                              USB-CDC Serial
+                              (/dev/ttyACM0)
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 3. Pi (bridge.py): Empfängt Frame                                       │
+│    → Bytes sammeln bis 0x00                                             │
+│    → COBS-decode                                                        │
+│    → CRC prüfen (Mismatch → verwerfen)                                  │
+│    → Header parsen, type=0x12 → SELECTION_STATE erkannt                 │
+│    → ACK senden (seq=1234, IS_ACK)                                      │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 4. Pi (bridge.py): Wandelt in JSON für WebSocket                        │
+│    {                                                                    │
+│      &quot;type&quot;: &quot;selection&quot;,                                               │
+│      &quot;selected&quot;: 7,                                                     │
+│      &quot;source&quot;: &quot;local_btn&quot;,                                             │
+│      &quot;tMs&quot;: 45678                                                       │
+│    }                                                                    │
+└─────────────────────────────────────────────────────────────────────────┘
+                                    │
+                              WebSocket :8081/ws
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 5. Browser (React): useBridgeWs() empfängt JSON                         │
+│    → State-Update: setSelectedChannel(7)                                │
+│    → Re-Render: LED 7 leuchtet grün im Dashboard                        │
+└─────────────────────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="latenz-analyse">Latenz-Analyse</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 38%" />
+<col style="width: 22%" />
+<col style="width: 39%" />
+</colgroup>
+<thead>
+<tr>
+<th>Segment</th>
+<th>Typische Latenz</th>
+<th>Einflussfaktoren</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Button → Debounce-Erkennung</td>
+<td>30–50 ms</td>
+<td>Debounce-Schwellwert</td>
+</tr>
+<tr>
+<td>ESP32 → Serial → Pi</td>
+<td>1–5 ms</td>
+<td>USB-CDC, Pufferung</td>
+</tr>
+<tr>
+<td>Pi → WebSocket → Browser</td>
+<td>5–20 ms</td>
+<td>Netzwerk, Browser-Event-Loop</td>
+</tr>
+<tr>
+<td><strong>Gesamt (typisch)</strong></td>
+<td><strong>40–75 ms</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="rückrichtung-dashboard-led">Rückrichtung: Dashboard → LED</h3>
+<pre><code>Browser                Pi                    ESP32
+   │                    │                      │
+   │── WS: select(7) ──►│                      │
+   │                    │── CMD_SET_SELECTION ►│
+   │                    │     (seq=99)         │
+   │                    │◄──── ACK ────────────│
+   │                    │                      │  (setzt LED 7)
+   │                    │◄── SELECTION_STATE ──│
+   │◄── WS: confirm ────│     (source=host_cmd)│
+   │                    │                      │</code></pre>
+<h3 id="zusammenfassung-5">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Button → Serial → Bridge → WebSocket →
+Browser. Fünf Stufen, eine Wahrheit.”</p>
+</blockquote>
+<hr />
+<h2 id="größenrahmen-und-limits">9) Größenrahmen und Limits</h2>
+<h3 id="konstanten">Konstanten</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Konstante</th>
+<th>Wert</th>
+<th>Herleitung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>HEADER_LEN</code></td>
+<td>10 Bytes</td>
+<td>Summe aller Header-Felder</td>
+</tr>
+<tr>
+<td><code>CRC_LEN</code></td>
+<td>2 Bytes</td>
+<td>CRC-16</td>
+</tr>
+<tr>
+<td><code>MAX_PAYLOAD</code></td>
+<td>256 Bytes</td>
+<td>Firmware-Limit (RAM-Beschränkung)</td>
+</tr>
+<tr>
+<td><code>MAX_PACKET</code></td>
+<td>268 Bytes</td>
+<td>10 + 256 + 2</td>
+</tr>
+<tr>
+<td><code>MAX_WIRE_FRAME</code></td>
+<td>~270 Bytes</td>
+<td>Nach COBS (max. +1 pro 254) + 0x00</td>
+</tr>
+</tbody>
+</table>
+<h3 id="paketgrößen-in-der-praxis">Paketgrößen in der Praxis</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Pakettyp</th>
+<th>Header</th>
+<th>Payload</th>
+<th>CRC</th>
+<th>Raw</th>
+<th>Wire (COBS)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACK</td>
+<td>10</td>
+<td>0</td>
+<td>2</td>
+<td>12</td>
+<td>~13</td>
+</tr>
+<tr>
+<td>PING/PONG</td>
+<td>10</td>
+<td>0</td>
+<td>2</td>
+<td>12</td>
+<td>~13</td>
+</tr>
+<tr>
+<td>SELECTION_STATE</td>
+<td>10</td>
+<td>8</td>
+<td>2</td>
+<td>20</td>
+<td>~21–22</td>
+</tr>
+<tr>
+<td>SNAPSHOT (10 Ch)</td>
+<td>10</td>
+<td>26</td>
+<td>2</td>
+<td>38</td>
+<td>~39–40</td>
+</tr>
+<tr>
+<td>SNAPSHOT (100 Ch)</td>
+<td>10</td>
+<td>206</td>
+<td>2</td>
+<td>218</td>
+<td>~220</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bandbreiten-betrachtung">Bandbreiten-Betrachtung</h3>
+<p>Bei 115200 Baud (typische USB-CDC-Einstellung):</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Metrik</th>
+<th>Wert</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rohe Bitrate</td>
+<td>115200 Bit/s</td>
+</tr>
+<tr>
+<td>Effektive Byterate</td>
+<td>11520 Byte/s (10 Bits pro Byte)</td>
+</tr>
+<tr>
+<td>SELECTION_STATE pro Sekunde</td>
+<td>~520 Pakete/s (bei 22 Bytes/Paket)</td>
+</tr>
+<tr>
+<td>Praktische Nutzung</td>
+<td>10–100 Pakete/s (ausreichend Reserve)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="zusammenfassung-6">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Max. 268 Bytes Raw, ~270 Bytes on-Wire.
+Für unsere Paketgrößen ist Bandbreite kein Engpass.”</p>
+</blockquote>
+<hr />
+<h2 id="fehlerbehandlung">10) Fehlerbehandlung</h2>
+<h3 id="fehlerarten-und-reaktionen">Fehlerarten und Reaktionen</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 36%" />
+<col style="width: 37%" />
+</colgroup>
+<thead>
+<tr>
+<th>Fehlerart</th>
+<th>Erkennung</th>
+<th>Reaktion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CRC-Mismatch</td>
+<td>CRC-Prüfung nach COBS-Decode</td>
+<td>Frame verwerfen, kein ACK</td>
+</tr>
+<tr>
+<td>Magic falsch</td>
+<td>Byte 0–1 ≠ 0x53 0x50</td>
+<td>Frame verwerfen, Resync</td>
+</tr>
+<tr>
+<td>Version inkompatibel</td>
+<td>ver_major stimmt nicht</td>
+<td>Frame verwerfen</td>
+</tr>
+<tr>
+<td>Länge inkonsistent</td>
+<td>len vs. tatsächliche Größe</td>
+<td>Frame verwerfen</td>
+</tr>
+<tr>
+<td>ACK-Timeout</td>
+<td>Timer nach Timeout abgelaufen</td>
+<td>Retry, dann Error an Browser</td>
+</tr>
+<tr>
+<td>Unbekannter Type</td>
+<td>type nicht in Dispatch-Tabelle</td>
+<td>Ignorieren (forward-compatible)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="resynchronisation">Resynchronisation</h3>
+<p>Da <code>0x00</code> garantiert nur als Delimiter vorkommt (dank
+COBS), findet der Empfänger nach einem korrupten Frame automatisch den
+nächsten gültigen Frame-Start:</p>
+<pre><code>Korrupter Frame        Delimiter   Nächster gültiger Frame
+[...Müll...] ──────────► 0x00 ────► [COBS-Daten...] 0x00
+                           ↑
+                    Hier synchronisiert
+                    der Empfänger neu</code></pre>
+<h3 id="error-paket-type-0x50">Error-Paket (Type 0x50)</h3>
+<p>Bei schwerwiegenden Fehlern sendet eine Seite ein ERR-Paket:</p>
+<pre><code>┌────────┬──────────────────┬───────┬─────────────────────────────────┐
+│ Offset │ Feld             │ Typ   │ Beschreibung                    │
+├────────┼──────────────────┼───────┼─────────────────────────────────┤
+│ 0      │ error_code       │ u8    │ Fehlercode (siehe Tabelle)      │
+│ 1      │ context_type     │ u8    │ Type des auslösenden Pakets     │
+│ 2–3    │ context_seq      │ u16   │ Seq des auslösenden Pakets      │
+└────────┴──────────────────┴───────┴─────────────────────────────────┘</code></pre>
+<p><strong>Fehlercodes:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Code</th>
+<th>Name</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>ERR_UNKNOWN_TYPE</code></td>
+<td>Unbekannter Message-Type</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>ERR_CRC_FAIL</code></td>
+<td>CRC-Prüfung fehlgeschlagen</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>ERR_DECODE_FAIL</code></td>
+<td>COBS-Dekodierung fehlgeschlagen</td>
+</tr>
+<tr>
+<td>20</td>
+<td><code>ERR_TIMEOUT</code></td>
+<td>Internes Timeout</td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>ERR_ACK_TIMEOUT</code></td>
+<td>ACK nicht erhalten</td>
+</tr>
+</tbody>
+</table>
+<h3 id="zusammenfassung-7">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Delimiter-Framing = automatische Resync.
+Unbekannte Types ignorieren = Forward-Kompatibilität.”</p>
+</blockquote>
+</div>
+</body>
+</html>

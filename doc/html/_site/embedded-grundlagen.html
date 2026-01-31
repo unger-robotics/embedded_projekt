@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>embedded-grundlagen.mathjax_tmp</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+  
+  <script>
+  window.MathJax = {
+    loader: {
+      load: ['[tex]/ams']
+    },
+    tex: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      packages: {'[+]': ['ams']},
+      macros: {
+        dd: '{\\,\\mathrm{d}}',
+        degC: '{^{\\circ}\\!\\mathrm{C}}',
+        Ohm: '{\\,\\Omega}',
+        ohm: '{\\,\\Omega}',
+        degree: '{^{\\circ}}'
+      }
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre','code','kbd','samp']
+    }
+  };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div class="main-container">
+<h1
+id="embedded-grundlagen-systematische-einführung">Embedded-Grundlagen:
+Systematische Einführung</h1>
+<h2 id="begriffsrahmen-und-zielsetzung">0) Begriffsrahmen und
+Zielsetzung</h2>
+<h3 id="anwendungskontext">Anwendungskontext</h3>
+<p>Embedded-Systeme unterscheiden sich fundamental von Desktop-Software.
+Die „API” ist physisch – Pins, Spannungspegel, Timing. Fehler führen
+nicht zu Exceptions, sondern zu falschen Signalen, zerstörter Hardware
+oder unerklärlichem Verhalten. Diese Dokumentation vermittelt die
+physikalischen und konzeptionellen Grundlagen, die hinter dem
+Selection-Panel-Code stehen.</p>
+<h3 id="lernziele">Lernziele</h3>
+<p>Nach dem Durcharbeiten dieses Dokuments kannst du:</p>
+<ol type="1">
+<li><strong>Das Schichtenmodell erklären</strong> – verstehen, wie
+Software über HAL und Register mit Hardware kommuniziert</li>
+<li><strong>Spannungspegel interpretieren</strong> – HIGH, LOW und
+undefinierte Bereiche unterscheiden</li>
+<li><strong>Active-Low/Active-High anwenden</strong> – die Logik von
+Tastern und LEDs korrekt implementieren</li>
+<li><strong>Schieberegister einsetzen</strong> – CD4021 für Eingabe und
+74HC595 für Ausgabe verdrahten und ansteuern</li>
+<li><strong>SPI-Parameter konfigurieren</strong> – Modi, Frequenzen und
+Timing-Anforderungen einhalten</li>
+<li><strong>Timing-Budgets berechnen</strong> – Scan-Intervalle
+einhalten und Determinismus sicherstellen</li>
+<li><strong>Debouncing implementieren</strong> – Prellvorgänge filtern
+und saubere Flanken erkennen</li>
+<li><strong>One-Hot-Encoding garantieren</strong> – die Invariante durch
+Konstruktion sicherstellen</li>
+</ol>
+<h3 id="begriffsdefinitionen">Begriffsdefinitionen</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 63%" />
+<col style="width: 19%" />
+</colgroup>
+<thead>
+<tr>
+<th>Begriff</th>
+<th>Definition</th>
+<th>Quelle/Norm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GPIO</strong></td>
+<td>General Purpose Input/Output – frei konfigurierbarer
+Mikrocontroller-Pin</td>
+<td>Embedded-Terminologie</td>
+</tr>
+<tr>
+<td><strong>HAL</strong></td>
+<td>Hardware Abstraction Layer – Schicht zwischen Anwendung und
+Registern</td>
+<td>CMSIS, AUTOSAR</td>
+</tr>
+<tr>
+<td><strong>Active-Low</strong></td>
+<td>Signal ist aktiv bei Pegel 0 (GND), inaktiv bei 1 (VCC)</td>
+<td>Digital-Design</td>
+</tr>
+<tr>
+<td><strong>Active-High</strong></td>
+<td>Signal ist aktiv bei Pegel 1 (VCC), inaktiv bei 0 (GND)</td>
+<td>Digital-Design</td>
+</tr>
+<tr>
+<td><strong>Debouncing</strong></td>
+<td>Entprellung – Filterung mechanischer Prellvorgänge durch
+Zeit-Schwellwert</td>
+<td>Embedded-Praxis</td>
+</tr>
+<tr>
+<td><strong>SPI</strong></td>
+<td>Serial Peripheral Interface – synchroner Vollduplex-Datenbus</td>
+<td>Motorola, de-facto</td>
+</tr>
+<tr>
+<td><strong>Schieberegister</strong></td>
+<td>IC zur Konvertierung zwischen parallelen und seriellen Daten</td>
+<td>Digital-Design</td>
+</tr>
+<tr>
+<td><strong>Pullup</strong></td>
+<td>Widerstand, der einen Pin auf HIGH zieht, wenn nicht aktiv
+getrieben</td>
+<td>Schaltungstechnik</td>
+</tr>
+<tr>
+<td><strong>Pulldown</strong></td>
+<td>Widerstand, der einen Pin auf LOW zieht, wenn nicht aktiv
+getrieben</td>
+<td>Schaltungstechnik</td>
+</tr>
+<tr>
+<td><strong>CPOL</strong></td>
+<td>Clock Polarity – Ruhezustand des SPI-Takts (0=LOW, 1=HIGH)</td>
+<td>SPI-Spezifikation</td>
+</tr>
+<tr>
+<td><strong>CPHA</strong></td>
+<td>Clock Phase – bei welcher Flanke werden Daten gesampelt</td>
+<td>SPI-Spezifikation</td>
+</tr>
+<tr>
+<td><strong>One-Hot</strong></td>
+<td>Codierung: höchstens ein Bit gesetzt, alle anderen 0</td>
+<td>Digital-Design</td>
+</tr>
+<tr>
+<td><strong>SSOT</strong></td>
+<td>Single Source of Truth – jede Konfiguration an genau einer
+Stelle</td>
+<td>Design-Patterns</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="hardware-ist-die-schnittstelle">1) Hardware ist die
+Schnittstelle</h2>
+<h3 id="problemstellung">Problemstellung</h3>
+<p>In Desktop-Software rufst du Funktionen auf und bekommst
+Rückgabewerte. Der Compiler garantiert Typsicherheit, das Betriebssystem
+schützt vor Speicherzugriffsfehlern. In Embedded-Systemen kommunizierst
+du direkt mit der Außenwelt über elektrische Signale – ohne
+Sicherheitsnetz.</p>
+<h3 id="herleitung-die-schichten-eines-embedded-systems">Herleitung: Die
+Schichten eines Embedded-Systems</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│  Anwendungslogik (Selection, Debounce, State-Machine)       │  ← Dein Code
+├─────────────────────────────────────────────────────────────┤
+│  Treiber (CD4021, 74HC595)                                  │  ← IC-spezifisch
+├─────────────────────────────────────────────────────────────┤
+│  HAL (SPI-Transfer, GPIO-Zugriff)                           │  ← Plattform-Abstraktion
+├─────────────────────────────────────────────────────────────┤
+│  Register (ESP32-S3 Peripherie)                             │  ← Hardware-Adressen
+├─────────────────────────────────────────────────────────────┤
+│  Physische Pins (3,3 V / GND / Signale)                     │  ← Elektrische Realität
+└─────────────────────────────────────────────────────────────┘</code></pre>
+<h3 id="anwendung-fehlerquellen-auf-jeder-ebene">Anwendung:
+Fehlerquellen auf jeder Ebene</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 46%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr>
+<th>Ebene</th>
+<th>Typischer Fehler</th>
+<th>Symptom</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Anwendungslogik</td>
+<td>Falsche Bit-Maske</td>
+<td>Falscher Button erkannt</td>
+</tr>
+<tr>
+<td>Treiber</td>
+<td>Falsches Timing für Latch-Puls</td>
+<td>LEDs flackern</td>
+</tr>
+<tr>
+<td>HAL</td>
+<td>SPI-Modus 0 statt 1</td>
+<td>Daten um 1 Bit verschoben</td>
+</tr>
+<tr>
+<td>Register</td>
+<td>Falsches Peripherie-Clock-Enable</td>
+<td>SPI sendet nichts</td>
+</tr>
+<tr>
+<td>Physische Pins</td>
+<td>Pins vertauscht oder nicht verbunden</td>
+<td>Komplett falsche Signale</td>
+</tr>
+</tbody>
+</table>
+<h3 id="regel">Regel</h3>
+<p>Ein Fehler auf jeder Ebene führt zu Fehlfunktion. Wenn der SPI-Modus
+falsch ist, liefert der CD4021 Müll – auch wenn dein Code syntaktisch
+korrekt ist. <strong>Debugging muss von unten nach oben
+erfolgen:</strong> Erst Verkabelung, dann Register, dann HAL, dann
+Treiber, dann Logik.</p>
+<h3 id="zusammenfassung">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Software-Bugs crashen, Hardware-Bugs
+schweigen. Prüfe von unten nach oben.”</p>
+</blockquote>
+<hr />
+<h2 id="spannungspegel-die-sprache-der-hardware">2) Spannungspegel – Die
+Sprache der Hardware</h2>
+<h3 id="problemstellung-1">Problemstellung</h3>
+<p>Digitale Signale in Software sind abstrakt: 0 oder 1, true oder
+false. In Hardware sind das Spannungsbereiche mit physikalischen Grenzen
+und verbotenen Zonen.</p>
+<h3 id="herleitung-logikpegel-bei-33-v">Herleitung: Logikpegel bei 3,3
+V</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Zustand</th>
+<th>Spannungsbereich</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LOW (0)</td>
+<td>0 V – 0,8 V</td>
+<td>Logisch 0, definiert</td>
+</tr>
+<tr>
+<td>Undefiniert</td>
+<td>0,8 V – 2,0 V</td>
+<td><strong>Verbotene Zone!</strong> Metastabil</td>
+</tr>
+<tr>
+<td>HIGH (1)</td>
+<td>2,0 V – 3,3 V</td>
+<td>Logisch 1, definiert</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Visualisierung:</strong></p>
+<pre><code>3,3 V ─────┬───────────────────── HIGH (logisch 1)
+           │
+2,0 V ─────┼─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ Grenze HIGH
+           │
+           │     VERBOTEN!         Undefiniert (metastabil)
+           │
+0,8 V ─────┼─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ Grenze LOW
+           │
+0 V   ─────┴───────────────────── LOW (logisch 0)</code></pre>
+<p><strong>Warum ist die undefinierte Zone gefährlich?</strong></p>
+<p>In diesem Bereich „weiß” der Eingang nicht, ob er 0 oder 1 sehen
+soll. Das Ergebnis kann zwischen 0 und 1 oszillieren oder bei jedem
+Lesen unterschiedlich sein. Der Zustand ist metastabil – wie eine Münze,
+die auf der Kante balanciert.</p>
+<h3 id="anwendung-pullup--und-pulldown-widerstände">Anwendung: Pullup-
+und Pulldown-Widerstände</h3>
+<p><strong>Problem:</strong> Ein offener Pin (nicht verbunden) hat
+keinen definierten Pegel – er „schwebt” und nimmt zufällige Werte durch
+Störeinkopplung an.</p>
+<p><strong>Lösung:</strong> Ein Pullup-Widerstand zieht den Pin auf
+HIGH, solange nichts anderes ihn aktiv auf LOW treibt.</p>
+<p><strong>Schaltbild – Taster mit Pullup (Active-Low):</strong></p>
+<pre><code>VCC (3,3 V)
+    │
+   ┌┴┐
+   │ │  R = 10 kΩ (Pullup)
+   └┬┘
+    ├──────────────────► zum GPIO-Pin
+    │
+   ╱    Taster (mechanisch)
+    │
+   GND
+
+Taster offen:   Pin = HIGH (3,3 V durch Pullup)
+Taster gedrückt: Pin = LOW  (GND überstimmt Pullup)</code></pre>
+<p><strong>Warum 10 kΩ?</strong></p>
+<ul>
+<li>Zu niedrig (100 Ω): Hoher Stromverbrauch bei gedrücktem Taster</li>
+<li>Zu hoch (1 MΩ): Zu langsam für schnelle Signale, anfällig für
+Störungen</li>
+<li>10 kΩ ist ein Kompromiss: niedrige Stromaufnahme (~0,33 mA),
+schnelle Anstiegszeit</li>
+</ul>
+<p><strong>Berechnung des Stroms bei gedrücktem Taster:</strong></p>
+<div class="math math-display">$$I = \frac{U}{R} = \frac{3,3\,\mathrm{V}}{10\,\mathrm{k}\Omega} = 0,33\,\mathrm{mA}$$</div>
+<p>Bei 100 Tastern mit gleichzeitigem Drücken:
+<span class="math math-inline">$100 \times 0,33\,\mathrm{mA} = 33\,\mathrm{mA}$</span>
+– akzeptabel.</p>
+<h3 id="zusammenfassung-1">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Floating Pins sind der Feind. Pullup für
+HIGH-Default, Pulldown für LOW-Default.”</p>
+</blockquote>
+<hr />
+<h2 id="active-low-vs.-active-high">3) Active-Low vs. Active-High</h2>
+<h3 id="problemstellung-2">Problemstellung</h3>
+<p>Warum ist ein gedrückter Taster „0” und eine leuchtende LED „1”? Das
+scheint unintuitiv – müsste „aktiv” nicht immer „1” sein?</p>
+<h3 id="herleitung-die-physikalische-begründung">Herleitung: Die
+physikalische Begründung</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 15%" />
+<col style="width: 18%" />
+<col style="width: 47%" />
+</colgroup>
+<thead>
+<tr>
+<th>Typ</th>
+<th>Aktiv bei</th>
+<th>Inaktiv bei</th>
+<th>Typischer Einsatz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Active-Low</td>
+<td>0 (GND)</td>
+<td>1 (VCC)</td>
+<td>Taster mit Pullup, Reset-Signale</td>
+</tr>
+<tr>
+<td>Active-High</td>
+<td>1 (VCC)</td>
+<td>0 (GND)</td>
+<td>LEDs, Enable-Signale</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Warum Active-Low für Taster?</strong></p>
+<p>Mit Pullup ist der Ruhezustand definiert (HIGH). Der Taster muss nur
+nach GND schalten – das ist: 1. <strong>Schaltungstechnisch
+einfacher:</strong> Taster hat nur zwei Kontakte 2. <strong>Robuster
+gegen Störungen:</strong> GND ist eine „härtere” Referenz als VCC 3.
+<strong>Historisch etabliert:</strong> TTL-Logik hatte stärkere
+LOW-Treiber</p>
+<p><strong>Warum Active-High für LEDs?</strong></p>
+<p>LEDs leuchten, wenn Strom fließt – von der Anode (+) zur Kathode
+(–).</p>
+<p><strong>Schaltbild – LED Active-High:</strong></p>
+<pre><code>GPIO-Pin ────┬──── 330 Ω ────┬──── LED ────┬──── GND
+             │               │             │
+           3,3 V           ~3 V          ~2 V          0 V
+             └───────────── Spannungsabfall ──────────┘
+
+Pin = HIGH: 3,3 V → Strom fließt → LED leuchtet
+Pin = LOW:  0 V   → kein Strom   → LED aus</code></pre>
+<p><strong>Berechnung des Vorwiderstands:</strong></p>
+<div class="math math-display">$$R = \frac{U_{\mathrm{GPIO}} - U_{\mathrm{LED}}}{I_{\mathrm{LED}}} = \frac{3,3\,\mathrm{V} - 2,0\,\mathrm{V}}{5\,\mathrm{mA}} = 260\,\Omega \approx 330\,\Omega$$</div>
+<p>(Standard-Wert 330 Ω ergibt ca. 4 mA – ausreichend für sichtbares
+Leuchten)</p>
+<h3 id="anwendung-im-code">Anwendung im Code</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Button lesen (Active-Low: gedrückt = 0)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> raw <span class="op">=</span> readShiftRegister<span class="op">();</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> button1Pressed <span class="op">=</span> <span class="op">(</span>raw <span class="op">&amp;</span> <span class="bn">0x80</span><span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">;</span>  <span class="co">// Bit 7 = 0 → gedrückt</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">// LED setzen (Active-High: an = 1)</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> ledState <span class="op">=</span> <span class="bn">0x00</span><span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>led1On<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    ledState <span class="op">|=</span> <span class="bn">0x80</span><span class="op">;</span>   <span class="co">// Bit 7 = 1 → LED 1 an</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>led2On<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    ledState <span class="op">|=</span> <span class="bn">0x40</span><span class="op">;</span>   <span class="co">// Bit 6 = 1 → LED 2 an</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>writeShiftRegister<span class="op">(</span>ledState<span class="op">);</span></span></code></pre></div>
+<p><strong>Bit-Operationen erklärt:</strong></p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 40%" />
+<col style="width: 34%" />
+</colgroup>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Wirkung</th>
+<th>Beispiel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>raw &amp; 0x80</code></td>
+<td>Isoliert Bit 7</td>
+<td><code>0b10101010 &amp; 0x80 = 0x80</code></td>
+</tr>
+<tr>
+<td><code>(raw &amp; 0x80) == 0</code></td>
+<td>Prüft ob Bit 7 = 0 (Active-Low)</td>
+<td><code>0x80 == 0</code> → <code>false</code></td>
+</tr>
+<tr>
+<td><code>state |= 0x80</code></td>
+<td>Setzt Bit 7 auf 1</td>
+<td><code>0x00 |= 0x80 = 0x80</code></td>
+</tr>
+<tr>
+<td><code>state &amp;= ~0x80</code></td>
+<td>Löscht Bit 7 (setzt auf 0)</td>
+<td><code>0xFF &amp;= 0x7F = 0x7F</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="zusammenfassung-2">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Taster mit Pullup = Active-Low. LED nach
+GND = Active-High. Die Physik bestimmt die Logik.”</p>
+</blockquote>
+<hr />
+<h2 id="schieberegister-pins-multiplizieren">4) Schieberegister – Pins
+multiplizieren</h2>
+<h3 id="problemstellung-3">Problemstellung</h3>
+<p>Der ESP32-S3 hat begrenzte GPIO-Pins. Für 100 Buttons und 100 LEDs
+bräuchtest du 200 Pins – die gibt es nicht. Selbst wenn, wäre die
+Verkabelung unmöglich.</p>
+<h3 id="regel-1">Regel</h3>
+<p>Schieberegister wandeln zwischen parallelen und seriellen Daten um.
+Mit wenigen seriellen Pins steuerst du viele parallele Signale.</p>
+<h3
+id="herleitung-cd4021b-parallel-zu-seriell-buttons-lesen">Herleitung:
+CD4021B – Parallel zu Seriell (Buttons lesen)</h3>
+<p><strong>Funktionsprinzip:</strong></p>
+<pre><code>        D7  D6  D5  D4  D3  D2  D1  D0    ← 8 Buttons (parallel)
+         │   │   │   │   │   │   │   │
+         ▼   ▼   ▼   ▼   ▼   ▼   ▼   ▼
+        ┌───────────────────────────────┐
+        │         CD4021B               │
+        │    8-Bit PISO Shift Register  │
+        │                               │
+        │  PS/LOAD ───► Latch Control   │
+        │  CLK     ───► Shift Clock     │
+        │  Q7      ───► Serial Out      │
+        └───────────────────────────────┘
+                      │
+                      ▼
+                 Serial Out ──────────► ESP32 MISO (1 Pin)</code></pre>
+<p><strong>PISO = Parallel-In, Serial-Out</strong></p>
+<p><strong>Timing-Ablauf:</strong></p>
+<pre><code>        ┌─────────────────────────────────────────────────────────────┐
+PS/LOAD │████│                                                        │
+        └────┘
+             │
+             │ Parallele Eingänge werden ins Register übernommen
+             ▼
+CLK     ────────┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──────
+                └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘
+                  1     2     3     4     5     6     7     8
+                  │     │     │     │     │     │     │     │
+Q7 (Data)       D7    D6    D5    D4    D3    D2    D1    D0
+                  │     │     │     │     │     │     │     │
+                  ▼     ▼     ▼     ▼     ▼     ▼     ▼     ▼
+                Bit 7 Bit 6 Bit 5 Bit 4 Bit 3 Bit 2 Bit 1 Bit 0</code></pre>
+<p><strong>Timing-Parameter (aus Datenblatt):</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Symbol</th>
+<th>Minimum</th>
+<th>Typisch</th>
+<th>Einheit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PS/LOAD Pulsbreite</td>
+<td>t_PW</td>
+<td>180</td>
+<td>–</td>
+<td>ns</td>
+</tr>
+<tr>
+<td>Clock Frequenz</td>
+<td>f_CLK</td>
+<td>–</td>
+<td>5</td>
+<td>MHz</td>
+</tr>
+<tr>
+<td>Setup Time</td>
+<td>t_SU</td>
+<td>50</td>
+<td>–</td>
+<td>ns</td>
+</tr>
+<tr>
+<td>Hold Time</td>
+<td>t_H</td>
+<td>50</td>
+<td>–</td>
+<td>ns</td>
+</tr>
+</tbody>
+</table>
+<p>Bei 500 kHz SPI-Frequenz (2 µs Periode) sind wir weit im sicheren
+Bereich.</p>
+<h3
+id="herleitung-74hc595-seriell-zu-parallel-leds-schreiben">Herleitung:
+74HC595 – Seriell zu Parallel (LEDs schreiben)</h3>
+<p><strong>Funktionsprinzip:</strong></p>
+<pre><code>ESP32 MOSI (1 Pin) ──────────► Serial In
+                                   │
+                                   ▼
+        ┌───────────────────────────────┐
+        │         74HC595               │
+        │    8-Bit SIPO Shift Register  │
+        │                               │
+        │  SRCLK  ───► Shift Clock      │
+        │  RCLK   ───► Latch Clock      │
+        │  OE     ───► Output Enable    │
+        └───────────────────────────────┘
+         │   │   │   │   │   │   │   │
+         ▼   ▼   ▼   ▼   ▼   ▼   ▼   ▼
+        Q7  Q6  Q5  Q4  Q3  Q2  Q1  Q0    ← 8 LEDs (parallel)</code></pre>
+<p><strong>SIPO = Serial-In, Parallel-Out</strong></p>
+<p><strong>Timing-Ablauf:</strong></p>
+<pre><code>Data (MOSI)  ──D7──D6──D5──D4──D3──D2──D1──D0────────────────────
+                │    │    │    │    │    │    │    │
+SRCLK        ───┴────┴────┴────┴────┴────┴────┴────┴─────────────
+                      (8 Shift-Pulse)
+                                                    │
+RCLK (Latch) ───────────────────────────────────────┴───┐  ┌─────
+                                                        └──┘
+                                                     Latch-Puls
+Outputs      ──────────── alte Werte ──────────────────┬── neue ─
+                                                       │
+                                        Daten werden übernommen</code></pre>
+<p><strong>Warum der Latch?</strong></p>
+<p>Ohne Latch würden die Ausgänge während des Schiebens durchlaufen –
+die LEDs würden für Mikrosekunden falsche Muster zeigen (Flackern). Der
+Latch hält die alten Werte stabil, bis alle 8 neuen Bits eingeschoben
+sind.</p>
+<h3 id="anwendung-kaskadierung-für-mehr-kanäle">Anwendung: Kaskadierung
+für mehr Kanäle</h3>
+<p>Mehrere Schieberegister werden in Reihe geschaltet:</p>
+<pre><code>CD4021 Kaskade (Buttons lesen):
+───────────────────────────────────────────────────────────────────
+Button 1-8      Button 9-16     Button 17-24           Button 97-100
+    │               │               │                      │
+    ▼               ▼               ▼                      ▼
+┌────────┐     ┌────────┐     ┌────────┐              ┌────────┐
+│CD4021  │────►│CD4021  │────►│CD4021  │── ... ──►   │CD4021  │──► MISO
+│ IC #0  │ Q7  │ IC #1  │ Q7  │ IC #2  │              │ IC #12 │
+└────────┘     └────────┘     └────────┘              └────────┘
+                                                           │
+                                                        ESP32
+
+74HC595 Kaskade (LEDs schreiben):
+───────────────────────────────────────────────────────────────────
+                                                        ESP32
+                                                           │
+                                                        MOSI
+                                                           │
+┌────────┐     ┌────────┐     ┌────────┐              ┌────────┐
+│74HC595 │◄────│74HC595 │◄────│74HC595 │◄── ... ◄────│74HC595 │
+│ IC #0  │ SER │ IC #1  │ SER │ IC #2  │              │ IC #12 │
+└────────┘     └────────┘     └────────┘              └────────┘
+    │               │               │                      │
+    ▼               ▼               ▼                      ▼
+LED 1-8         LED 9-16        LED 17-24              LED 97-100</code></pre>
+<p><strong>Pin-Einsparung:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Kanäle</th>
+<th>Direkte GPIOs</th>
+<th>Mit Schieberegistern</th>
+<th>Einsparung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td>8</td>
+<td>4 (SCK, MISO, PS, LATCH)</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>16</td>
+<td>16</td>
+<td>4</td>
+<td>75%</td>
+</tr>
+<tr>
+<td>100</td>
+<td>100</td>
+<td>5 (+ MOSI)</td>
+<td>95%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="zusammenfassung-3">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „CD4021 = Einlesen (Parallel→Seriell),
+74HC595 = Ausgeben (Seriell→Parallel). Kaskadieren = Daisy-Chain.”</p>
+</blockquote>
+<hr />
+<h2 id="spi-der-datenbus">5) SPI – Der Datenbus</h2>
+<h3 id="problemstellung-4">Problemstellung</h3>
+<p>Wie überträgst du Daten zwischen ESP32 und Schieberegistern synchron
+und zuverlässig? Die Chips müssen wissen, wann ein Bit gültig ist.</p>
+<h3 id="regel-2">Regel</h3>
+<p>SPI (Serial Peripheral Interface) ist ein synchroner Bus – ein
+gemeinsamer Takt (SCK) synchronisiert alle Übertragungen.</p>
+<h3 id="herleitung-spi-signale">Herleitung: SPI-Signale</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 24%" />
+<col style="width: 18%" />
+<col style="width: 47%" />
+</colgroup>
+<thead>
+<tr>
+<th>Signal</th>
+<th>Name</th>
+<th>Richtung</th>
+<th>Funktion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCK</td>
+<td>Serial Clock</td>
+<td>Master → Slave</td>
+<td>Taktsignal (synchronisiert Übertragung)</td>
+</tr>
+<tr>
+<td>MOSI</td>
+<td>Master Out Slave In</td>
+<td>Master → Slave</td>
+<td>Daten vom Master zum Slave</td>
+</tr>
+<tr>
+<td>MISO</td>
+<td>Master In Slave Out</td>
+<td>Slave → Master</td>
+<td>Daten vom Slave zum Master</td>
+</tr>
+<tr>
+<td>CS/SS</td>
+<td>Chip Select</td>
+<td>Master → Slave</td>
+<td>Welcher Slave ist aktiv (Active-Low)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Timing-Diagramm (Vollduplex):</strong></p>
+<pre><code>SCK     ────┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌──┐  ┌─────
+            └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘  └──┘
+               ↑     ↑     ↑     ↑     ↑     ↑     ↑     ↑
+            Sample-Zeitpunkte (abhängig von Mode)
+
+MOSI    ──┬─D7─┬─D6─┬─D5─┬─D4─┬─D3─┬─D2─┬─D1─┬─D0─┬──────────
+          └────┴────┴────┴────┴────┴────┴────┴────┘
+              Master sendet zu Slave
+
+MISO    ──┬─D7─┬─D6─┬─D5─┬─D4─┬─D3─┬─D2─┬─D1─┬─D0─┬──────────
+          └────┴────┴────┴────┴────┴────┴────┴────┘
+              Slave sendet zu Master (gleichzeitig!)</code></pre>
+<h3 id="herleitung-spi-modi-cpol-und-cpha">Herleitung: SPI-Modi (CPOL
+und CPHA)</h3>
+<p><strong>Problem:</strong> Wann genau wird ein Bit gelesen – bei
+steigender oder fallender Flanke? Das hängt von zwei Parametern ab.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPOL</td>
+<td>Clock Polarity – Ruhezustand des Takts</td>
+</tr>
+<tr>
+<td>CPHA</td>
+<td>Clock Phase – bei welcher Flanke wird gesampelt</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Die vier Modi:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">Mode</th>
+<th style="text-align: center;">CPOL</th>
+<th style="text-align: center;">CPHA</th>
+<th>Clock Idle</th>
+<th>Sample bei</th>
+<th>Shift bei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td>LOW</td>
+<td>Rising Edge ↑</td>
+<td>Falling Edge ↓</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td>LOW</td>
+<td>Falling Edge ↓</td>
+<td>Rising Edge ↑</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td>HIGH</td>
+<td>Falling Edge ↓</td>
+<td>Rising Edge ↑</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td>HIGH</td>
+<td>Rising Edge ↑</td>
+<td>Falling Edge ↓</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Visualisierung Mode 0 vs. Mode 1:</strong></p>
+<pre><code>Mode 0 (CPOL=0, CPHA=0):
+────────────────────────────────────────────────────────────
+SCK     ────┐  ┌──┐  ┌──┐  ┌──────
+            └──┘  └──┘  └──┘
+               ↑     ↑     ↑
+            Sample (Rising Edge)
+
+Mode 1 (CPOL=0, CPHA=1):
+────────────────────────────────────────────────────────────
+SCK     ────┐  ┌──┐  ┌──┐  ┌──────
+            └──┘  └──┘  └──┘
+            ↓     ↓     ↓
+         Sample (Falling Edge)</code></pre>
+<h3 id="anwendung-im-projekt">Anwendung im Projekt</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>IC</th>
+<th style="text-align: center;">Mode</th>
+<th>Frequenz</th>
+<th>Begründung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CD4021B</td>
+<td style="text-align: center;">1</td>
+<td>500 kHz</td>
+<td>Datenblatt empfiehlt Mode 1/2</td>
+</tr>
+<tr>
+<td>74HC595</td>
+<td style="text-align: center;">0</td>
+<td>1 MHz</td>
+<td>Standard-Mode, weit verbreitet</td>
+</tr>
+</tbody>
+</table>
+<p><strong>ESP32-S3 Konfiguration:</strong></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">// CD4021 (Button-Input)</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>spi_device_interface_config_t cd4021_cfg <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>clock_speed_hz <span class="op">=</span> <span class="dv">500000</span><span class="op">,</span>    <span class="co">// 500 kHz</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>mode <span class="op">=</span> <span class="dv">1</span><span class="op">,</span>                   <span class="co">// CPOL=0, CPHA=1</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>spics_io_num <span class="op">=</span> <span class="op">-</span><span class="dv">1</span><span class="op">,</span>          <span class="co">// Manuelles CS (PS/LOAD)</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>queue_size <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">// 74HC595 (LED-Output)</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>spi_device_interface_config_t hc595_cfg <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>clock_speed_hz <span class="op">=</span> <span class="dv">1000000</span><span class="op">,</span>   <span class="co">// 1 MHz</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>mode <span class="op">=</span> <span class="dv">0</span><span class="op">,</span>                   <span class="co">// CPOL=0, CPHA=0</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>spics_io_num <span class="op">=</span> <span class="op">-</span><span class="dv">1</span><span class="op">,</span>          <span class="co">// Manuelles CS (LATCH)</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>queue_size <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div>
+<p><strong>Konsequenz:</strong> Wenn du den falschen Modus verwendest,
+liest du Müll oder die Daten sind um ein Bit verschoben. Das äußert sich
+oft als „Button 1 triggert Button 2”.</p>
+<h3 id="zusammenfassung-4">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Mode im Datenblatt nachschlagen, nie
+raten. Ein falsches Mode-Bit = alles verschoben.”</p>
+</blockquote>
+<hr />
+<h2 id="timing-determinismus-ist-pflicht">6) Timing – Determinismus ist
+Pflicht</h2>
+<h3 id="problemstellung-5">Problemstellung</h3>
+<p>Embedded-Software muss in definierten Zeitfenstern reagieren. Wenn du
+eine Deadline verpasst, funktioniert das System nicht – Buttons
+reagieren nicht, LEDs flackern, Kommunikation bricht ab.</p>
+<h3 id="herleitung-timing-budget">Herleitung: Timing-Budget</h3>
+<p><strong>Scan-Intervall:</strong> 10 ms (100 Hz) – schnell genug für
+Benutzerinteraktion, langsam genug für Debouncing.</p>
+<pre><code>┌──────────────────────────────────────────────────────────────┐
+│  10 ms Scan-Intervall (10.000 µs)                            │
+│                                                              │
+│  ├── CD4021 read ──┤  20 µs                                  │
+│  ├── Debounce ─────┤   5 µs                                  │
+│  ├── Logic ────────┤   5 µs                                  │
+│  ├── HC595 write ──┤  20 µs                                  │
+│  ├─────────────────────────────────── Reserve ──────────────┤│
+│                                                  9.950 µs    │
+└──────────────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Timing-Budget Berechnung:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Operation</th>
+<th>Dauer</th>
+<th>Anteil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CD4021 read (2 Bytes)</td>
+<td>~20 µs</td>
+<td>0,2%</td>
+</tr>
+<tr>
+<td>Debounce (10 Buttons)</td>
+<td>~5 µs</td>
+<td>0,05%</td>
+</tr>
+<tr>
+<td>Selection-Logik</td>
+<td>~5 µs</td>
+<td>0,05%</td>
+</tr>
+<tr>
+<td>HC595 write (2 Bytes)</td>
+<td>~20 µs</td>
+<td>0,2%</td>
+</tr>
+<tr>
+<td><strong>Summe</strong></td>
+<td>~50 µs</td>
+<td><strong>0,5%</strong></td>
+</tr>
+<tr>
+<td><strong>Reserve</strong></td>
+<td>~9.950 µs</td>
+<td><strong>99,5%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Bei 100 Kanälen (13 Bytes):</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Operation</th>
+<th>Dauer</th>
+<th>Anteil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CD4021 read (13 Bytes)</td>
+<td>~130 µs</td>
+<td>1,3%</td>
+</tr>
+<tr>
+<td>Debounce (100 Buttons)</td>
+<td>~50 µs</td>
+<td>0,5%</td>
+</tr>
+<tr>
+<td>Selection-Logik</td>
+<td>~10 µs</td>
+<td>0,1%</td>
+</tr>
+<tr>
+<td>HC595 write (13 Bytes)</td>
+<td>~130 µs</td>
+<td>1,3%</td>
+</tr>
+<tr>
+<td><strong>Summe</strong></td>
+<td>~320 µs</td>
+<td><strong>3,2%</strong></td>
+</tr>
+<tr>
+<td><strong>Reserve</strong></td>
+<td>~9.680 µs</td>
+<td><strong>96,8%</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="anwendung-was-zerstört-timing">Anwendung: Was zerstört
+Timing?</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Gut ✓</th>
+<th>Schlecht ✗</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vTaskDelayUntil()</code> (FreeRTOS)</td>
+<td><code>delay()</code> im Hot-Path</td>
+</tr>
+<tr>
+<td>Logging bei Zustandsänderung</td>
+<td>Logging pro Scan-Zyklus</td>
+</tr>
+<tr>
+<td>Kurze SPI-Transfers</td>
+<td>Blockierende UART-Ausgabe</td>
+</tr>
+<tr>
+<td>Interrupt-basierte Ereignisse</td>
+<td>Polling in Busy-Loop</td>
+</tr>
+</tbody>
+</table>
+<h3 id="herleitung-uart-overhead">Herleitung: UART-Overhead</h3>
+<p><strong>Berechnung:</strong></p>
+<p>Bei 115200 Baud dauert ein Zeichen:</p>
+<div class="math math-display">$$t_{\mathrm{char}} = \frac{10 \text{ Bits}}{115200 \text{ Baud}} = 86,8\,\mu\mathrm{s} \approx 87\,\mu\mathrm{s}$$</div>
+<p>(10 Bits = 1 Start + 8 Daten + 1 Stop)</p>
+<p>Eine Debug-Zeile mit 50 Zeichen:</p>
+<div class="math math-display">$$t_{\mathrm{line}} = 50 \times 87\,\mu\mathrm{s} = 4,35\,\mathrm{ms}$$</div>
+<p>Das sind <strong>43,5% des 10-ms-Intervalls</strong> – für eine
+einzige Debug-Zeile!</p>
+<p><strong>Konsequenz:</strong> Debug-Ausgaben nur bei Events
+(Zustandsänderungen), nie pro Scan-Zyklus.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ✗ SCHLECHT: Logging pro Zyklus</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> scanButtons<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> raw <span class="op">=</span> readCD4021<span class="op">();</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    Serial<span class="op">.</span>printf<span class="op">(</span><span class="st">&quot;RAW: </span><span class="sc">%02X\n</span><span class="st">&quot;</span><span class="op">,</span> raw<span class="op">);</span>  <span class="co">// 4+ ms blockiert!</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    processButtons<span class="op">(</span>raw<span class="op">);</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">// ✓ GUT: Logging nur bei Änderung</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> scanButtons<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> raw <span class="op">=</span> readCD4021<span class="op">();</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>raw <span class="op">!=</span> lastRaw<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        Serial<span class="op">.</span>printf<span class="op">(</span><span class="st">&quot;RAW changed: </span><span class="sc">%02X\n</span><span class="st">&quot;</span><span class="op">,</span> raw<span class="op">);</span>  <span class="co">// Selten</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        lastRaw <span class="op">=</span> raw<span class="op">;</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>    processButtons<span class="op">(</span>raw<span class="op">);</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="zusammenfassung-5">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Im Hot-Path kein printf(). Messe Timing,
+rechne vorher, teste danach.”</p>
+</blockquote>
+<hr />
+<h2 id="debouncing-mechanisches-prellen-filtern">7) Debouncing –
+Mechanisches Prellen filtern</h2>
+<h3 id="problemstellung-6">Problemstellung</h3>
+<p>Mechanische Taster prellen. Ein einzelner Druck erzeugt mehrere
+Flanken in wenigen Millisekunden – ein Mikrokontroller sieht statt einem
+Button-Druck 3–20 Einzelevents.</p>
+<p><strong>Visualisierung:</strong></p>
+<pre><code>Ideal (erwartet):
+────────────┐                    ┌────────────────────
+            │                    │
+            └────────────────────┘
+              ◄── gedrückt ────►
+
+Real (gemessen):
+────────────┐ ┌┐ ┌┐              ┌┐ ┌┐┌───────────────
+            │ ││ ││              ││ │││
+            └─┘└─┘└──────────────┘└─┘└┘
+              ◄──── Prellen ────►  ◄─ Prellen beim Loslassen</code></pre>
+<h3 id="herleitung-prellverhalten">Herleitung: Prellverhalten</h3>
+<p><strong>Messwerte (typisch für taktile Mikrotaster):</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Minimum</th>
+<th>Typisch</th>
+<th>Maximum</th>
+<th>Einheit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prellzeit</td>
+<td>5</td>
+<td>20</td>
+<td>50</td>
+<td>ms</td>
+</tr>
+<tr>
+<td>Anzahl Prellvorgänge</td>
+<td>3</td>
+<td>10</td>
+<td>20</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Prellperiode</td>
+<td>0,5</td>
+<td>2</td>
+<td>5</td>
+<td>ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Konsequenz ohne Debouncing:</strong></p>
+<pre><code>User drückt Button 1 einmal
+→ Firmware sieht: Press, Release, Press, Release, Press...
+→ Selection toggelt 10× in 50 ms
+→ Endresultat: zufällig an oder aus</code></pre>
+<h3 id="anwendung-software-debounce-algorithmus">Anwendung:
+Software-Debounce-Algorithmus</h3>
+<p><strong>Prinzip:</strong> Ein neuer Zustand wird erst akzeptiert,
+wenn er für N aufeinanderfolgende Samples stabil bleibt.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> stable<span class="op">;</span>     <span class="co">// Letzter stabiler Zustand (0 oder 1)</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> counter<span class="op">;</span>    <span class="co">// Zähler für aufeinanderfolgende gleiche Samples</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> DebounceState<span class="op">;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co">/**</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"> * Aktualisiert den Debounce-Zustand und erkennt Press-Edges.</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"> *</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co"> * </span><span class="an">@param</span><span class="co"> </span><span class="cv">state</span><span class="co">     Zeiger auf Debounce-Zustand</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co"> * </span><span class="an">@param</span><span class="co"> </span><span class="cv">current</span><span class="co">   Aktueller Rohwert (0 oder 1)</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"> * </span><span class="an">@param</span><span class="co"> </span><span class="cv">threshold</span><span class="co"> Anzahl stabiler Samples für Zustandswechsel</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co"> * </span><span class="an">@return</span><span class="co"> true wenn Press-Edge erkannt (war HIGH, ist jetzt stabil LOW)</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co"> */</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> debounce_update<span class="op">(</span>DebounceState<span class="op">*</span> state<span class="op">,</span> <span class="dt">uint8_t</span> current<span class="op">,</span> <span class="dt">uint8_t</span> threshold<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Fall 1: Rohwert == stabiler Zustand → bestätigt, Reset</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>current <span class="op">==</span> state<span class="op">-&gt;</span>stable<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>        state<span class="op">-&gt;</span>counter <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Fall 2: Rohwert != stabiler Zustand → Zähler erhöhen</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    state<span class="op">-&gt;</span>counter<span class="op">++;</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Fall 3: Threshold erreicht → neuer stabiler Zustand</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>state<span class="op">-&gt;</span>counter <span class="op">&gt;=</span> threshold<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>        <span class="dt">bool</span> wasHigh <span class="op">=</span> <span class="op">(</span>state<span class="op">-&gt;</span>stable <span class="op">!=</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>        <span class="dt">bool</span> isLow   <span class="op">=</span> <span class="op">(</span>current <span class="op">==</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>        state<span class="op">-&gt;</span>stable <span class="op">=</span> current<span class="op">;</span></span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>        state<span class="op">-&gt;</span>counter <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Press-Edge bei Active-Low: war HIGH, ist jetzt LOW</span></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">(</span>wasHigh <span class="op">&amp;&amp;</span> isLow<span class="op">);</span></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span>  <span class="co">// Noch nicht stabil genug</span></span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="herleitung-threshold-berechnung">Herleitung:
+Threshold-Berechnung</h3>
+<p><strong>Formel:</strong></p>
+<div class="math math-display">$$\text{threshold} = \left\lceil \frac{t_{\text{debounce}}}{t_{\mathrm{scan}}} \right\rceil$$</div>
+<p><strong>Beispiel:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Gewünschte Debounce-Zeit</th>
+<th>Scan-Intervall</th>
+<th>Threshold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30 ms</td>
+<td>10 ms</td>
+<td>3</td>
+</tr>
+<tr>
+<td>50 ms</td>
+<td>10 ms</td>
+<td>5</td>
+</tr>
+<tr>
+<td>50 ms</td>
+<td>5 ms</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<p>Bei 10 ms Scan-Intervall und 50 ms gewünschter Debounce-Zeit:</p>
+<div class="math math-display">$$\text{threshold} = \frac{50\,\mathrm{ms}}{10\,\mathrm{ms}} = 5$$</div>
+<h3 id="anwendung-zustandsdiagramm">Anwendung: Zustandsdiagramm</h3>
+<pre><code>                    ┌─────────────────────────────────┐
+                    │                                 │
+                    ▼                                 │
+              ┌──────────┐                            │
+     ┌───────►│  STABLE  │◄───────┐                   │
+     │        │ (HIGH)   │        │                   │
+     │        └────┬─────┘        │                   │
+     │             │              │                   │
+     │     current == 0           │ current == 1      │
+     │             │              │ (counter &lt; thres) │
+     │             ▼              │                   │
+     │        ┌──────────┐        │                   │
+     │        │ COUNTING │────────┘                   │
+     │        │ (to LOW) │                            │
+     │        └────┬─────┘                            │
+     │             │                                  │
+     │     counter &gt;= threshold                       │
+     │             │                                  │
+     │             ▼                                  │
+     │        ┌──────────┐                            │
+     └────────│  STABLE  │────────────────────────────┘
+              │ (LOW)    │       current == 1, counter &gt;= threshold
+              └──────────┘       → Release-Edge (nicht verwendet)
+                    │
+                    │ current == 0
+                    │
+                    └─────────────────► Press-Edge erkannt!</code></pre>
+<h3 id="zusammenfassung-6">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Debounce = Zeitfilter. Threshold =
+Debounce-Zeit / Scan-Intervall. Nur stabile Zustände zählen.”</p>
+</blockquote>
+<hr />
+<h2 id="one-hot-encoding-die-invariante">8) One-Hot-Encoding – Die
+Invariante</h2>
+<h3 id="problemstellung-7">Problemstellung</h3>
+<p>Bei einem Selection Panel soll immer genau eine Auswahl aktiv sein
+(oder keine). Wie stellst du sicher, dass niemals zwei LEDs gleichzeitig
+leuchten – auch bei Bugs oder Race Conditions?</p>
+<h3 id="regel-3">Regel</h3>
+<p>One-Hot ist eine Invariante, die durch Konstruktion garantiert wird:
+Zuerst alle Bits löschen, dann genau eines setzen.</p>
+<h3 id="herleitung-one-hot-prinzip">Herleitung: One-Hot-Prinzip</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>selectedId</th>
+<th>Binär (2 Bytes, MSB-first)</th>
+<th>Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>00000000 00000000</code></td>
+<td><code>0x00 0x00</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>10000000 00000000</code></td>
+<td><code>0x80 0x00</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>01000000 00000000</code></td>
+<td><code>0x40 0x00</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>00000001 00000000</code></td>
+<td><code>0x01 0x00</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>00000000 10000000</code></td>
+<td><code>0x00 0x80</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>00000000 01000000</code></td>
+<td><code>0x00 0x40</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Invariante:</strong> Zu jedem Zeitpunkt gilt:
+<code>popcount(ledState) ≤ 1</code></p>
+<p>(popcount = Anzahl gesetzter Bits)</p>
+<h3 id="anwendung-sichere-implementierung">Anwendung: Sichere
+Implementierung</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">/**</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"> * Setzt LED-Zustand im One-Hot-Format.</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co"> *</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"> * Garantiert: Entweder 0 oder genau 1 Bit gesetzt.</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"> *</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co"> * </span><span class="an">@param</span><span class="co"> </span><span class="cv">selectedId</span><span class="co">  0 = alle aus, 1..LED_COUNT = diese LED an</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"> * </span><span class="an">@param</span><span class="co"> </span><span class="cv">ledState</span><span class="co">    Output-Array (wird überschrieben)</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co"> * </span><span class="an">@param</span><span class="co"> </span><span class="cv">bytes</span><span class="co">       Größe des Arrays</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="co"> */</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> setOneHot<span class="op">(</span><span class="dt">uint8_t</span> selectedId<span class="op">,</span> <span class="dt">uint8_t</span><span class="op">*</span> ledState<span class="op">,</span> <span class="dt">size_t</span> bytes<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Schritt 1: ALLE Bits löschen (garantiert sauberen Zustand)</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    memset<span class="op">(</span>ledState<span class="op">,</span> <span class="bn">0x00</span><span class="op">,</span> bytes<span class="op">);</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Schritt 2: Validierung der ID</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>selectedId <span class="op">&lt;</span> <span class="dv">1</span> <span class="op">||</span> selectedId <span class="op">&gt;</span> LED_COUNT<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span><span class="op">;</span>  <span class="co">// Alle LEDs aus (bereits durch memset)</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Schritt 3: Genau EIN Bit setzen</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> byteIdx <span class="op">=</span> <span class="op">(</span>selectedId <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">8</span><span class="op">;</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> bitPos  <span class="op">=</span> <span class="dv">7</span> <span class="op">-</span> <span class="op">((</span>selectedId <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">%</span> <span class="dv">8</span><span class="op">);</span>  <span class="co">// MSB-first</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>    ledState<span class="op">[</span>byteIdx<span class="op">]</span> <span class="op">|=</span> <span class="op">(</span><span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPos<span class="op">);</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Schritt 4: Ungültige Bits im letzten Byte maskieren</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>    ledState<span class="op">[</span>bytes <span class="op">-</span> <span class="dv">1</span><span class="op">]</span> <span class="op">&amp;=</span> LED_LAST_MASK<span class="op">;</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="herleitung-warum-memset-zuerst">Herleitung: Warum memset
+zuerst?</h3>
+<p><strong>Alternativer Ansatz (unsicher):</strong></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ✗ GEFÄHRLICH: Race Condition möglich</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> setOneHot_UNSAFE<span class="op">(</span><span class="dt">uint8_t</span> oldId<span class="op">,</span> <span class="dt">uint8_t</span> newId<span class="op">,</span> <span class="dt">uint8_t</span><span class="op">*</span> ledState<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Schritt 1: Altes Bit löschen</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    clearBit<span class="op">(</span>ledState<span class="op">,</span> oldId<span class="op">);</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Schritt 2: Neues Bit setzen</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    setBit<span class="op">(</span>ledState<span class="op">,</span> newId<span class="op">);</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Problem:</strong> Zwischen Schritt 1 und 2 könnte ein
+Interrupt die LED-Daten senden – der Empfänger sieht kurz 0 gesetzte
+Bits.</p>
+<p><strong>Oder schlimmer:</strong> Ein Bug setzt <code>oldId</code>
+falsch, und plötzlich hast du 2 Bits gesetzt.</p>
+<p><strong>Mit memset + einem |= ist die Invariante
+garantiert:</strong></p>
+<ol type="1">
+<li><code>memset</code> → 0 Bits gesetzt</li>
+<li><code>|=</code> → genau 1 Bit gesetzt</li>
+<li>Kein Zustand mit 2+ Bits möglich</li>
+</ol>
+<h3 id="anwendung-bit-position-berechnung-msb-first">Anwendung:
+Bit-Position-Berechnung (MSB-first)</h3>
+<pre><code>selectedId = 9, LED_COUNT = 10, LED_BYTES = 2
+
+byteIdx = (9 - 1) / 8 = 8 / 8 = 1  → Byte[1]
+bitPos  = 7 - ((9 - 1) % 8)
+        = 7 - (8 % 8)
+        = 7 - 0
+        = 7                        → Bit 7 (MSB)
+
+ledState[1] |= (1u &lt;&lt; 7) = 0b10000000 = 0x80
+
+Ergebnis: Byte[0] = 0x00, Byte[1] = 0x80</code></pre>
+<h3 id="zusammenfassung-7">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „One-Hot = Clear-then-Set. memset(0)
+garantiert die Invariante, |= setzt genau ein Bit.”</p>
+</blockquote>
+<hr />
+<h2 id="ssot-single-source-of-truth">9) SSOT – Single Source of
+Truth</h2>
+<h3 id="problemstellung-8">Problemstellung</h3>
+<p>Wenn Pin-Definitionen in drei Dateien stehen (main.cpp, driver.cpp,
+test.cpp) und du eine änderst, sind die anderen falsch. Das System
+verhält sich unerklärlich.</p>
+<h3 id="regel-4">Regel</h3>
+<p>Jede Information hat genau eine autoritative Quelle. Alle anderen
+Stellen referenzieren diese Quelle.</p>
+<h3 id="anwendung-im-projekt-1">Anwendung im Projekt</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 43%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspekt</th>
+<th>SSOT-Datei</th>
+<th>Konsumenten</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pin-Zuordnung</td>
+<td><code>firmware/include/hw/board_pins.h</code></td>
+<td>hal/, drivers/</td>
+</tr>
+<tr>
+<td>Kanalanzahl, Masken</td>
+<td><code>firmware/include/hw/io_counts.h</code></td>
+<td>logic/, drivers/, tests</td>
+</tr>
+<tr>
+<td>SPI-Parameter</td>
+<td><code>firmware/include/hw/spi_params.h</code></td>
+<td>hal/spi_bus.cpp</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Beispiel – io_counts.h:</strong></p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">// firmware/include/hw/io_counts.h</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="co">// SSOT für Kanalanzahl – bei Änderung nur hier editieren!</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#define BTN_COUNT       </span><span class="dv">10</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_COUNT       </span><span class="dv">10</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Abgeleitete Werte (automatisch korrekt bei Änderung von COUNT)</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="pp">#define BTN_BYTES       </span><span class="op">((</span><span class="pp">BTN_COUNT </span><span class="op">+</span><span class="pp"> </span><span class="dv">7</span><span class="op">)</span><span class="pp"> </span><span class="op">/</span><span class="pp"> </span><span class="dv">8</span><span class="op">)</span><span class="pp">   </span><span class="co">// = 2</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_BYTES       </span><span class="op">((</span>LED_COUNT<span class="pp"> </span><span class="op">+</span><span class="pp"> </span><span class="dv">7</span><span class="op">)</span><span class="pp"> </span><span class="op">/</span><span class="pp"> </span><span class="dv">8</span><span class="op">)</span><span class="pp">   </span><span class="co">// = 2</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co">// Maske für gültige Bits im letzten Byte</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Bei 10 LEDs: 16 Bits verfügbar, 10 genutzt</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Byte[1]: Bits 7, 6 gültig → Maske = 0xC0</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_LAST_MASK   </span><span class="bn">0xC0</span></span></code></pre></div>
+<h3 id="herleitung-änderung-von-10-auf-100-kanäle">Herleitung: Änderung
+von 10 auf 100 Kanäle</h3>
+<p><strong>Änderungen in io_counts.h:</strong></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define BTN_COUNT       </span><span class="dv">100</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_COUNT       </span><span class="dv">100</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co">// BTN_BYTES = (100 + 7) / 8 = 13 (automatisch)</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co">// LED_BYTES = (100 + 7) / 8 = 13 (automatisch)</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">// LED_LAST_MASK muss manuell berechnet werden:</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co">// 100 % 8 = 4 → Bits 7, 6, 5, 4 gültig → Maske = 0xF0</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_LAST_MASK   </span><span class="bn">0xF0</span></span></code></pre></div>
+<p><strong>Keine weiteren Änderungen nötig in:</strong> - Treiber-Code
+(nutzt <code>BTN_BYTES</code>, <code>LED_BYTES</code>) - Logik-Code
+(nutzt <code>BTN_COUNT</code>, <code>LED_COUNT</code>) - Test-Code
+(inkludiert io_counts.h)</p>
+<h3 id="zusammenfassung-8">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Eine Zahl, eine Stelle. Änderst du SSOT,
+änderst du überall.”</p>
+</blockquote>
+<hr />
+<h2 id="test-strategie-vertrauen-durch-verifikation">10) Test-Strategie
+– Vertrauen durch Verifikation</h2>
+<h3 id="problemstellung-9">Problemstellung</h3>
+<p>Embedded-Bugs sind schwer zu debuggen. Du siehst nicht, was auf der
+Leitung passiert. Ohne Oszilloskop oder Logic Analyzer ist Fehlersuche
+Raterei.</p>
+<h3 id="regel-5">Regel</h3>
+<p>Zweistufige Test-Strategie: Logik isoliert testen (Unit-Tests), dann
+Hardware verifizieren (E2E-Tests).</p>
+<h3 id="anwendung-unit-tests-logik-isoliert">Anwendung: Unit-Tests
+(Logik isoliert)</h3>
+<p><strong>Befehl:</strong></p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pio</span> test <span class="at">-d</span> firmware <span class="at">-e</span> seeed_xiao_esp32s3_test <span class="at">-v</span></span></code></pre></div>
+<p><strong>Was wird getestet:</strong> - Debounce-Algorithmus (filtert
+Prellen korrekt?) - Selection-Logik (One-Hot-Invariante garantiert?) -
+Bit-Mapping (ID → Byte/Bit korrekt?)</p>
+<p><strong>Beispiel-Test:</strong></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> test_debounce_filters_noise<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    DebounceState state <span class="op">=</span> <span class="op">{.</span>stable <span class="op">=</span> <span class="dv">1</span><span class="op">,</span> <span class="op">.</span>counter <span class="op">=</span> <span class="dv">0</span><span class="op">};</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Simuliere Prellen: 1 → 0 → 1 → 0 → 0 → 0</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_FALSE<span class="op">(</span>debounce_update<span class="op">(&amp;</span>state<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">3</span><span class="op">));</span>  <span class="co">// counter = 1</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_FALSE<span class="op">(</span>debounce_update<span class="op">(&amp;</span>state<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">));</span>  <span class="co">// counter = 0 (reset)</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_FALSE<span class="op">(</span>debounce_update<span class="op">(&amp;</span>state<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">3</span><span class="op">));</span>  <span class="co">// counter = 1</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_FALSE<span class="op">(</span>debounce_update<span class="op">(&amp;</span>state<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">3</span><span class="op">));</span>  <span class="co">// counter = 2</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_TRUE<span class="op">(</span>debounce_update<span class="op">(&amp;</span>state<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">3</span><span class="op">));</span>   <span class="co">// counter = 3 → Edge!</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_EQUAL<span class="op">(</span><span class="dv">0</span><span class="op">,</span> state<span class="op">.</span>stable<span class="op">);</span>  <span class="co">// Neuer stabiler Zustand</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> test_oneHot_sets_single_bit<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> ledState<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="bn">0xFF</span><span class="op">,</span> <span class="bn">0xFF</span><span class="op">};</span>  <span class="co">// Absichtlich &quot;verschmutzt&quot;</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>    setOneHot<span class="op">(</span><span class="dv">1</span><span class="op">,</span> ledState<span class="op">,</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_EQUAL_HEX8<span class="op">(</span><span class="bn">0x80</span><span class="op">,</span> ledState<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_EQUAL_HEX8<span class="op">(</span><span class="bn">0x00</span><span class="op">,</span> ledState<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    setOneHot<span class="op">(</span><span class="dv">10</span><span class="op">,</span> ledState<span class="op">,</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_EQUAL_HEX8<span class="op">(</span><span class="bn">0x00</span><span class="op">,</span> ledState<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_EQUAL_HEX8<span class="op">(</span><span class="bn">0x40</span><span class="op">,</span> ledState<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>    setOneHot<span class="op">(</span><span class="dv">0</span><span class="op">,</span> ledState<span class="op">,</span> <span class="dv">2</span><span class="op">);</span>  <span class="co">// Alle aus</span></span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_EQUAL_HEX8<span class="op">(</span><span class="bn">0x00</span><span class="op">,</span> ledState<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_EQUAL_HEX8<span class="op">(</span><span class="bn">0x00</span><span class="op">,</span> ledState<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Vorteil:</strong> Läuft in Sekunden, keine Hardware nötig.
+Schnelles Feedback bei Refactoring.</p>
+<h3 id="anwendung-e2e-tests-hardware-verifiziert">Anwendung: E2E-Tests
+(Hardware verifiziert)</h3>
+<p><strong>Befehl:</strong></p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pio</span> test <span class="at">-d</span> firmware <span class="at">-e</span> seeed_xiao_esp32s3_e2e <span class="at">-f</span> test_e2e_hw <span class="at">-v</span></span></code></pre></div>
+<p><strong>Was wird getestet:</strong> - SPI-Timing (Daten kommen
+korrekt an?) - Pin-Zuordnung (Button 1 → Bit 7 von Byte 0?) -
+LED-Mapping (selectedId=5 → LED 5 leuchtet?)</p>
+<p><strong>Typischer Ablauf (interaktiv):</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Schritt</th>
+<th>Aktion</th>
+<th>Erwartung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Nichts drücken (Idle)</td>
+<td>RAW = 0xFF (alle HIGH)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Button 1 drücken</td>
+<td>RAW Bit 7 = 0</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Button 1 loslassen</td>
+<td>RAW = 0xFF</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Button 10 drücken</td>
+<td>RAW Byte 1, Bit 6 = 0</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Walking-One LEDs</td>
+<td>Visuell prüfen: 1, 2, 3…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="herleitung-wann-welcher-test">Herleitung: Wann welcher
+Test?</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 15%" />
+<col style="width: 13%" />
+<col style="width: 43%" />
+</colgroup>
+<thead>
+<tr>
+<th>Änderung</th>
+<th style="text-align: center;">Unit-Test</th>
+<th style="text-align: center;">E2E-Test</th>
+<th>Begründung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Debounce-Threshold</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">–</td>
+<td>Reine Logik</td>
+</tr>
+<tr>
+<td>Selection-Policy</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">–</td>
+<td>Reine Logik</td>
+</tr>
+<tr>
+<td>Bit-Mapping-Formel</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td>Logik + Hardware-Verifikation</td>
+</tr>
+<tr>
+<td>SPI-Frequenz</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">✓</td>
+<td>Nur mit Hardware testbar</td>
+</tr>
+<tr>
+<td>Pin-Änderung</td>
+<td style="text-align: center;">–</td>
+<td style="text-align: center;">✓</td>
+<td>Physische Verdrahtung</td>
+</tr>
+<tr>
+<td>Neuer Message-Type</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td>Logik + Integration</td>
+</tr>
+</tbody>
+</table>
+</div>
+</body>
+</html>

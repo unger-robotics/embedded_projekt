@@ -1,0 +1,495 @@
+% =============================================================================
+% projekt.tex – Selection-Panel-Projekt: Gesamtübersicht
+% Einbindung: \input{content/projekt}
+% =============================================================================
+
+\section{Selection-Panel-Projekt -- Gesamtübersicht}
+\label{sec:projekt-uebersicht}
+
+% -----------------------------------------------------------------------------
+\subsection{Begriffsrahmen und Zielsetzung}
+\label{subsec:begriffsrahmen}
+
+\textbf{Projektroot:} \code{/Users/jan/daten/IoT/embedded\_projekt}
+
+\textbf{Zielbild:} Ein interaktives Selection Panel mit 10--100 Buttons und LEDs,
+bei dem zu jedem Zeitpunkt höchstens eine Auswahl aktiv ist (One-Hot-Prinzip).
+Das System besteht aus drei Ebenen: Firmware (ESP32-S3), Bridge (Raspberry Pi),
+Dashboard (Browser).
+
+\begin{table}[H]
+\centering
+\caption{Zentrale Begriffe}
+\label{tab:projekt-begriffe}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Begriff} & \textbf{Definition} \\
+\midrule
+Selection Panel & Hardware-Interface mit Tastern und LEDs für Kanalauswahl \\
+One-Hot         & Invariante: genau 0 oder 1 Auswahl aktiv, niemals mehrere \\
+CD4021          & 8-Bit Parallel-zu-Seriell Schieberegister (Button-Input) \\
+74HC595         & 8-Bit Seriell-zu-Parallel Schieberegister (LED-Output) \\
+Bridge          & Python-Server, der WebSocket $\leftrightarrow$ Serial übersetzt \\
+SSOT            & Single Source of Truth -- jede Konfiguration existiert an genau einer Stelle \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Systemarchitektur -- Drei Ebenen}
+\label{subsec:systemarchitektur}
+
+Die Architektur folgt einer Dreischichten-Struktur: Browser-Dashboard kommuniziert
+via WebSocket mit der Bridge, die Bridge übersetzt zwischen JSON und binärem
+Serial-Protokoll zur Firmware.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  layer/.style={draw, rectangle, rounded corners=3pt, minimum width=12cm,
+                minimum height=2.0cm, font=\sffamily\small},
+  arrow/.style={-{Stealth[length=3mm]}, thick},
+  label/.style={font=\sffamily\footnotesize, text=MutedText}
+]
+  % Browser Layer
+  \node[layer, fill=ArduinoTeal!10] (browser) at (0,6.5) {};
+  \node[font=\sffamily\bfseries] at (-4.5,7.1) {BROWSER (Dashboard)};
+  \node[font=\ttfamily\footnotesize] at (0,6.8) {React + TypeScript + Vite + Tailwind};
+  \node[font=\ttfamily\footnotesize] at (0,6.2) {Quellcode: apps/dashboard/src/};
+
+  % Bridge Layer
+  \node[layer, fill=RaspberryRed!10] (bridge) at (0,3.25) {};
+  \node[font=\sffamily\bfseries] at (-4.5,3.85) {RASPBERRY PI (Bridge)};
+  \node[font=\ttfamily\footnotesize] at (0,3.55) {Python + aiohttp};
+  \node[font=\ttfamily\footnotesize] at (0,3.0) {Runtime: apps/bridge/bridge.py};
+  \node[font=\ttfamily\footnotesize] at (0,2.5) {Static: apps/dashboard/dist/};
+
+  % Firmware Layer
+  \node[layer, fill=SuccessGreen!10] (firmware) at (0,0) {};
+  \node[font=\sffamily\bfseries] at (-4.5,0.6) {ESP32-S3 (Firmware)};
+  \node[font=\ttfamily\footnotesize] at (0,0.3) {C++ + FreeRTOS};
+  \node[font=\ttfamily\footnotesize] at (0,-0.3) {Hardware: CD4021 (Buttons) + 74HC595 (LEDs)};
+
+  % Arrows with labels
+  \draw[arrow] (browser.south) -- node[right, label] {WebSocket (JSON)}
+               node[left, label] {ws://rover.local:8081/ws} (bridge.north);
+  \draw[arrow] (bridge.south) -- node[right, label] {USB-CDC Serial (COBS + CRC16)}
+               node[left, label] {\SI{921600}{Baud}} (firmware.north);
+\end{tikzpicture}
+\caption{Dreischichten-Architektur des Selection Panels}
+\label{fig:architektur}
+\end{figure}
+
+\paragraph{Datenfluss bei Button-Druck}
+
+Der Ablauf vom physischen Tastendruck bis zur UI-Aktualisierung durchläuft fünf Stufen:
+
+\begin{enumerate}
+  \item CD4021 liest Button-Matrix (alle \SI{10}{\milli\second})
+  \item Firmware erkennt Press-Edge, aktualisiert \code{selectedId}
+  \item Firmware sendet \code{SELECTION\_STATE} via Serial (COBS/CRC)
+  \item Bridge empfängt, wandelt in JSON: \code{\{"type":"selection","selected":7\}}
+  \item Browser empfängt via WebSocket, React aktualisiert UI
+\end{enumerate}
+
+% -----------------------------------------------------------------------------
+\subsection{Repository-Struktur}
+\label{subsec:repo-struktur}
+
+Das Repository gliedert sich in drei Hauptbereiche: Firmware, Apps (Bridge und Dashboard)
+sowie Hardware-Designs und Dokumentation.
+
+\begin{lstlisting}[style=shell, caption={Repository-Struktur}, label={lst:repo-struktur}]
+embedded_projekt/
+|-- apps/
+|   |-- bridge/                    # Python Bridge (Pi Runtime)
+|   |   |-- bridge.py             # HTTP + WebSocket + Serial
+|   |   |-- docs/
+|   |   |   |-- PROTOCOL.md       # Serial/WS Protokoll (SSOT)
+|   |   |   |-- WORKFLOW.md       # Build/Deploy/Run
+|   |   |   `-- SMOKE_TEST.md     # E2E-Tests
+|   |   `-- requirements.txt
+|   |
+|   `-- dashboard/                 # React Frontend
+|       |-- src/
+|       |   |-- pages/            # DashboardPage, SettingsPage
+|       |   |-- components/       # UI-Komponenten
+|       |   `-- lib/              # protocol.ts, ws.ts
+|       |-- dist/                 # Build-Output (wird von Bridge served)
+|       |-- docs/
+|       |   |-- DEVELOPER.md      # Frontend-Entwicklung
+|       |   `-- USER_GUIDE.md     # Benutzerhandbuch
+|       |-- vite.config.ts
+|       `-- package.json
+|
+|-- firmware/                      # ESP32-S3 Firmware (C++)
+|   |-- include/hw/               # SSOT: Pins, Counts, SPI-Parameter
+|   |-- src/
+|   |   |-- hal/                  # SPI-Bus Zugriff
+|   |   |-- drivers/              # CD4021, HC595
+|   |   |-- logic/                # Debounce, Selection, Pipeline
+|   |   |-- app/                  # Loop/Task Orchestrierung
+|   |   `-- protocol/             # COBS/CRC Frames
+|   |-- test/                     # Unit + E2E Tests
+|   |-- docs/                     # Firmware-Dokumentation
+|   `-- platformio.ini
+|
+|-- hardware/
+|   `-- kicad/                    # Schaltplaene, PCB
+|
+|-- doc/
+|   |-- md/                       # Markdown-Quellen (SSOT)
+|   `-- latex/                    # LaTeX/PDF-Output
+|
+|-- assets/
+|   |-- pdf/                      # Generierte PDFs
+|   `-- video/                    # Medien
+|
+`-- scripts/                       # Build-/Deploy-Helfer
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+\subsection{SSOT -- Single Source of Truth}
+\label{subsec:ssot}
+
+\textbf{Regel:} Jede Konfiguration existiert an genau einer Stelle. Änderungen
+propagieren automatisch.
+
+\begin{table}[H]
+\centering
+\caption{SSOT-Dateien nach Aspekt}
+\label{tab:ssot}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Aspekt} & \textbf{SSOT-Datei} \\
+\midrule
+Pins                & \code{firmware/include/hw/board\_pins.h} \\
+Counts/Masks        & \code{firmware/include/hw/io\_counts.h} \\
+SPI-Parameter       & \code{firmware/include/hw/spi\_params.h} \\
+Serial-Protokoll    & \code{apps/bridge/docs/PROTOCOL.md} \\
+WebSocket-Protokoll & \code{apps/bridge/docs/PROTOCOL.md} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Generierte Artefakte}
+\label{tab:artefakte}
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\textbf{Artefakt} & \textbf{Quelle} & \textbf{Output} \\
+\midrule
+Frontend & \code{apps/dashboard/src/} & \code{apps/dashboard/dist/} \\
+PDFs     & \code{doc/latex/}          & \code{assets/pdf/} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Firmware -- Build, Flash, Test}
+\label{subsec:firmware}
+
+\paragraph{Flashen}
+
+\begin{lstlisting}[style=shell, caption={Firmware flashen}, label={lst:flash}]
+cd /Users/jan/daten/IoT/embedded_projekt
+
+# FreeRTOS-Variante (empfohlen)
+pio run -d firmware -e seeed_xiao_esp32s3_freertos -t upload
+
+# Arduino-Loop-Variante
+pio run -d firmware -e seeed_xiao_esp32s3_loop -t upload
+\end{lstlisting}
+
+\paragraph{Monitor}
+
+\begin{lstlisting}[style=shell]
+pio device monitor -d firmware -e seeed_xiao_esp32s3_freertos
+\end{lstlisting}
+
+\paragraph{Tests}
+
+\begin{lstlisting}[style=shell, caption={Unit- und E2E-Tests}, label={lst:tests}]
+# Unit-Tests (Logik: Debounce, Selection, Pipeline)
+pio test -d firmware -e seeed_xiao_esp32s3_test -v
+
+# E2E-Hardwaretest (SPI, Pinning, Timing)
+pio test -d firmware -e seeed_xiao_esp32s3_e2e -f test_e2e_hw -v
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Build-Varianten}
+\label{tab:build-varianten}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Environment} & \textbf{Beschreibung} \\
+\midrule
+\code{seeed\_xiao\_esp32s3\_freertos} & FreeRTOS Task (\code{APP\_USE\_FREERTOS=1}) \\
+\code{seeed\_xiao\_esp32s3\_loop}     & Arduino Loop (\code{APP\_USE\_FREERTOS=0}) \\
+\code{seeed\_xiao\_esp32s3\_test}     & Unit-Tests (nur \code{logic/}) \\
+\code{seeed\_xiao\_esp32s3\_e2e}      & E2E-Hardware-Test \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Dashboard -- Entwicklung und Build}
+\label{subsec:dashboard}
+
+\paragraph{DEV-Server (Mac)}
+
+\begin{lstlisting}[style=shell]
+cd /Users/jan/daten/IoT/embedded_projekt/apps/dashboard
+npm ci
+npm run dev
+# -> http://localhost:5173/
+# -> WebSocket via Proxy zu rover.local:8081
+\end{lstlisting}
+
+\paragraph{Production-Build}
+
+\begin{lstlisting}[style=shell]
+npm run lint
+npm run typecheck
+npm run build
+# -> Output: dist/
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{npm Scripts}
+\label{tab:npm-scripts}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Script} & \textbf{Zweck} \\
+\midrule
+\code{npm run dev}       & DEV-Server mit HMR \\
+\code{npm run lint}      & ESLint-Prüfung \\
+\code{npm run typecheck} & TypeScript-Prüfung \\
+\code{npm run build}     & Production-Build nach \code{dist/} \\
+\code{npm run format}    & Prettier-Formatierung \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Bridge -- Raspberry Pi}
+\label{subsec:bridge}
+
+\paragraph{Manueller Start}
+
+\begin{lstlisting}[style=shell, caption={Bridge manuell starten}, label={lst:bridge-start}]
+ssh pi@rover
+source ~/venvs/selection-bridge/bin/activate
+
+python /home/pi/embedded_projekt/apps/bridge/bridge.py \
+  --port auto \
+  --vid 0x303A --pid 0x1001 \
+  --baud 921600 \
+  --http 8081 \
+  --web-root /home/pi/embedded_projekt/apps/dashboard/dist \
+  --wait-port --wait-timeout 0 --wait-poll 0.5 \
+  --reconnect-delay 2 \
+  --ack-timeout 0.6 --retries 4
+\end{lstlisting}
+
+\paragraph{systemd-Service}
+
+\begin{lstlisting}[style=shell, caption={systemd-Befehle}, label={lst:systemd}]
+# Status pruefen
+sudo systemctl status embedded-bridge.service --no-pager -l
+
+# Neu starten
+sudo systemctl restart embedded-bridge.service
+
+# Logs verfolgen
+sudo journalctl -u embedded-bridge.service -f
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{URLs im PROD-Modus}
+\label{tab:urls}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Zweck} & \textbf{URL} \\
+\midrule
+Dashboard & \url{http://rover.local:8081/} \\
+WebSocket & \url{ws://rover.local:8081/ws} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Deployment-Workflow}
+\label{subsec:deployment}
+
+\paragraph{Mac → Pi synchronisieren}
+
+\begin{lstlisting}[style=shell, caption={rsync-Synchronisation}, label={lst:rsync}]
+# Zielpfad auf dem Pi anlegen (einmalig)
+ssh pi@rover 'mkdir -p /home/pi/embedded_projekt/apps/bridge \
+                       /home/pi/embedded_projekt/apps/dashboard'
+
+# Sync (ohne venv, node_modules, dist)
+rsync -avh --delete \
+  --exclude '.git/' \
+  --exclude '.venv/' \
+  --exclude '__pycache__/' \
+  --exclude '*.pyc' \
+  --exclude '.DS_Store' \
+  --exclude 'node_modules/' \
+  --exclude 'apps/dashboard/dist/' \
+  ./ \
+  pi@rover:/home/pi/embedded_projekt/
+\end{lstlisting}
+
+\paragraph{Dashboard dist sync}
+
+\begin{lstlisting}[style=shell, caption={Dashboard-Build und Sync}, label={lst:dist-sync}]
+# Lokal bauen
+cd apps/dashboard
+npm ci
+npm run build
+cd -
+
+# Dashboard dist sync (prod)
+rsync -avh --delete \
+  --exclude '.DS_Store' \
+  ./apps/dashboard/dist/ \
+  pi@rover:/home/pi/embedded_projekt/apps/dashboard/dist/
+\end{lstlisting}
+
+\paragraph{Service neu starten}
+
+\begin{lstlisting}[style=shell]
+ssh pi@rover "sudo systemctl daemon-reload && \
+              sudo systemctl restart embedded-bridge.service"
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+\subsection{Dokumentationsstruktur}
+\label{subsec:dokumentation}
+
+\paragraph{Firmware-Dokumentation}
+
+Die Firmware-Dokumentation liegt unter \code{firmware/docs/}:
+
+\begin{table}[H]
+\centering
+\caption{Firmware-Dokumentation}
+\label{tab:firmware-docs}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Datei} & \textbf{Inhalt} \\
+\midrule
+\code{overview.md}     & Projektübersicht, Bit-Mapping (MSB-first) \\
+\code{wiring.md}       & Hardware-Verdrahtung (Pins, ICs) \\
+\code{architecture.md} & Schichtenmodell (HAL → Driver → Logic → App) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Bridge-Dokumentation}
+
+Die Bridge-Dokumentation liegt unter \code{apps/bridge/docs/}:
+
+\begin{table}[H]
+\centering
+\caption{Bridge-Dokumentation}
+\label{tab:bridge-docs}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Datei} & \textbf{Inhalt} \\
+\midrule
+\code{PROTOCOL.md}   & Serial + WebSocket Protokoll (SSOT) \\
+\code{WORKFLOW.md}   & Build/Deploy/Run \\
+\code{SMOKE\_TEST.md} & E2E-Tests \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Dashboard-Dokumentation}
+
+Die Dashboard-Dokumentation liegt unter \code{apps/dashboard/docs/}:
+
+\begin{table}[H]
+\centering
+\caption{Dashboard-Dokumentation}
+\label{tab:dashboard-docs}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Datei} & \textbf{Inhalt} \\
+\midrule
+\code{DEVELOPER.md}  & Frontend-Entwicklung \\
+\code{USER\_GUIDE.md} & Benutzerhandbuch \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Typische Arbeitsabläufe}
+\label{subsec:workflows}
+
+\begin{infobox}[Firmware-Logik ändern]
+\begin{enumerate}
+  \item Code ändern in \code{firmware/src/logic/}
+  \item Unit-Tests: \code{pio test -d firmware -e seeed\_xiao\_esp32s3\_test -v}
+  \item Bei Erfolg: Flashen mit \code{pio run ... -t upload}
+  \item Monitor: \code{pio device monitor -d firmware}
+\end{enumerate}
+\end{infobox}
+
+\begin{infobox}[Dashboard-UI ändern]
+\begin{enumerate}
+  \item DEV-Server starten: \code{cd apps/dashboard \&\& npm run dev}
+  \item Ändern -- Browser aktualisiert automatisch (HMR)
+  \item Lint + Build: \code{npm run lint \&\& npm run build}
+  \item Deploy (siehe \cref{subsec:deployment})
+\end{enumerate}
+\end{infobox}
+
+\begin{warnbox}[Hardware-Verdrahtung ändern]
+Bei Änderungen an der Hardware-Verdrahtung:
+\begin{enumerate}
+  \item SSOT aktualisieren: \code{firmware/include/hw/board\_pins.h}
+  \item Dokumentation aktualisieren: \code{firmware/docs/wiring.md}
+  \item E2E-Test: \code{pio test ... -e seeed\_xiao\_esp32s3\_e2e -f test\_e2e\_hw -v}
+\end{enumerate}
+\end{warnbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Roadmap}
+\label{subsec:roadmap}
+
+\begin{table}[H]
+\centering
+\caption{Projekt-Roadmap}
+\label{tab:roadmap}
+\begin{tabularx}{\textwidth}{@{}l c X@{}}
+\toprule
+\textbf{Milestone} & \textbf{Status} & \textbf{Beschreibung} \\
+\midrule
+10× Buttons/LEDs   & ✓  & Grundfunktion verifiziert \\
+Serial-Protokoll   & ✓  & COBS/CRC, ACK/Retry \\
+React-Dashboard    & ✓  & DEV/PROD-Split \\
+100× Skalierung    & -- & Counts/Masks + Kaskadierung + Timing \\
+Audio-Integration  & -- & Multimedia bei Selection-Change \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Siehe auch}
+\label{subsec:projekt-siehe-auch}
+
+Weiterführende Dokumentation:
+
+\begin{itemize}
+  \item \code{firmware/docs/overview.md} -- Firmware-Einstieg
+  \item \code{apps/dashboard/docs/DEVELOPER.md} -- Frontend-Einstieg
+  \item \code{apps/bridge/docs/WORKFLOW.md} -- Pi-Deployment
+  \item \code{apps/bridge/docs/PROTOCOL.md} -- Protokoll-Spezifikation
+\end{itemize}

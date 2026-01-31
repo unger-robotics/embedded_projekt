@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>embedded-glossar.mathjax_tmp</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+  
+  <script>
+  window.MathJax = {
+    loader: {
+      load: ['[tex]/ams']
+    },
+    tex: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      packages: {'[+]': ['ams']},
+      macros: {
+        dd: '{\\,\\mathrm{d}}',
+        degC: '{^{\\circ}\\!\\mathrm{C}}',
+        Ohm: '{\\,\\Omega}',
+        ohm: '{\\,\\Omega}',
+        degree: '{^{\\circ}}'
+      }
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre','code','kbd','samp']
+    }
+  };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div class="main-container">
+<h1 id="glossar-embedded-entwicklung">Glossar: Embedded-Entwicklung</h1>
+<h2 id="a">A</h2>
+<h3 id="ack-acknowledge">ACK (Acknowledge)</h3>
+<p><strong>Definition:</strong> Bestätigung einer empfangenen Nachricht
+im Request-Response-Protokoll.</p>
+<p><strong>Projektbezug:</strong> Die Bridge sendet ACK nach
+erfolgreichem Empfang eines Kommandos. Das ACK-Paket enthält die
+Sequenznummer des bestätigten Pakets.</p>
+<p><strong>Protokoll-Ablauf:</strong></p>
+<pre><code>Sender                          Empfänger
+   │                                │
+   │── Paket (seq=42, ACK_REQ) ────►│
+   │                                │ (verarbeitet)
+   │◄────── ACK (seq=42) ───────────│
+   │                                │</code></pre>
+<p><strong>Verwandte Begriffe:</strong> → NACK, → Retry, → Timeout</p>
+<hr />
+<h3 id="active-high">Active-High</h3>
+<p><strong>Definition:</strong> Signal-Konvention, bei der der aktive
+Zustand dem HIGH-Pegel (VCC) entspricht.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Zustand</th>
+<th>Pegel</th>
+<th>Spannung (3,3 V Logik)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aktiv</td>
+<td>HIGH</td>
+<td>2,0 V – 3,3 V</td>
+</tr>
+<tr>
+<td>Inaktiv</td>
+<td>LOW</td>
+<td>0 V – 0,8 V</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong> LEDs am 74HC595 sind Active-High – ein
+gesetztes Bit (1) schaltet die LED ein.</p>
+<p><strong>Code-Muster:</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// LED einschalten (Active-High)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>ledState <span class="op">|=</span> <span class="op">(</span><span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPos<span class="op">);</span>   <span class="co">// Bit = 1 → LED an</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// LED ausschalten</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>ledState <span class="op">&amp;=</span> <span class="op">~(</span><span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPos<span class="op">);</span>  <span class="co">// Bit = 0 → LED aus</span></span></code></pre></div>
+<p><strong>Verwandte Begriffe:</strong> → Active-Low, → Pull-up</p>
+<hr />
+<h3 id="active-low">Active-Low</h3>
+<p><strong>Definition:</strong> Signal-Konvention, bei der der aktive
+Zustand dem LOW-Pegel (GND) entspricht.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Zustand</th>
+<th>Pegel</th>
+<th>Spannung (3,3 V Logik)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aktiv</td>
+<td>LOW</td>
+<td>0 V – 0,8 V</td>
+</tr>
+<tr>
+<td>Inaktiv</td>
+<td>HIGH</td>
+<td>2,0 V – 3,3 V</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong> CD4021-Buttons sind Active-Low – ein
+gedrückter Taster zieht den Eingang auf GND (0).</p>
+<p><strong>Code-Muster:</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Button-Zustand prüfen (Active-Low)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> isPressed <span class="op">=</span> <span class="op">(</span>rawByte <span class="op">&amp;</span> mask<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">;</span>  <span class="co">// Bit = 0 → gedrückt</span></span></code></pre></div>
+<p><strong>Warum Active-Low für Taster?</strong> - Pull-up-Widerstand
+definiert Ruhezustand (HIGH) - Taster schaltet nur nach GND – einfacher
+und robuster - Historisch: TTL-Logik hatte stärkere LOW-Treiber</p>
+<p><strong>Verwandte Begriffe:</strong> → Active-High, → Pull-up, →
+CD4021</p>
+<hr />
+<h2 id="b">B</h2>
+<h3 id="baudrate">Baudrate</h3>
+<p><strong>Definition:</strong> Übertragungsgeschwindigkeit einer
+seriellen Verbindung in Symbolen pro Sekunde. Bei binärer Übertragung: 1
+Baud ≙ 1 Bit/s.</p>
+<p><strong>Typische Werte:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Baudrate</th>
+<th>Zeichen/s</th>
+<th>Anwendung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9600</td>
+<td>960</td>
+<td>Legacy, Debug</td>
+</tr>
+<tr>
+<td>115200</td>
+<td>11520</td>
+<td>Standard Serial</td>
+</tr>
+<tr>
+<td>921600</td>
+<td>92160</td>
+<td>High-Speed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong> USB-CDC mit nominell 921600 Baud. Bei
+USB-CDC wird die Baudrate vom USB-Stack ignoriert – die tatsächliche
+Geschwindigkeit hängt vom USB-Durchsatz ab.</p>
+<p><strong>Berechnung Übertragungszeit:</strong></p>
+<div class="math math-display">$$t_{\mathrm{Byte}} = \frac{10 \text{ Bits}}{\text{Baudrate}} = \frac{10}{115200} \approx 87\,\mu\mathrm{s}$$</div>
+<p>(10 Bits = 1 Start + 8 Daten + 1 Stop)</p>
+<p><strong>Verwandte Begriffe:</strong> → USB-CDC, → Frame</p>
+<hr />
+<h3 id="bit-mapping">Bit-Mapping</h3>
+<p><strong>Definition:</strong> Zuordnung von logischen Identifikatoren
+(IDs) zu physischen Bit-Positionen in einem Byte-Array.</p>
+<p><strong>Projektbezug:</strong> MSB-first für Buttons und LEDs.</p>
+<p><strong>Mapping-Tabelle (10 Kanäle):</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>ID</th>
+<th>Byte-Index</th>
+<th>Bit-Position</th>
+<th>Maske</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>7 (MSB)</td>
+<td>0x80</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0</td>
+<td>6</td>
+<td>0x40</td>
+</tr>
+<tr>
+<td>8</td>
+<td>0</td>
+<td>0 (LSB)</td>
+<td>0x01</td>
+</tr>
+<tr>
+<td>9</td>
+<td>1</td>
+<td>7 (MSB)</td>
+<td>0x80</td>
+</tr>
+<tr>
+<td>10</td>
+<td>1</td>
+<td>6</td>
+<td>0x40</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Berechnungsformel:</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> byteIdx <span class="op">=</span> <span class="op">(</span>id <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">8</span><span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> bitPos  <span class="op">=</span> <span class="dv">7</span> <span class="op">-</span> <span class="op">((</span>id <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">%</span> <span class="dv">8</span><span class="op">);</span>  <span class="co">// MSB-first</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> mask    <span class="op">=</span> <span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPos<span class="op">;</span></span></code></pre></div>
+<p><strong>Verwandte Begriffe:</strong> → LSB/MSB, → Maske</p>
+<hr />
+<h2 id="c">C</h2>
+<h3 id="cd4021-cd4021b">CD4021 (CD4021B)</h3>
+<p><strong>Definition:</strong> 8-Bit CMOS Parallel-In/Serial-Out (PISO)
+Schieberegister von Texas Instruments.</p>
+<p><strong>Funktion:</strong> Wandelt 8 parallele Eingänge in serielle
+Daten für SPI-Übertragung.</p>
+<p><strong>Pinbelegung (relevante Pins):</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Pin</th>
+<th>Name</th>
+<th>Funktion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>P/S</td>
+<td>Parallel/Serial Control (Load)</td>
+</tr>
+<tr>
+<td>10</td>
+<td>CLK</td>
+<td>Clock (Shift)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Q7</td>
+<td>Serial Data Out</td>
+</tr>
+<tr>
+<td>1-8</td>
+<td>D0-D7</td>
+<td>Parallel Data Inputs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Timing-Ablauf:</strong></p>
+<pre><code>P/S  ────┐    ┌─────────────────────────────
+         └────┘  (kurzer HIGH-Puls zum Laden)
+              │
+CLK  ─────────┴──┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐
+                 └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘
+                   D7  D6  D5  D4  D3  D2  D1  D0</code></pre>
+<p><strong>Projektbezug:</strong> Liest Button-Zustände (Active-Low).
+SPI Mode 1, 500 kHz.</p>
+<p><strong>⚠ Häufiger Fehler:</strong> Falscher SPI-Mode führt zu um ein
+Bit verschobenen Daten.</p>
+<p><strong>Verwandte Begriffe:</strong> → HC595, → SPI, → Active-Low</p>
+<hr />
+<h3 id="cobs-consistent-overhead-byte-stuffing">COBS (Consistent
+Overhead Byte Stuffing)</h3>
+<p><strong>Definition:</strong> Framing-Verfahren, das garantiert, dass
+ein bestimmtes Byte (0x00) nicht in den Nutzdaten vorkommt. Ermöglicht
+eindeutige Frame-Grenzen.</p>
+<p><strong>Prinzip:</strong></p>
+<pre><code>Original:     [0x11] [0x00] [0x22] [0x00] [0x33]
+                      ↓            ↓
+COBS-kodiert: [0x02] [0x11] [0x02] [0x22] [0x02] [0x33]
+               └─ Zeiger auf nächste &quot;Null&quot; oder Ende</code></pre>
+<p><strong>Overhead:</strong> Maximal 1 Byte pro 254 Originalbytes.</p>
+<p><strong>Projektbezug:</strong> Serial-Protokoll zwischen ESP32 und Pi
+verwendet COBS mit 0x00 als Delimiter.</p>
+<p><strong>Wire-Frame:</strong></p>
+<pre><code>┌────────────────────────────────┬──────┐
+│  COBS-kodierte Daten           │ 0x00 │
+│  (keine 0x00 enthalten)        │ Delim│
+└────────────────────────────────┴──────┘</code></pre>
+<p><strong>Verwandte Begriffe:</strong> → Frame, → CRC, → Wire Frame</p>
+<hr />
+<h3 id="crc-cyclic-redundancy-check">CRC (Cyclic Redundancy Check)</h3>
+<p><strong>Definition:</strong> Prüfsummenverfahren zur Erkennung von
+Übertragungsfehlern basierend auf Polynomdivision.</p>
+<p><strong>Projektbezug:</strong> CRC-16/CCITT-FALSE</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Wert</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Polynom</td>
+<td>0x1021</td>
+</tr>
+<tr>
+<td>Init</td>
+<td>0xFFFF</td>
+</tr>
+<tr>
+<td>XorOut</td>
+<td>0x0000</td>
+</tr>
+<tr>
+<td>RefIn/Out</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Fehlererkennungsrate:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Fehlertyp</th>
+<th>Erkennungsrate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alle Einzelbitfehler</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Alle Doppelbitfehler</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Burst-Fehler ≤ 16 Bit</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Zufällige Fehler</td>
+<td>99,998%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verwandte Begriffe:</strong> → Frame, → COBS</p>
+<hr />
+<h2 id="d">D</h2>
+<h3 id="debounce-entprellung">Debounce (Entprellung)</h3>
+<p><strong>Definition:</strong> Filterung der mechanischen Prellvorgänge
+eines Tasters durch zeitliche Verzögerung.</p>
+<p><strong>Problem – Prellen:</strong></p>
+<pre><code>Ideal:   ────┐          ┌────
+             └──────────┘
+
+Real:    ────┐ ┌┐ ┌┐    ┌┐┌──
+             └─┘└─┘└────┘└┘
+              ← Prellen →</code></pre>
+<p><strong>Algorithmus:</strong> Ein Zustandswechsel wird erst
+akzeptiert, wenn er für N aufeinanderfolgende Samples stabil ist.</p>
+<p><strong>Projektbezug:</strong> 50 ms Debounce-Zeit bei 10 ms
+Scan-Intervall → Threshold = 5.</p>
+<p><strong>Formel:</strong></p>
+<div class="math math-display">$$\text{Threshold} = \frac{t_{\text{Debounce}}}{t_{\mathrm{Scan}}} = \frac{50\,\mathrm{ms}}{10\,\mathrm{ms}} = 5$$</div>
+<p><strong>Verwandte Begriffe:</strong> → Edge, → Scan-Zyklus, →
+Guard</p>
+<hr />
+<h3 id="datenfluss">Datenfluss</h3>
+<p><strong>Definition:</strong> Die gerichtete Sequenz von
+Verarbeitungsschritten, durch die Daten fließen.</p>
+<p><strong>Projektbezug – IO-Pipeline:</strong></p>
+<pre><code>CD4021::read()  →  Debounce  →  Selection  →  setOneHot()  →  HC595::write()
+     │                │             │              │               │
+  rawButtons     pressEdges    selectedId      ledState[]      Hardware</code></pre>
+<p><strong>Regel:</strong> Daten fließen immer in eine Richtung. Keine
+Rückwärts-Abhängigkeiten innerhalb eines Zyklus.</p>
+<p><strong>Verwandte Begriffe:</strong> → Pipeline, → Scan-Zyklus</p>
+<hr />
+<h2 id="e">E</h2>
+<h3 id="e2e-test-end-to-end-test">E2E-Test (End-to-End-Test)</h3>
+<p><strong>Definition:</strong> Test, der das gesamte System von Eingang
+bis Ausgang mit echter Hardware prüft.</p>
+<p><strong>Projektbezug:</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pio</span> test <span class="at">-d</span> firmware <span class="at">-e</span> seeed_xiao_esp32s3_e2e <span class="at">-f</span> test_e2e_hw <span class="at">-v</span></span></code></pre></div>
+<p><strong>Prüfpunkte:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Test</th>
+<th>Erwartung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Idle (nichts drücken)</td>
+<td>RAW = 0xFF</td>
+</tr>
+<tr>
+<td>Button 1 drücken</td>
+<td>RAW Bit 7 = 0</td>
+</tr>
+<tr>
+<td>Walking-One LEDs</td>
+<td>LEDs leuchten nacheinander</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verwandte Begriffe:</strong> → Unit-Test, → HAL</p>
+<hr />
+<h3 id="edge-flanke">Edge (Flanke)</h3>
+<p><strong>Definition:</strong> Der Übergang eines Signals von einem
+Zustand zum anderen.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Typ</th>
+<th>Übergang</th>
+<th>Verwendung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rising Edge</td>
+<td>0 → 1</td>
+<td>Clock-Sampling (Mode 0)</td>
+</tr>
+<tr>
+<td>Falling Edge</td>
+<td>1 → 0</td>
+<td>Clock-Sampling (Mode 1)</td>
+</tr>
+<tr>
+<td>Press-Edge</td>
+<td>HIGH → LOW</td>
+<td>Button wurde gedrückt (Active-Low)</td>
+</tr>
+<tr>
+<td>Release-Edge</td>
+<td>LOW → HIGH</td>
+<td>Button wurde losgelassen</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong> Die Selection-Logik reagiert auf
+Press-Edges, nicht auf Pegel.</p>
+<p><strong>Warum Edge statt Pegel?</strong></p>
+<pre><code>Pegel-basiert:  Button gehalten → 100 Events/s bei 10 ms Scan
+Edge-basiert:   Button gehalten → 1 Event (Press-Edge)</code></pre>
+<p><strong>Verwandte Begriffe:</strong> → Debounce, → Polling</p>
+<hr />
+<h2 id="f">F</h2>
+<h3 id="frame">Frame</h3>
+<p><strong>Definition:</strong> Ein abgegrenztes Datenpaket mit
+definiertem Anfang, Ende und Struktur.</p>
+<p><strong>Projektbezug – Paket-Struktur:</strong></p>
+<pre><code>┌──────────────────────────────────────────────────────┐
+│ Header (10 B) │ Payload (0-256 B) │ CRC-16 (2 B)    │
+└──────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Header-Felder:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Offset</th>
+<th>Feld</th>
+<th>Größe</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-1</td>
+<td>Magic</td>
+<td>2</td>
+<td>“SP” (0x53 0x50)</td>
+</tr>
+<tr>
+<td>2-3</td>
+<td>Version</td>
+<td>2</td>
+<td>Major.Minor</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Type</td>
+<td>1</td>
+<td>Message-Typ</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Flags</td>
+<td>1</td>
+<td>ACK_REQ, IS_ACK, etc.</td>
+</tr>
+<tr>
+<td>6-7</td>
+<td>Seq</td>
+<td>2</td>
+<td>Sequenznummer</td>
+</tr>
+<tr>
+<td>8-9</td>
+<td>Len</td>
+<td>2</td>
+<td>Payload-Länge</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verwandte Begriffe:</strong> → COBS, → CRC, → Wire Frame</p>
+<hr />
+<h3 id="freertos">FreeRTOS</h3>
+<p><strong>Definition:</strong> Real-Time Operating System für
+Mikrocontroller mit präemptivem Multitasking.</p>
+<p><strong>Kernkonzepte:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Konzept</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Task</td>
+<td>Unabhängige Ausführungseinheit mit eigenem Stack</td>
+</tr>
+<tr>
+<td>Queue</td>
+<td>Thread-sichere Nachrichtenwarteschlange</td>
+</tr>
+<tr>
+<td>Semaphore</td>
+<td>Synchronisationsprimitiv</td>
+</tr>
+<tr>
+<td>Mutex</td>
+<td>Gegenseitiger Ausschluss für Ressourcen</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong> Optional für Task-basierte Architektur
+(<code>APP_USE_FREERTOS=1</code>).</p>
+<p><strong>Timing-Funktion:</strong></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Präzises periodisches Timing</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ioTask<span class="op">(</span><span class="dt">void</span><span class="op">*</span> param<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    TickType_t lastWake <span class="op">=</span> xTaskGetTickCount<span class="op">();</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="kw">true</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">// IO-Verarbeitung...</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        vTaskDelayUntil<span class="op">(&amp;</span>lastWake<span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">10</span><span class="op">));</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Verwandte Begriffe:</strong> → Task, → RTOS, → ISR</p>
+<hr />
+<h2 id="g">G</h2>
+<h3 id="gpio-general-purpose-inputoutput">GPIO (General Purpose
+Input/Output)</h3>
+<p><strong>Definition:</strong> Universell konfigurierbarer
+Mikrocontroller-Pin für digitale Ein- oder Ausgabe.</p>
+<p><strong>Konfigurationsmodi:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Modus</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input</td>
+<td>Liest externen Pegel</td>
+</tr>
+<tr>
+<td>Input + Pull-up</td>
+<td>Mit internem Pull-up-Widerstand</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>Treibt Pegel aktiv</td>
+</tr>
+<tr>
+<td>Open-Drain</td>
+<td>Kann nur LOW treiben, HIGH = floating</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong> SPI-Pins, PS/LOAD, LATCH sind als GPIO
+konfiguriert.</p>
+<p><strong>Verwandte Begriffe:</strong> → Pull-up, → HAL</p>
+<hr />
+<h3 id="guard-press-guard">Guard (Press-Guard)</h3>
+<p><strong>Definition:</strong> Zeitfenster, das nach einem Event
+weitere Aktionen blockiert, um versehentliche Mehrfachauslösung zu
+verhindern.</p>
+<p><strong>Projektbezug:</strong> Press-Guard verhindert Doppelklicks
+innerhalb von z. B. 200 ms.</p>
+<p><strong>Ablauf:</strong></p>
+<pre><code>Button gedrückt → Event ausgelöst → Guard aktiv (200 ms)
+                                         │
+Button erneut gedrückt ──────────────────►│ ignoriert
+                                         │
+                                    Guard endet
+                                         │
+Button erneut gedrückt ──────────────────►│ Event ausgelöst</code></pre>
+<p><strong>Verwandte Begriffe:</strong> → Debounce, → Edge</p>
+<hr />
+<h2 id="h">H</h2>
+<h3 id="hal-hardware-abstraction-layer">HAL (Hardware Abstraction
+Layer)</h3>
+<p><strong>Definition:</strong> Software-Schicht, die
+hardware-spezifische Details von der Anwendungslogik trennt.</p>
+<p><strong>Projektbezug:</strong> <code>firmware/src/hal/</code> enthält
+SPI-Zugriff.</p>
+<p><strong>Schichtenmodell:</strong></p>
+<pre><code>┌─────────────────────────────┐
+│  Anwendungslogik            │  ← Hardware-unabhängig
+├─────────────────────────────┤
+│  Treiber (CD4021, HC595)    │  ← IC-spezifisch
+├─────────────────────────────┤
+│  HAL (SPI, GPIO)            │  ← Plattform-spezifisch
+├─────────────────────────────┤
+│  Register / Hardware        │
+└─────────────────────────────┘</code></pre>
+<p><strong>Vorteil:</strong> Logik kann auf Host-PC getestet werden,
+ohne echte Hardware.</p>
+<p><strong>Verwandte Begriffe:</strong> → GPIO, → SPI</p>
+<hr />
+<h3 id="hc595-74hc595">HC595 (74HC595)</h3>
+<p><strong>Definition:</strong> 8-Bit CMOS Serial-In/Parallel-Out (SIPO)
+Schieberegister mit Latch.</p>
+<p><strong>Funktion:</strong> Wandelt serielle SPI-Daten in 8 parallele
+Ausgänge.</p>
+<p><strong>Pinbelegung (relevante Pins):</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Pin</th>
+<th>Name</th>
+<th>Funktion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>14</td>
+<td>SER</td>
+<td>Serial Data In</td>
+</tr>
+<tr>
+<td>11</td>
+<td>SRCLK</td>
+<td>Shift Register Clock</td>
+</tr>
+<tr>
+<td>12</td>
+<td>RCLK</td>
+<td>Register Clock (Latch)</td>
+</tr>
+<tr>
+<td>13</td>
+<td>OE</td>
+<td>Output Enable (Active-Low)</td>
+</tr>
+<tr>
+<td>15, 1-7</td>
+<td>QA-QH</td>
+<td>Parallel Outputs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Timing-Ablauf:</strong></p>
+<pre><code>SER   ──D7──D6──D5──D4──D3──D2──D1──D0────────
+           │    │    │    │    │    │    │    │
+SRCLK ─────┴────┴────┴────┴────┴────┴────┴────┴─
+                                              │
+RCLK  ────────────────────────────────────────┴──┐ ┌──
+                                                 └─┘
+                                              Latch-Puls</code></pre>
+<p><strong>Projektbezug:</strong> Steuert LEDs (Active-High). SPI Mode
+0, 1 MHz.</p>
+<p><strong>⚠ Häufiger Fehler:</strong> Latch-Puls vergessen → LEDs
+zeigen alten Zustand.</p>
+<p><strong>Verwandte Begriffe:</strong> → CD4021, → Latch, → SPI</p>
+<hr />
+<h2 id="i">I</h2>
+<h3 id="isr-interrupt-service-routine">ISR (Interrupt Service
+Routine)</h3>
+<p><strong>Definition:</strong> Funktion, die bei Auftreten eines
+Hardware-Interrupts ausgeführt wird.</p>
+<p><strong>Regeln für ISRs:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>✓ Erlaubt</th>
+<th>✗ Verboten</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flag setzen</td>
+<td>printf/Serial.print</td>
+</tr>
+<tr>
+<td>Queue senden (FromISR)</td>
+<td>malloc/free</td>
+</tr>
+<tr>
+<td>Kurze Berechnungen</td>
+<td>Lange Schleifen</td>
+</tr>
+<tr>
+<td>Volatile-Variablen schreiben</td>
+<td>Blockierende Funktionen</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Code-Muster:</strong></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="dt">volatile</span> <span class="dt">bool</span> buttonPressed <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> IRAM_ATTR buttonISR<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    buttonPressed <span class="op">=</span> <span class="kw">true</span><span class="op">;</span>  <span class="co">// Nur Flag setzen</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> loop<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>buttonPressed<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>        buttonPressed <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>        handleButtonPress<span class="op">();</span>  <span class="co">// Verarbeitung im Hauptkontext</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Verwandte Begriffe:</strong> → Volatile, → FreeRTOS</p>
+<hr />
+<h2 id="l">L</h2>
+<h3 id="latch">Latch</h3>
+<p><strong>Definition:</strong> Speicherelement, das Daten bei einem
+Trigger-Signal übernimmt und stabil hält.</p>
+<p><strong>Projektbezug:</strong> Der 74HC595 hat einen internen Latch
+zwischen Schieberegister und Ausgängen.</p>
+<p><strong>Warum Latch?</strong></p>
+<pre><code>Ohne Latch:  Ausgänge ändern sich während des Schiebens → Flackern
+Mit Latch:   Ausgänge bleiben stabil bis zum Latch-Puls → Sauberer Wechsel</code></pre>
+<p><strong>Verwandte Begriffe:</strong> → HC595, → SPI</p>
+<hr />
+<h3 id="lsb-msb">LSB / MSB</h3>
+<p><strong>Definition:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Begriff</th>
+<th>Bedeutung</th>
+<th>Position</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LSB</td>
+<td>Least Significant Bit</td>
+<td>Bit 0 (rechts)</td>
+</tr>
+<tr>
+<td>MSB</td>
+<td>Most Significant Bit</td>
+<td>Bit 7 (links)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Visualisierung:</strong></p>
+<pre><code>Byte: 0b10110010
+         │     │
+        MSB   LSB
+       Bit 7  Bit 0
+      Wert:128 Wert:1</code></pre>
+<p><strong>Projektbezug:</strong> MSB-first für Buttons und LEDs. ID 1 →
+Bit 7, ID 8 → Bit 0.</p>
+<p><strong>Verwandte Begriffe:</strong> → Bit-Mapping, → Maske</p>
+<hr />
+<h2 id="m">M</h2>
+<h3 id="maske-bitmask">Maske (Bitmask)</h3>
+<p><strong>Definition:</strong> Bitmuster zum Selektieren, Setzen oder
+Löschen bestimmter Bits.</p>
+<p><strong>Operationen:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Operation</th>
+<th>Code</th>
+<th>Wirkung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bit lesen</td>
+<td><code>value &amp; mask</code></td>
+<td>Isoliert maskierte Bits</td>
+</tr>
+<tr>
+<td>Bit setzen</td>
+<td><code>value |= mask</code></td>
+<td>Setzt maskierte Bits auf 1</td>
+</tr>
+<tr>
+<td>Bit löschen</td>
+<td><code>value &amp;= ~mask</code></td>
+<td>Setzt maskierte Bits auf 0</td>
+</tr>
+<tr>
+<td>Bit togglen</td>
+<td><code>value ^= mask</code></td>
+<td>Invertiert maskierte Bits</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Beispiel:</strong></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> value <span class="op">=</span> <span class="bn">0b11001010</span><span class="op">;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> mask  <span class="op">=</span> <span class="bn">0b00001111</span><span class="op">;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>value <span class="op">&amp;</span> mask   <span class="co">// = 0b00001010 (untere 4 Bits)</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>value <span class="op">|</span> mask   <span class="co">// = 0b11001111 (untere 4 Bits gesetzt)</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>value <span class="op">&amp;</span> <span class="op">~</span>mask  <span class="co">// = 0b11000000 (untere 4 Bits gelöscht)</span></span></code></pre></div>
+<p><strong>Verwandte Begriffe:</strong> → Bit-Mapping, → LSB/MSB</p>
+<hr />
+<h3 id="miso-mosi">MISO / MOSI</h3>
+<p><strong>Definition:</strong> SPI-Datenleitungen.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Signal</th>
+<th>Vollständig</th>
+<th>Richtung</th>
+<th>Funktion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MOSI</td>
+<td>Master Out, Slave In</td>
+<td>Master → Slave</td>
+<td>Daten zum Slave</td>
+</tr>
+<tr>
+<td>MISO</td>
+<td>Master In, Slave Out</td>
+<td>Slave → Master</td>
+<td>Daten vom Slave</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong> - MOSI → 74HC595 (LED-Daten) - MISO ←
+CD4021 (Button-Daten)</p>
+<p><strong>Verwandte Begriffe:</strong> → SPI, → HAL</p>
+<hr />
+<h2 id="o">O</h2>
+<h3 id="oe-output-enable">OE (Output Enable)</h3>
+<p><strong>Definition:</strong> Steuersignal, das die Ausgänge eines ICs
+aktiviert oder hochohmig schaltet.</p>
+<p><strong>Projektbezug:</strong> 74HC595 OE-Pin (meist Active-Low).</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>OE-Pegel</th>
+<th>Ausgänge</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LOW</td>
+<td>Aktiv (treiben Pegel)</td>
+</tr>
+<tr>
+<td>HIGH</td>
+<td>Hochohmig (Tri-State)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Anwendung:</strong> OE dauerhaft auf GND für permanente
+Ausgabe, oder mit PWM für Dimming.</p>
+<p><strong>Verwandte Begriffe:</strong> → HC595, → Active-Low</p>
+<hr />
+<h3 id="one-hot">One-Hot</h3>
+<p><strong>Definition:</strong> Codierung, bei der zu jedem Zeitpunkt
+höchstens ein Bit gesetzt ist.</p>
+<p><strong>Gültige Zustände (2 Bytes):</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>selectedId</th>
+<th>Binär</th>
+<th>Gültig?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>00000000 00000000</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>10000000 00000000</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>00001000 00000000</code></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>???</td>
+<td><code>10001000 00000000</code></td>
+<td>✗ (2 Bits)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong> Immer nur eine LED aktiv – garantiert
+durch <code>setOneHot()</code>.</p>
+<p><strong>Implementierung:</strong></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> setOneHot<span class="op">(</span><span class="dt">uint8_t</span> id<span class="op">,</span> <span class="dt">uint8_t</span><span class="op">*</span> state<span class="op">,</span> <span class="dt">size_t</span> bytes<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    memset<span class="op">(</span>state<span class="op">,</span> <span class="bn">0x00</span><span class="op">,</span> bytes<span class="op">);</span>  <span class="co">// Alle löschen</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>id <span class="op">&gt;=</span> <span class="dv">1</span> <span class="op">&amp;&amp;</span> id <span class="op">&lt;=</span> LED_COUNT<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Genau ein Bit setzen</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Verwandte Begriffe:</strong> → Bit-Mapping, → Selection</p>
+<hr />
+<h2 id="p">P</h2>
+<h3 id="pipeline">Pipeline</h3>
+<p><strong>Definition:</strong> Sequenz von Verarbeitungsstufen mit
+definierten Ein- und Ausgängen.</p>
+<p><strong>Projektbezug:</strong></p>
+<pre><code>┌──────────────────────────────────────────────────────┐
+│                    io_pipeline                       │
+│  ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐  │
+│  │  Read  │ → │Debounce│ → │  Guard │ → │ Select │  │
+│  └────────┘   └────────┘   └────────┘   └────────┘  │
+└──────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Regel:</strong> Jede Stufe hat genau eine Verantwortung.
+Keine Stufe überspringen.</p>
+<p><strong>Verwandte Begriffe:</strong> → Datenfluss, → Scan-Zyklus</p>
+<hr />
+<h3 id="polling">Polling</h3>
+<p><strong>Definition:</strong> Regelmäßiges Abfragen eines Zustands in
+einer Schleife.</p>
+<p><strong>Projektbezug:</strong> 10 ms Scan-Intervall für
+Button-Abfrage.</p>
+<p><strong>Polling vs. Interrupt:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Aspekt</th>
+<th>Polling</th>
+<th>Interrupt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Latenz</td>
+<td>≤ Scan-Intervall</td>
+<td>Sofort</td>
+</tr>
+<tr>
+<td>CPU-Last</td>
+<td>Konstant</td>
+<td>Nur bei Event</td>
+</tr>
+<tr>
+<td>Komplexität</td>
+<td>Einfach</td>
+<td>Höher (ISR-Regeln)</td>
+</tr>
+<tr>
+<td>Determinismus</td>
+<td>Vorhersagbar</td>
+<td>Variable Latenz</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verwandte Begriffe:</strong> → Scan-Zyklus, → ISR</p>
+<hr />
+<h3 id="pull-up-pull-down">Pull-up / Pull-down</h3>
+<p><strong>Definition:</strong> Widerstand, der einen offenen Pin auf
+definierten Pegel zieht.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Typ</th>
+<th>Pegel bei offenem Pin</th>
+<th>Typischer Wert</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pull-up</td>
+<td>HIGH (VCC)</td>
+<td>10 kΩ</td>
+</tr>
+<tr>
+<td>Pull-down</td>
+<td>LOW (GND)</td>
+<td>10 kΩ</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Schaltbild (Pull-up):</strong></p>
+<pre><code>VCC (3,3 V)
+    │
+   ┌┴┐
+   │ │ 10 kΩ
+   └┬┘
+    ├───► GPIO-Pin (HIGH wenn offen)
+    │
+   ╱  Taster
+    │
+   GND</code></pre>
+<p><strong>Projektbezug:</strong> CD4021-Inputs haben externe Pull-ups
+für Active-Low-Logik.</p>
+<p><strong>Verwandte Begriffe:</strong> → Active-Low, → GPIO</p>
+<hr />
+<h2 id="r">R</h2>
+<h3 id="rtos-real-time-operating-system">RTOS (Real-Time Operating
+System)</h3>
+<p><strong>Definition:</strong> Betriebssystem mit garantierten
+Reaktionszeiten für zeitkritische Anwendungen.</p>
+<p><strong>Eigenschaften:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Merkmal</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Präemption</td>
+<td>Höher priorisierte Tasks unterbrechen</td>
+</tr>
+<tr>
+<td>Determinismus</td>
+<td>Vorhersagbare Worst-Case-Latenz</td>
+</tr>
+<tr>
+<td>Task-Scheduling</td>
+<td>Prioritätsbasiert</td>
+</tr>
+<tr>
+<td>IPC</td>
+<td>Queues, Semaphoren, Mutexe</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong> FreeRTOS ist optional
+(<code>APP_USE_FREERTOS=1</code>).</p>
+<p><strong>Verwandte Begriffe:</strong> → FreeRTOS, → Task</p>
+<hr />
+<h2 id="s">S</h2>
+<h3 id="scan-zyklus">Scan-Zyklus</h3>
+<p><strong>Definition:</strong> Ein vollständiger Durchlauf: Eingänge
+lesen → Verarbeiten → Ausgänge schreiben.</p>
+<p><strong>Projektbezug:</strong></p>
+<pre><code>┌─────────────────────────────────────────────────────┐
+│  10 ms Scan-Intervall                               │
+│                                                     │
+│  CD4021 read ─┬─ Debounce ─┬─ Selection ─┬─ HC595  │
+│     20 µs     │    5 µs    │    5 µs     │  20 µs  │
+│               │            │             │         │
+│  ◄────────────── ~50 µs ──────────────────►        │
+│               Reserve: ~9950 µs (99,5%)             │
+└─────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Verwandte Begriffe:</strong> → Pipeline, → Polling, →
+Timing</p>
+<hr />
+<h3 id="spi-serial-peripheral-interface">SPI (Serial Peripheral
+Interface)</h3>
+<p><strong>Definition:</strong> Synchroner Vollduplex-Bus mit 4 Signalen
+(SCK, MOSI, MISO, CS).</p>
+<p><strong>Modi:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">Mode</th>
+<th style="text-align: center;">CPOL</th>
+<th style="text-align: center;">CPHA</th>
+<th>Clock Idle</th>
+<th>Sample bei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td>LOW</td>
+<td>Rising Edge</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td>LOW</td>
+<td>Falling Edge</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td>HIGH</td>
+<td>Falling Edge</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td>HIGH</td>
+<td>Rising Edge</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>IC</th>
+<th style="text-align: center;">Mode</th>
+<th>Frequenz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CD4021</td>
+<td style="text-align: center;">1</td>
+<td>500 kHz</td>
+</tr>
+<tr>
+<td>HC595</td>
+<td style="text-align: center;">0</td>
+<td>1 MHz</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verwandte Begriffe:</strong> → MISO/MOSI, → HAL</p>
+<hr />
+<h3 id="ssot-single-source-of-truth">SSOT (Single Source of Truth)</h3>
+<p><strong>Definition:</strong> Prinzip, dass jede Information an genau
+einer Stelle definiert ist.</p>
+<p><strong>Projektbezug:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Information</th>
+<th>SSOT-Datei</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pin-Zuordnung</td>
+<td><code>include/hw/board_pins.h</code></td>
+</tr>
+<tr>
+<td>Kanalanzahl</td>
+<td><code>include/hw/io_counts.h</code></td>
+</tr>
+<tr>
+<td>SPI-Parameter</td>
+<td><code>include/hw/spi_params.h</code></td>
+</tr>
+<tr>
+<td>Protokoll</td>
+<td><code>apps/bridge/docs/PROTOCOL.md</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Regel:</strong> Änderung = nur eine Datei editieren.</p>
+<p><strong>Verwandte Begriffe:</strong> → HAL</p>
+<hr />
+<h2 id="t">T</h2>
+<h3 id="task">Task</h3>
+<p><strong>Definition:</strong> Unabhängige Ausführungseinheit in einem
+RTOS mit eigenem Stack und Priorität.</p>
+<p><strong>FreeRTOS-API:</strong></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Task erstellen</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>xTaskCreate<span class="op">(</span>ioTask<span class="op">,</span> <span class="st">&quot;IO&quot;</span><span class="op">,</span> <span class="dv">4096</span><span class="op">,</span> NULL<span class="op">,</span> <span class="dv">5</span><span class="op">,</span> NULL<span class="op">);</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Task-Funktion</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ioTask<span class="op">(</span><span class="dt">void</span><span class="op">*</span> param<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="kw">true</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Arbeit...</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">10</span><span class="op">));</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Projektbezug:</strong> <code>io_task</code> für
+IO-Verarbeitung.</p>
+<p><strong>Verwandte Begriffe:</strong> → FreeRTOS, → RTOS</p>
+<hr />
+<h3 id="timing">Timing</h3>
+<p><strong>Definition:</strong> Zeitliche Abfolge und Dauer von Signalen
+und Operationen.</p>
+<p><strong>Kritische Timing-Aspekte:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Aspekt</th>
+<th>Zu schnell</th>
+<th>Zu langsam</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SPI-Clock</td>
+<td>Setup/Hold verletzt</td>
+<td>Durchsatz sinkt</td>
+</tr>
+<tr>
+<td>Scan-Intervall</td>
+<td>CPU-Überlastung</td>
+<td>Träge Reaktion</td>
+</tr>
+<tr>
+<td>Debounce</td>
+<td>Prellen nicht gefiltert</td>
+<td>Verzögerte Erkennung</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong> Timing-Budget einhalten (&lt; 10 ms
+pro Scan).</p>
+<p><strong>Verwandte Begriffe:</strong> → Scan-Zyklus, → SPI</p>
+<hr />
+<h2 id="u">U</h2>
+<h3 id="unit-test">Unit-Test</h3>
+<p><strong>Definition:</strong> Test einer einzelnen Komponente in
+Isolation, ohne Hardware-Abhängigkeiten.</p>
+<p><strong>Projektbezug:</strong></p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pio</span> test <span class="at">-d</span> firmware <span class="at">-e</span> seeed_xiao_esp32s3_test <span class="at">-v</span></span></code></pre></div>
+<p><strong>Getestete Komponenten:</strong> - Debounce-Algorithmus -
+Selection-Logik - Bit-Mapping - One-Hot-Encoding</p>
+<p><strong>Vorteil:</strong> Läuft in Sekunden, reproduzierbar,
+automatisierbar.</p>
+<p><strong>Verwandte Begriffe:</strong> → E2E-Test</p>
+<hr />
+<h3 id="usb-cdc-usb-communication-device-class">USB-CDC (USB
+Communication Device Class)</h3>
+<p><strong>Definition:</strong> USB-Geräteklasse für virtuelle serielle
+Schnittstellen.</p>
+<p><strong>Eigenschaften:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Aspekt</th>
+<th>Wert</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baudrate</td>
+<td>Wird ignoriert (USB bestimmt Speed)</td>
+</tr>
+<tr>
+<td>Pufferung</td>
+<td>OS-abhängig</td>
+</tr>
+<tr>
+<td>Latenz</td>
+<td>Variabel (USB-Polling)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Projektbezug:</strong> ESP32-S3 ↔︎ Raspberry Pi
+Verbindung.</p>
+<p><strong>Verwandte Begriffe:</strong> → Baudrate, → Frame</p>
+<hr />
+<h2 id="v">V</h2>
+<h3 id="volatile">Volatile</h3>
+<p><strong>Definition:</strong> C-Keyword, das dem Compiler
+signalisiert, dass eine Variable sich unerwartet ändern kann (durch ISR,
+Hardware, andere Threads).</p>
+<p><strong>Verwendung:</strong></p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="dt">volatile</span> <span class="dt">bool</span> flag <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> ISR<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    flag <span class="op">=</span> <span class="kw">true</span><span class="op">;</span>  <span class="co">// Wird von ISR geschrieben</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(!</span>flag<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Ohne volatile könnte der Compiler</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">// flag nur einmal lesen und cachen</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>⚠ Regel:</strong> Variablen, die von ISRs oder Hardware
+geschrieben werden, müssen <code>volatile</code> sein.</p>
+<p><strong>Verwandte Begriffe:</strong> → ISR</p>
+<hr />
+<h2 id="w">W</h2>
+<h3 id="watchdog">Watchdog</h3>
+<p><strong>Definition:</strong> Hardware-Timer, der bei Nicht-Rücksetzen
+einen System-Reset auslöst.</p>
+<p><strong>Zweck:</strong> Erkennung von Software-Hängern und
+automatische Wiederherstellung.</p>
+<p><strong>Ablauf:</strong></p>
+<pre><code>System startet → Watchdog Timer startet (z.B. 5 s)
+     │
+     ├─► Normaler Betrieb: Watchdog regelmäßig zurücksetzen
+     │                          │
+     │                     Timer Reset → Kein Reset
+     │
+     └─► Software hängt: Kein Reset des Watchdogs
+                              │
+                         Timer läuft ab → System-Reset</code></pre>
+<p><strong>Verwandte Begriffe:</strong> → RTOS, → ISR</p>
+<hr />
+<h3 id="wire-frame">Wire Frame</h3>
+<p><strong>Definition:</strong> Das tatsächliche Datenpaket auf dem
+physischen Medium (nach Encoding).</p>
+<p><strong>Unterschied Raw vs. Wire:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Begriff</th>
+<th>Inhalt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw Frame</td>
+<td>Header + Payload + CRC (vor COBS)</td>
+</tr>
+<tr>
+<td>Wire Frame</td>
+<td>COBS-kodiert + 0x00 Delimiter</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Größenbeispiel (SELECTION_STATE):</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Stufe</th>
+<th>Größe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Payload</td>
+<td>8 Bytes</td>
+</tr>
+<tr>
+<td>Raw Frame</td>
+<td>20 Bytes</td>
+</tr>
+<tr>
+<td>Wire Frame</td>
+<td>~22 Bytes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verwandte Begriffe:</strong> → Frame, → COBS</p>
+</div>
+</body>
+</html>

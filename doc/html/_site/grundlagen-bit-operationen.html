@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>grundlagen-bit-operationen.mathjax_tmp</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+  
+  <script>
+  window.MathJax = {
+    loader: {
+      load: ['[tex]/ams']
+    },
+    tex: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      packages: {'[+]': ['ams']},
+      macros: {
+        dd: '{\\,\\mathrm{d}}',
+        degC: '{^{\\circ}\\!\\mathrm{C}}',
+        Ohm: '{\\,\\Omega}',
+        ohm: '{\\,\\Omega}',
+        degree: '{^{\\circ}}'
+      }
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre','code','kbd','samp']
+    }
+  };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div class="main-container">
+<h1 id="grundlagen-zahlensysteme-und-bit-operationen">Grundlagen:
+Zahlensysteme und Bit-Operationen</h1>
+<h2 id="begriffsrahmen-und-zielsetzung">0) Begriffsrahmen und
+Zielsetzung</h2>
+<p><strong>Anwendungskontext:</strong> Schieberegister (CD4021B für
+Eingabe, 74HC595 für Ausgabe) verarbeiten Daten byteweise. Die Firmware
+muss einzelne Bits gezielt lesen und schreiben können – etwa um
+festzustellen, ob Taster 7 gedrückt ist, oder um LED 5
+einzuschalten.</p>
+<p><strong>Lernziele:</strong> Nach diesem Kapitel kannst du:</p>
+<ol type="1">
+<li>Zahlenwerte zwischen Dezimal, Binär und Hexadezimal umrechnen</li>
+<li>Den passenden Datentyp für eine gegebene Bitbreite wählen</li>
+<li>Bit-Operationen (Setzen, Löschen, Prüfen, Toggeln) sicher
+anwenden</li>
+<li>Eine Button-ID in Byte-Index und Bit-Position überführen</li>
+</ol>
+<p><strong>Begriffsdefinitionen:</strong></p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 62%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Begriff</th>
+<th>Definition</th>
+<th>Quelle/Norm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bit</strong></td>
+<td>Kleinste Informationseinheit; Wertebereich {0, 1}</td>
+<td>IEC 60027-2</td>
+</tr>
+<tr>
+<td><strong>Byte</strong></td>
+<td>Gruppe von 8 Bits; Wertebereich 0–255 (unsigned)</td>
+<td>IEC 80000-13</td>
+</tr>
+<tr>
+<td><strong>Nibble</strong></td>
+<td>Gruppe von 4 Bits; entspricht einer Hexadezimalziffer</td>
+<td>Gebräuchliche Konvention</td>
+</tr>
+<tr>
+<td><strong>MSB</strong></td>
+<td>Most Significant Bit – Bit 7, höchster Stellenwert (2⁷=128)</td>
+<td>–</td>
+</tr>
+<tr>
+<td><strong>LSB</strong></td>
+<td>Least Significant Bit – Bit 0, niedrigster Stellenwert (2⁰=1)</td>
+<td>–</td>
+</tr>
+<tr>
+<td><strong>Maske</strong></td>
+<td>Bit-Muster zur gezielten Manipulation bestimmter Bits</td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="zahlensysteme-drei-darstellungen-ein-wert">1) Zahlensysteme –
+Drei Darstellungen, ein Wert</h2>
+<p><strong>Problemstellung:</strong> Der Wert „zwölf” lässt sich auf
+verschiedene Arten schreiben. In der Embedded-Entwicklung begegnen alle
+drei Darstellungen – oft im selben Quellcode. Das Verständnis der
+Umrechnung ist Voraussetzung für die Arbeit mit Bit-Masken.</p>
+<h3 id="die-drei-zahlensysteme">1.1) Die drei Zahlensysteme</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 10%" />
+<col style="width: 21%" />
+<col style="width: 20%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr>
+<th>System</th>
+<th style="text-align: center;">Basis</th>
+<th>Ziffernvorrat</th>
+<th style="text-align: center;">C/C++ Präfix</th>
+<th>Beispiel (Wert 12)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dezimal</td>
+<td style="text-align: center;">10</td>
+<td>0–9</td>
+<td style="text-align: center;">(keiner)</td>
+<td><code>12</code></td>
+</tr>
+<tr>
+<td>Binär</td>
+<td style="text-align: center;">2</td>
+<td>0, 1</td>
+<td style="text-align: center;"><code>0b</code></td>
+<td><code>0b0000.1100</code></td>
+</tr>
+<tr>
+<td>Hexadezimal</td>
+<td style="text-align: center;">16</td>
+<td>0–9, A–F</td>
+<td style="text-align: center;"><code>0x</code></td>
+<td><code>0x0C</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Anwendungsregel – Welches System wann?</strong></p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 43%" />
+<col style="width: 26%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Empfohlenes System</th>
+<th>Beispiel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zählwerte, Indizes, Zeitangaben</td>
+<td>Dezimal</td>
+<td><code>count = 10</code></td>
+</tr>
+<tr>
+<td>Einzelne Bits sichtbar machen</td>
+<td>Binär</td>
+<td><code>0b1000.0000</code> (Bit 7)</td>
+</tr>
+<tr>
+<td>Byte-Werte, Adressen, Register</td>
+<td>Hexadezimal</td>
+<td><code>0x80</code> (kompakt)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nibble-prinzip-binär-und-hex-verbinden">1.2) Nibble-Prinzip –
+Binär und Hex verbinden</h3>
+<p>Ein Nibble umfasst 4 Bits und entspricht exakt einer
+Hexadezimalziffer. Diese Korrespondenz ermöglicht schnelle Umrechnungen
+ohne Taschenrechner.</p>
+<p><strong>Schreibkonvention:</strong> Zur besseren Lesbarkeit trennen
+wir Nibbles mit einem Punkt:</p>
+<pre><code>0b0001.0000  statt  0b00010000
+  ~~~~.~~~~
+  High Low
+  Nibble</code></pre>
+<p><strong>Umrechnungstabelle (Nibble ↔︎ Hex):</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">Hex</th>
+<th style="text-align: center;">Binär</th>
+<th style="text-align: right;">Dez</th>
+<th></th>
+<th style="text-align: center;">Hex</th>
+<th style="text-align: center;">Binär</th>
+<th style="text-align: right;">Dez</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;"><code>0000</code></td>
+<td style="text-align: right;">0</td>
+<td></td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;"><code>1000</code></td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;"><code>0001</code></td>
+<td style="text-align: right;">1</td>
+<td></td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;"><code>1001</code></td>
+<td style="text-align: right;">9</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;"><code>0010</code></td>
+<td style="text-align: right;">2</td>
+<td></td>
+<td style="text-align: center;">A</td>
+<td style="text-align: center;"><code>1010</code></td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;"><code>0011</code></td>
+<td style="text-align: right;">3</td>
+<td></td>
+<td style="text-align: center;">B</td>
+<td style="text-align: center;"><code>1011</code></td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;"><code>0100</code></td>
+<td style="text-align: right;">4</td>
+<td></td>
+<td style="text-align: center;">C</td>
+<td style="text-align: center;"><code>1100</code></td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;"><code>0101</code></td>
+<td style="text-align: right;">5</td>
+<td></td>
+<td style="text-align: center;">D</td>
+<td style="text-align: center;"><code>1101</code></td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;"><code>0110</code></td>
+<td style="text-align: right;">6</td>
+<td></td>
+<td style="text-align: center;">E</td>
+<td style="text-align: center;"><code>1110</code></td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;"><code>0111</code></td>
+<td style="text-align: right;">7</td>
+<td></td>
+<td style="text-align: center;">F</td>
+<td style="text-align: center;"><code>1111</code></td>
+<td style="text-align: right;">15</td>
+</tr>
+</tbody>
+</table>
+<p><em>Diese Tabelle sollte auswendig beherrscht werden – sie ist das
+Einmaleins der Bit-Manipulation.</em></p>
+<h3 id="anwendungsbeispiel-0x80-in-binär-umwandeln">1.3)
+Anwendungsbeispiel: 0x80 in Binär umwandeln</h3>
+<p><strong>Aufgabe:</strong> Wandle <code>0x80</code> in
+Binärdarstellung um.</p>
+<p><strong>Schritt-für-Schritt-Herleitung:</strong></p>
+<pre><code>Schritt 1: Hex-Ziffern identifizieren
+    0x80 = 0x8 und 0x0
+
+Schritt 2: Jede Hex-Ziffer → Nibble (aus Tabelle)
+    0x8 → 0b1000
+    0x0 → 0b0000
+
+Schritt 3: Nibbles zusammensetzen
+    0x80 = 0b1000.0000
+
+Schritt 4: Interpretation
+    Nur Bit 7 ist gesetzt → Stellenwert 2⁷ = 128</code></pre>
+<p><strong>Ergebnis:</strong>
+<code>0x80 = 0b1000.0000 = 128₁₀</code></p>
+<p>Diese Maske adressiert Bit 7 – im MSB-first-Mapping entspricht das ID
+1.</p>
+<hr />
+<h2 id="datentypen-mit-fester-bitbreite">2) Datentypen mit fester
+Bitbreite</h2>
+<p><strong>Problemstellung:</strong> Die C/C++-Standardtypen
+(<code>int</code>, <code>char</code>) haben plattformabhängige Größen.
+Ein <code>int</code> kann 16, 32 oder 64 Bit breit sein. Für
+Schieberegister, die exakt 8 Bit verarbeiten, ist diese Unbestimmtheit
+problematisch.</p>
+<p><strong>Lösung:</strong> Der Header <code>&lt;stdint.h&gt;</code> (C)
+bzw. <code>&lt;cstdint&gt;</code> (C++) definiert Typen mit garantierter
+Bitbreite (vgl. ISO/IEC 9899:1999, §7.18).</p>
+<h3 id="integer-typen-mit-garantierter-breite">2.1) Integer-Typen mit
+garantierter Breite</h3>
+<table class="table table-compact" style="width:100%;">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 7%" />
+<col style="width: 42%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr>
+<th>Typ</th>
+<th style="text-align: center;">Bits</th>
+<th>Wertebereich (dezimal)</th>
+<th>Wertebereich (hex)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>uint8_t</code></td>
+<td style="text-align: center;">8</td>
+<td>0 bis 255</td>
+<td><code>0x00</code> – <code>0xFF</code></td>
+</tr>
+<tr>
+<td><code>int8_t</code></td>
+<td style="text-align: center;">8</td>
+<td>−128 bis +127</td>
+<td><code>0x80</code> – <code>0x7F</code></td>
+</tr>
+<tr>
+<td><code>uint16_t</code></td>
+<td style="text-align: center;">16</td>
+<td>0 bis 65.535</td>
+<td><code>0x0000</code> – <code>0xFFFF</code></td>
+</tr>
+<tr>
+<td><code>int16_t</code></td>
+<td style="text-align: center;">16</td>
+<td>−32.768 bis +32.767</td>
+<td><code>0x8000</code> – <code>0x7FFF</code></td>
+</tr>
+<tr>
+<td><code>uint32_t</code></td>
+<td style="text-align: center;">32</td>
+<td>0 bis 4.294.967.295</td>
+<td><code>0x00000000</code> – <code>0xFFFFFFFF</code></td>
+</tr>
+<tr>
+<td><code>int32_t</code></td>
+<td style="text-align: center;">32</td>
+<td>−2.147.483.648 bis +2.147.483.647</td>
+<td><code>0x80000000</code> – <code>0x7FFFFFFF</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Namenskonvention dekodieren:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Bestandteil</th>
+<th>Bedeutung</th>
+<th>Beispiel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>u</code></td>
+<td>unsigned (vorzeichenlos)</td>
+<td><code>uint8_t</code></td>
+</tr>
+<tr>
+<td>Zahl</td>
+<td>Bitbreite</td>
+<td><code>8</code>, <code>16</code>, <code>32</code></td>
+</tr>
+<tr>
+<td><code>_t</code></td>
+<td>type (Typedef-Kennzeichnung)</td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+<p><em>Lesehilfe:</em> <code>uint8_t</code> = <strong>u</strong>nsigned
+<strong>int</strong>eger, <strong>8</strong> Bit,
+<strong>t</strong>ype</p>
+<h3 id="typwahl-für-schieberegister">2.2) Typwahl für
+Schieberegister</h3>
+<p>Ein Schieberegister (CD4021B, 74HC595) verarbeitet exakt 8 Bits. Der
+Typ <code>uint8_t</code> bildet dies 1:1 ab:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;stdint.h&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> buttonState <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>           <span class="co">// 8 Taster → 1 Byte</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> ledState<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="dv">0</span><span class="op">,</span> <span class="dv">0</span><span class="op">};</span>      <span class="co">// 10 LEDs  → 2 Bytes (16 Bits, 10 genutzt)</span></span></code></pre></div>
+<p><strong>Typvergleich für Schieberegister-Anwendungen:</strong></p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 8%" />
+<col style="width: 26%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr>
+<th>Typ</th>
+<th style="text-align: center;">Bits</th>
+<th>Garantiert?</th>
+<th>Bewertung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>uint8_t</code></td>
+<td style="text-align: center;">8</td>
+<td>Ja, exakt 8 Bit</td>
+<td><strong>Empfohlen</strong> – explizit, portabel</td>
+</tr>
+<tr>
+<td><code>unsigned char</code></td>
+<td style="text-align: center;">8</td>
+<td>Mindestens 8 Bit</td>
+<td>Funktioniert, aber weniger lesbar</td>
+</tr>
+<tr>
+<td><code>byte</code></td>
+<td style="text-align: center;">8</td>
+<td>Nur Arduino-Framework</td>
+<td>Nicht portabel auf andere Plattformen</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td style="text-align: center;">16–32</td>
+<td>Plattformabhängig</td>
+<td>Ungeeignet – verschwendet RAM</td>
+</tr>
+</tbody>
+</table>
+<h3 id="überlauf-overflow-und-unterlauf-underflow">2.3) Überlauf
+(Overflow) und Unterlauf (Underflow)</h3>
+<p>Bei unsigned-Typen „wickelt” der Wert bei Bereichsüberschreitung um –
+ohne Fehlermeldung:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> x <span class="op">=</span> <span class="dv">255</span><span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> x <span class="op">+</span> <span class="dv">1</span><span class="op">;</span>    <span class="co">// Ergebnis: x = 0   (nicht 256!)</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> y <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> y <span class="op">-</span> <span class="dv">1</span><span class="op">;</span>    <span class="co">// Ergebnis: y = 255 (nicht -1!)</span></span></code></pre></div>
+<p><strong>Visualisierung als Zahlenkreis:</strong></p>
+<pre><code>             0
+         255 ↑ 1
+       254 ←─┼─→ 2
+           · · ·
+       129 ←─┼─→ 127
+         128</code></pre>
+<p><em>Bei 255+1 springt der Wert auf 0; bei 0−1 springt er auf
+255.</em></p>
+<p><strong>Anwendungshinweis:</strong> Dieses Verhalten ist definiert
+(kein Undefined Behavior bei unsigned), kann aber zu schwer auffindbaren
+Fehlern führen. Prüfe Grenzwerte vor arithmetischen Operationen.</p>
+<h3 id="das-suffix-u-warum-1u-statt-1">2.4) Das Suffix <code>u</code> –
+Warum <code>1u</code> statt <code>1</code>?</h3>
+<p><strong>Problemstellung:</strong> Das Literal <code>1</code> hat den
+Typ <code>int</code> (signed). Bei Shift-Operationen kann dies zu
+undefiniertem Verhalten führen.</p>
+<p><strong>Hintergrund – signed vs. unsigned bei Shifts:</strong></p>
+<pre><code>int8_t (signed, 8 Bit):
+┌───┬───┬───┬───┬───┬───┬───┬───┐
+│ V │ 6 │ 5 │ 4 │ 3 │ 2 │ 1 │ 0 │   V = Vorzeichen-Bit
+└───┴───┴───┴───┴───┴───┴───┴───┘
+  │
+  └── 0 = positiv (+0 bis +127)
+      1 = negativ (−128 bis −1)
+
+uint8_t (unsigned, 8 Bit):
+┌───┬───┬───┬───┬───┬───┬───┬───┐
+│ 7 │ 6 │ 5 │ 4 │ 3 │ 2 │ 1 │ 0 │   Alle 8 Bits für den Wert
+└───┴───┴───┴───┴───┴───┴───┴───┘</code></pre>
+<p><strong>Konkretes Fehlerszenario:</strong></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">// OHNE &#39;u&#39; – problematisch:</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> result <span class="op">=</span> <span class="dv">1</span> <span class="op">&lt;&lt;</span> <span class="dv">31</span><span class="op">;</span>     <span class="co">// Undefiniertes Verhalten! (signed overflow)</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">// MIT &#39;u&#39; – sicher:</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="dt">unsigned</span> <span class="dt">int</span> result <span class="op">=</span> <span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> <span class="dv">31</span><span class="op">;</span>   <span class="co">// OK, definiertes Verhalten</span></span></code></pre></div>
+<p><strong>Regel:</strong> Ein Linksshift, der das Vorzeichen-Bit eines
+signed Typs modifiziert, ist laut C++-Standard (ISO/IEC 14882:2017,
+§8.8) undefiniert. Der Compiler darf beliebigen Code erzeugen.</p>
+<p><strong>Best Practice – Immer <code>1u</code> bei
+Bit-Operationen:</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> mask <span class="op">=</span> <span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> <span class="dv">7</span><span class="op">;</span>           <span class="co">// ✓ Sicher</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> mask <span class="op">=</span> <span class="dv">1</span> <span class="op">&lt;&lt;</span> <span class="dv">7</span><span class="op">;</span>            <span class="co">// ✗ Riskant (auf manchen Plattformen)</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>ledState <span class="op">|=</span> <span class="op">(</span><span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPos<span class="op">);</span>       <span class="co">// ✓ Setzen</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>ledState <span class="op">&amp;=</span> <span class="op">~(</span><span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPos<span class="op">);</span>      <span class="co">// ✓ Löschen</span></span></code></pre></div>
+<blockquote>
+<p><strong>Merkregel:</strong> Siehst du <code>&lt;&lt;</code> oder
+<code>&gt;&gt;</code>, schreib <code>1u</code> statt <code>1</code>.</p>
+</blockquote>
+<hr />
+<h2 id="skalierung-von-8-auf-100-bits">3) Skalierung – Von 8 auf 100+
+Bits</h2>
+<p><strong>Problemstellung:</strong> Standard-Integer-Typen enden bei 64
+Bit. Für 100 LEDs benötigen wir 100 Bits – wie organisieren wir
+diese?</p>
+<h3 id="verfügbare-integer-typen">3.1) Verfügbare Integer-Typen</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Typ</th>
+<th style="text-align: center;">Bits</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>uint8_t</code></td>
+<td style="text-align: center;">8</td>
+<td>✓ Standard</td>
+</tr>
+<tr>
+<td><code>uint16_t</code></td>
+<td style="text-align: center;">16</td>
+<td>✓ Standard</td>
+</tr>
+<tr>
+<td><code>uint32_t</code></td>
+<td style="text-align: center;">32</td>
+<td>✓ Standard</td>
+</tr>
+<tr>
+<td><code>uint64_t</code></td>
+<td style="text-align: center;">64</td>
+<td>✓ Standard (<strong>Maximum</strong>)</td>
+</tr>
+</tbody>
+</table>
+<p>Der ESP32-S3 als 32-Bit-Prozessor kann maximal 32 Bits in einem
+Rechenschritt verarbeiten. Für größere Bitmengen verwenden wir
+Arrays.</p>
+<h3 id="lösung-byte-arrays">3.2) Lösung: Byte-Arrays</h3>
+<p><strong>Formel – Anzahl Bytes berechnen:</strong></p>
+<div class="math math-display">$$\text{Bytes} = \left\lceil \frac{\text{Bits}}{8} \right\rceil = \frac{\text{Bits} + 7}{8} \quad \text{(ganzzahlige Division)}$$</div>
+<p><strong>Herleitung am Beispiel:</strong></p>
+<pre><code>Gegeben: 100 LEDs → 100 Bits benötigt
+
+Rechnung: (100 + 7) / 8 = 107 / 8 = 13  (ganzzahlig)
+
+Ergebnis: 13 Bytes (= 104 Bits, davon 100 genutzt, 4 ungenutzt)</code></pre>
+<p><strong>Umsetzung in C:</strong></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define NUM_LEDS  </span><span class="dv">100</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define NUM_BYTES </span><span class="op">((</span><span class="pp">NUM_LEDS </span><span class="op">+</span><span class="pp"> </span><span class="dv">7</span><span class="op">)</span><span class="pp"> </span><span class="op">/</span><span class="pp"> </span><span class="dv">8</span><span class="op">)</span><span class="pp">   </span><span class="co">// = 13</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> ledState<span class="op">[</span>NUM_BYTES<span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="dv">0</span><span class="op">};</span>       <span class="co">// 13 Bytes, alle auf 0 initialisiert</span></span></code></pre></div>
+<h3 id="adressierung-id-byte-index-und-bit-position">3.3) Adressierung:
+ID → Byte-Index und Bit-Position</h3>
+<p>Um ein bestimmtes Bit in einem Array zu adressieren, benötigen wir
+zwei Informationen:</p>
+<ol type="1">
+<li><strong>Byte-Index:</strong> In welchem Array-Element liegt das
+Bit?</li>
+<li><strong>Bit-Position:</strong> Welches Bit innerhalb dieses
+Bytes?</li>
+</ol>
+<p><strong>Formeln (für 1-basierte IDs):</strong></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> byteIndex   <span class="op">=</span> <span class="op">(</span>id <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">8</span><span class="op">;</span>      <span class="co">// Ganzzahlige Division</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> bitPosition <span class="op">=</span> <span class="op">(</span>id <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">%</span> <span class="dv">8</span><span class="op">;</span>      <span class="co">// Modulo (Rest)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> mask        <span class="op">=</span> <span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPosition<span class="op">;</span> <span class="co">// Bit-Maske</span></span></code></pre></div>
+<h3 id="anwendungsbeispiel-led-87-einschalten">3.4) Anwendungsbeispiel:
+LED 87 einschalten</h3>
+<p><strong>Schritt-für-Schritt-Herleitung:</strong></p>
+<pre><code>Gegeben: id = 87
+
+Schritt 1: Nullbasierter Index
+    bit = id - 1 = 87 - 1 = 86
+
+Schritt 2: Byte-Index (welches Byte im Array?)
+    byteIndex = 86 / 8 = 10  (ganzzahlig)
+    → LED 87 liegt in ledState[10]
+
+Schritt 3: Bit-Position (welches Bit im Byte?)
+    bitPosition = 86 % 8 = 6
+    → LED 87 liegt auf Bit 6
+
+Schritt 4: Maske erzeugen
+    mask = 1u &lt;&lt; 6 = 0b0100.0000 = 0x40
+
+Schritt 5: Bit setzen
+    ledState[10] |= 0x40;</code></pre>
+<p><strong>Kontrolltabelle für ausgewählte IDs:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: right;">LED</th>
+<th style="text-align: right;">id−1</th>
+<th style="text-align: right;">Byte</th>
+<th style="text-align: right;">Bit</th>
+<th>Maske (binär)</th>
+<th>Maske (hex)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td><code>0b0000.0001</code></td>
+<td><code>0x01</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td><code>0b1000.0000</code></td>
+<td><code>0x80</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td><code>0b0000.0001</code></td>
+<td><code>0x01</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+<td><code>0b1000.0000</code></td>
+<td><code>0x80</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td><code>0b0000.0010</code></td>
+<td><code>0x02</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">87</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">6</td>
+<td><code>0b0100.0000</code></td>
+<td><code>0x40</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">99</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">3</td>
+<td><code>0b0000.1000</code></td>
+<td><code>0x08</code></td>
+</tr>
+</tbody>
+</table>
+<p><em>Beobachtung:</em> Bei jeder 8. LED (8, 16, 24, …) springt der
+Byte-Index um 1, die Bit-Position kehrt zu 0 zurück.</p>
+<hr />
+<h2 id="bit-positionen-und-stellenwerte">4) Bit-Positionen und
+Stellenwerte</h2>
+<p><strong>Definition:</strong> Ein Byte besteht aus 8 Bits mit den
+Positionen 0 bis 7. Jede Position hat einen Stellenwert, der einer
+Zweierpotenz entspricht.</p>
+<h3 id="aufbau-eines-bytes">4.1) Aufbau eines Bytes</h3>
+<pre><code>Position:      7      6      5      4      3      2      1      0
+             ┌──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┐
+Byte:        │      │      │      │      │      │      │      │      │
+             └──────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┘
+Stellenwert:   128    64     32     16      8      4      2      1
+Potenz:        2⁷     2⁶     2⁵     2⁴     2³     2²     2¹     2⁰
+               MSB                                              LSB</code></pre>
+<p><strong>Stellenwert-Formel:</strong> Bit n hat den Wert
+<span class="math math-inline">$2^n$</span>.</p>
+<h3 id="referenztabelle-bit-position-maske">4.2) Referenztabelle:
+Bit-Position → Maske</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">Bit</th>
+<th style="text-align: right;">Stellenwert</th>
+<th style="text-align: center;">Berechnung</th>
+<th>Maske (binär)</th>
+<th style="text-align: center;">Maske (hex)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: center;"><code>1u &lt;&lt; 0</code></td>
+<td><code>0b0000.0001</code></td>
+<td style="text-align: center;"><code>0x01</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: center;"><code>1u &lt;&lt; 1</code></td>
+<td><code>0b0000.0010</code></td>
+<td style="text-align: center;"><code>0x02</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: center;"><code>1u &lt;&lt; 2</code></td>
+<td><code>0b0000.0100</code></td>
+<td style="text-align: center;"><code>0x04</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: center;"><code>1u &lt;&lt; 3</code></td>
+<td><code>0b0000.1000</code></td>
+<td style="text-align: center;"><code>0x08</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: center;"><code>1u &lt;&lt; 4</code></td>
+<td><code>0b0001.0000</code></td>
+<td style="text-align: center;"><code>0x10</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: center;"><code>1u &lt;&lt; 5</code></td>
+<td><code>0b0010.0000</code></td>
+<td style="text-align: center;"><code>0x20</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">6</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: center;"><code>1u &lt;&lt; 6</code></td>
+<td><code>0b0100.0000</code></td>
+<td style="text-align: center;"><code>0x40</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">7</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: center;"><code>1u &lt;&lt; 7</code></td>
+<td><code>0b1000.0000</code></td>
+<td style="text-align: center;"><code>0x80</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Merkregel:</strong> Die Hex-Werte folgen dem Muster 1, 2, 4,
+8 pro Nibble: - Low-Nibble (Bit 0–3): <code>0x01</code>,
+<code>0x02</code>, <code>0x04</code>, <code>0x08</code> - High-Nibble
+(Bit 4–7): <code>0x10</code>, <code>0x20</code>, <code>0x40</code>,
+<code>0x80</code></p>
+</blockquote>
+<h3 id="anwendungsbeispiel-bytewert-aus-gesetzten-bits-berechnen">4.3)
+Anwendungsbeispiel: Bytewert aus gesetzten Bits berechnen</h3>
+<p><strong>Aufgabe:</strong> Welchen dezimalen Wert hat
+<code>0b0100.1010</code>?</p>
+<p><strong>Herleitung:</strong></p>
+<pre><code>Byte:          0  1  0  0  .  1  0  1  0
+Position:      7  6  5  4     3  2  1  0
+               │  │           │     │
+               │  └── Bit 6   │     └── Bit 1 gesetzt
+               │      gesetzt │
+               │              └── Bit 3 gesetzt
+               └── Bit 7 nicht gesetzt
+
+Gesetzte Bits: 6, 3, 1
+Wert = 2⁶ + 2³ + 2¹ = 64 + 8 + 2 = 74
+
+Kontrolle in Hex: 0b0100.1010 = 0x4A
+    0x4 = 4₁₀ × 16 = 64
+    0xA = 10₁₀
+    Summe: 64 + 10 = 74 ✓</code></pre>
+<hr />
+<h2 id="der-modulo-operator">5) Der Modulo-Operator (%)</h2>
+<p><strong>Definition:</strong> Der Modulo-Operator berechnet den Rest
+einer ganzzahligen Division.</p>
+<div class="math math-display">$$a \mod b = a - \left\lfloor \frac{a}{b} \right\rfloor \cdot b$$</div>
+<h3 id="grundprinzip">5.1) Grundprinzip</h3>
+<p><strong>Beispiel:</strong> <code>13 % 5</code></p>
+<pre><code>Rechnung: 13 ÷ 5 = 2 Rest 3
+          │       │      │
+          │       │      └── Modulo-Ergebnis
+          │       └── Ganzzahliger Quotient
+          └── Dividend
+
+Probe: 2 × 5 + 3 = 10 + 3 = 13 ✓</code></pre>
+<h3 id="spezialfall-dividend-divisor">5.2) Spezialfall: Dividend &lt;
+Divisor</h3>
+<p><strong>Frage:</strong> Was ergibt <code>4 % 8</code>?</p>
+<pre><code>Rechnung: 4 ÷ 8 = 0 Rest 4
+          │       │      │
+          │       │      └── Das gesamte 4 bleibt als Rest
+          │       └── 0-mal passt 8 in 4
+          └── Dividend
+
+Ergebnis: 4 % 8 = 4</code></pre>
+<blockquote>
+<p><strong>Regel:</strong> Ist der Dividend kleiner als der Divisor, ist
+das Ergebnis der Dividend selbst.</p>
+</blockquote>
+<h3 id="anwendung-position-innerhalb-eines-bytes">5.3) Anwendung:
+Position innerhalb eines Bytes</h3>
+<p>Der Ausdruck <code>bit % 8</code> liefert die Position innerhalb
+eines Bytes (0–7):</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: right;">bit</th>
+<th style="text-align: right;">bit / 8</th>
+<th style="text-align: right;">bit % 8</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>Byte 0, Bit 0</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td>Byte 0, Bit 4</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td>Byte 0, Bit 7</td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td>Byte 1, Bit 0 (Sprung!)</td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td>Byte 1, Bit 1</td>
+</tr>
+<tr>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">7</td>
+<td>Byte 1, Bit 7</td>
+</tr>
+<tr>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td>Byte 2, Bit 0 (Sprung!)</td>
+</tr>
+</tbody>
+</table>
+<p><em>Beobachtung:</em> Bei jedem Vielfachen von 8 springt
+<code>bit % 8</code> auf 0 zurück – der Übergang zum nächsten Byte.</p>
+<hr />
+<h2 id="der-linksshift-operator">6) Der Linksshift-Operator
+(&lt;&lt;)</h2>
+<p><strong>Definition:</strong> Der Operator <code>&lt;&lt;</code>
+verschiebt alle Bits um n Positionen nach links. Rechts werden Nullen
+nachgefüllt.</p>
+<p><strong>Syntax:</strong> <code>a &lt;&lt; n</code> – „a um n nach
+links shiften”</p>
+<h3 id="visualisierung">6.1) Visualisierung</h3>
+<pre><code>Beispiel: 1 &lt;&lt; 4
+
+Start:    0b0000.0001  (Wert 1)
+               │
+               └── Einziges gesetztes Bit auf Position 0
+
+Shift:    ←←←← (4 Positionen)
+
+Ergebnis: 0b0001.0000  (Wert 16)
+               │
+               └── Bit jetzt auf Position 4</code></pre>
+<h3 id="schrittweise-ausführung-1-4">6.2) Schrittweise Ausführung:
+<code>1 &lt;&lt; 4</code></h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">Schritt</th>
+<th>Operation</th>
+<th>Binär</th>
+<th style="text-align: right;">Dezimal</th>
+<th>Potenz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td>Start</td>
+<td><code>0b0000.0001</code></td>
+<td style="text-align: right;">1</td>
+<td>2⁰</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td><code>1 &lt;&lt; 1</code></td>
+<td><code>0b0000.0010</code></td>
+<td style="text-align: right;">2</td>
+<td>2¹</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td><code>1 &lt;&lt; 2</code></td>
+<td><code>0b0000.0100</code></td>
+<td style="text-align: right;">4</td>
+<td>2²</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td><code>1 &lt;&lt; 3</code></td>
+<td><code>0b0000.1000</code></td>
+<td style="text-align: right;">8</td>
+<td>2³</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td><code>1 &lt;&lt; 4</code></td>
+<td><code>0b0001.0000</code></td>
+<td style="text-align: right;">16</td>
+<td>2⁴</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mathematischer-zusammenhang">6.3) Mathematischer
+Zusammenhang</h3>
+<p>Linksshift um n entspricht Multiplikation mit 2ⁿ:</p>
+<div class="math math-display">$$a \ll n = a \times 2^n$$</div>
+<p><strong>Beispiel:</strong>
+<span class="math math-inline">$1 \ll 4 = 1 \times 2^4 = 1 \times 16 = 16$</span></p>
+<p><em>Analogie:</em> Im Dezimalsystem entspricht das Anhängen einer
+Null der Multiplikation mit 10. Im Binärsystem entspricht Linksshift um
+1 der Multiplikation mit 2.</p>
+<p><em>Grenze der Analogie:</em> Anders als beim Dezimalsystem gehen
+beim Shift Bits verloren, die über den Wertebereich hinausschieben (bei
+8-Bit: Bit 7 und höher).</p>
+<hr />
+<h2 id="der-rechtsshift-operator">7) Der Rechtsshift-Operator
+(&gt;&gt;)</h2>
+<p><strong>Definition:</strong> Der Operator <code>&gt;&gt;</code>
+verschiebt alle Bits um n Positionen nach rechts. Links werden Nullen
+nachgefüllt (bei unsigned Typen).</p>
+<p><strong>Syntax:</strong> <code>a &gt;&gt; n</code> – „a um n nach
+rechts shiften”</p>
+<h3 id="visualisierung-1">7.1) Visualisierung</h3>
+<pre><code>Beispiel: 16 &gt;&gt; 2
+
+Start:    0b0001.0000  (Wert 16)
+               │
+               └── Bit auf Position 4
+
+Shift:    →→ (2 Positionen)
+
+Ergebnis: 0b0000.0100  (Wert 4)
+                  │
+                  └── Bit jetzt auf Position 2</code></pre>
+<h3 id="schrittweise-ausführung-16-n">7.2) Schrittweise Ausführung:
+<code>16 &gt;&gt; n</code></h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">Schritt</th>
+<th>Operation</th>
+<th>Binär</th>
+<th style="text-align: right;">Dezimal</th>
+<th>Division</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td>Start</td>
+<td><code>0b0001.0000</code></td>
+<td style="text-align: right;">16</td>
+<td>16 ÷ 1 = 16</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td><code>16 &gt;&gt; 1</code></td>
+<td><code>0b0000.1000</code></td>
+<td style="text-align: right;">8</td>
+<td>16 ÷ 2 = 8</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td><code>16 &gt;&gt; 2</code></td>
+<td><code>0b0000.0100</code></td>
+<td style="text-align: right;">4</td>
+<td>16 ÷ 4 = 4</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td><code>16 &gt;&gt; 3</code></td>
+<td><code>0b0000.0010</code></td>
+<td style="text-align: right;">2</td>
+<td>16 ÷ 8 = 2</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td><code>16 &gt;&gt; 4</code></td>
+<td><code>0b0000.0001</code></td>
+<td style="text-align: right;">1</td>
+<td>16 ÷ 16 = 1</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td><code>16 &gt;&gt; 5</code></td>
+<td><code>0b0000.0000</code></td>
+<td style="text-align: right;">0</td>
+<td>16 ÷ 32 = 0,5 → 0</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mathematischer-zusammenhang-1">7.3) Mathematischer
+Zusammenhang</h3>
+<p>Rechtsshift um n entspricht ganzzahliger Division durch 2ⁿ
+(Abrunden):</p>
+<div class="math math-display">$$a \gg n = \left\lfloor \frac{a}{2^n} \right\rfloor$$</div>
+<p><strong>Beispiel:</strong>
+<span class="math math-inline">$16 \gg 2 = \lfloor 16 / 4 \rfloor = \lfloor 4 \rfloor = 4$</span></p>
+<p><strong>Hinweis:</strong> Bits, die rechts „herausfallen”, gehen
+verloren. Das Ergebnis wird abgerundet.</p>
+<h3 id="vergleich-linksshift-vs.-rechtsshift">7.4) Vergleich: Linksshift
+vs. Rechtsshift</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Eigenschaft</th>
+<th>Linksshift <code>&lt;&lt;</code></th>
+<th>Rechtsshift <code>&gt;&gt;</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Symbol</td>
+<td><code>&lt;&lt;</code> (zeigt nach links)</td>
+<td><code>&gt;&gt;</code> (zeigt nach rechts)</td>
+</tr>
+<tr>
+<td>Bit-Bewegung</td>
+<td>nach links</td>
+<td>nach rechts</td>
+</tr>
+<tr>
+<td>Auffüllung</td>
+<td>rechts mit Nullen</td>
+<td>links mit Nullen</td>
+</tr>
+<tr>
+<td>Mathematik</td>
+<td>Multiplikation mit 2ⁿ</td>
+<td>Division durch 2ⁿ</td>
+</tr>
+<tr>
+<td>Beispiel</td>
+<td><code>1 &lt;&lt; 4 = 16</code></td>
+<td><code>16 &gt;&gt; 2 = 4</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Merkregel:</strong> Das Symbol zeigt die Richtung der
+Bit-Bewegung. - <code>&lt;&lt;</code> Pfeile nach links → Bits wandern
+nach links → Multiplikation - <code>&gt;&gt;</code> Pfeile nach rechts →
+Bits wandern nach rechts → Division</p>
+</blockquote>
+<h3 id="praxisanwendung-byte-index-berechnen">7.5) Praxisanwendung:
+Byte-Index berechnen</h3>
+<p>Der Compiler optimiert Division durch Zweierpotenzen zu
+Rechtsshifts:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> byteIndex <span class="op">=</span> bit <span class="op">/</span> <span class="dv">8</span><span class="op">;</span>    <span class="co">// Lesbar</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> byteIndex <span class="op">=</span> bit <span class="op">&gt;&gt;</span> <span class="dv">3</span><span class="op">;</span>   <span class="co">// Identisch, da 8 = 2³</span></span></code></pre></div>
+<p>Beide Varianten erzeugen denselben Maschinencode. Die erste ist
+lesbarer, die zweite macht die Bit-Operation explizit.</p>
+<hr />
+<h2 id="bitweise-logische-operatoren">8) Bitweise logische
+Operatoren</h2>
+<p><strong>Übersicht:</strong> Vier Operatoren manipulieren einzelne
+Bits unabhängig voneinander:</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">Operator</th>
+<th>Name</th>
+<th>Sprechweise</th>
+<th>Typische Anwendung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><code>\|</code></td>
+<td>OR</td>
+<td>„Oder”</td>
+<td>Bits setzen</td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>&amp;</code></td>
+<td>AND</td>
+<td>„Und”</td>
+<td>Bits prüfen / maskieren</td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>~</code></td>
+<td>NOT</td>
+<td>„Nicht”</td>
+<td>Bits invertieren</td>
+</tr>
+<tr>
+<td style="text-align: center;"><code>^</code></td>
+<td>XOR</td>
+<td>„Exklusiv-Oder”</td>
+<td>Bits umschalten (toggle)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="wahrheitstabellen">8.1) Wahrheitstabellen</h3>
+<p><strong>OR (<code>|</code>)</strong> – Ergebnis ist 1, wenn
+mindestens ein Eingang 1 ist.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">B</th>
+<th style="text-align: center;">A | B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+<p><em>Eselsbrücke:</em> „Oder” – einer <strong>oder</strong> der andere
+<strong>oder</strong> beide.</p>
+<p><strong>AND (<code>&amp;</code>)</strong> – Ergebnis ist 1, wenn
+beide Eingänge 1 sind.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">B</th>
+<th style="text-align: center;">A &amp; B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+<p><em>Eselsbrücke:</em> „Und” – dieser <strong>und</strong> jener
+müssen beide wahr sein.</p>
+<p><strong>NOT (<code>~</code>)</strong> – Invertiert jeden
+Bit-Wert.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">~A</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+</tr>
+</tbody>
+</table>
+<p><em>Eselsbrücke:</em> „Nicht” – das Gegenteil.</p>
+<p><strong>XOR (<code>^</code>)</strong> – Ergebnis ist 1, wenn die
+Eingänge unterschiedlich sind.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">A</th>
+<th style="text-align: center;">B</th>
+<th style="text-align: center;">A ^ B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+</tr>
+</tbody>
+</table>
+<p><em>Eselsbrücke:</em> „Entweder-Oder” – aber <strong>nicht</strong>
+beide gleichzeitig.</p>
+<hr />
+<h2 id="bit-manipulation-die-vier-grundoperationen">9) Bit-Manipulation:
+Die vier Grundoperationen</h2>
+<p>Mit Masken und logischen Operatoren lassen sich einzelne Bits gezielt
+verändern, ohne andere Bits zu beeinflussen.</p>
+<h3 id="bit-setzen-mit-or">9.1) Bit setzen mit OR (<code>|=</code>)</h3>
+<p><strong>Prinzip:</strong> <code>x | 0 = x</code> (bleibt) und
+<code>x | 1 = 1</code> (wird gesetzt)</p>
+<p><strong>Code-Muster:</strong></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>ledState <span class="op">|=</span> <span class="op">(</span><span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPos<span class="op">);</span>   <span class="co">// Bit an Position bitPos setzen</span></span></code></pre></div>
+<p><strong>Anwendungsbeispiel: Bit 4 setzen</strong></p>
+<pre><code>Ausgangszustand:  ledState = 0b1000.0000  (Bit 7 bereits gesetzt)
+Maske:                       0b0001.0000  (1u &lt;&lt; 4)
+                             ───────────  OR
+Ergebnis:                    0b1001.0000  (Bit 7 bleibt, Bit 4 neu)
+
+Bit-für-Bit-Analyse:
+Position:   7   6   5   4   3   2   1   0
+ledState:   1   0   0   0   0   0   0   0
+Maske:      0   0   0   1   0   0   0   0
+            ─   ─   ─   ─   ─   ─   ─   ─  OR
+Ergebnis:   1   0   0   1   0   0   0   0
+            │           │
+            │           └── 0|1 = 1 (gesetzt)
+            └── 1|0 = 1 (unverändert)</code></pre>
+<h3 id="bit-löschen-mit-and-not">9.2) Bit löschen mit AND NOT
+(<code>&amp;= ~</code>)</h3>
+<p><strong>Prinzip:</strong> <code>x &amp; 1 = x</code> (bleibt) und
+<code>x &amp; 0 = 0</code> (wird gelöscht)</p>
+<p><strong>Code-Muster:</strong></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ledState <span class="op">&amp;=</span> <span class="op">~(</span><span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPos<span class="op">);</span>   <span class="co">// Bit an Position bitPos löschen</span></span></code></pre></div>
+<p><strong>Anwendungsbeispiel: Bit 4 löschen</strong></p>
+<pre><code>Schritt 1: Maske erzeugen
+    1u &lt;&lt; 4 = 0b0001.0000
+
+Schritt 2: Maske invertieren
+    ~0b0001.0000 = 0b1110.1111
+
+Schritt 3: AND anwenden
+    Ausgangszustand:  ledState = 0b1001.0011  (mehrere Bits gesetzt)
+    Invertierte Maske:           0b1110.1111
+                                 ───────────  AND
+    Ergebnis:                    0b1000.0011  (nur Bit 4 gelöscht)
+
+Bit-für-Bit-Analyse:
+Position:   7   6   5   4   3   2   1   0
+ledState:   1   0   0   1   0   0   1   1
+~Maske:     1   1   1   0   1   1   1   1
+            ─   ─   ─   ─   ─   ─   ─   ─  AND
+Ergebnis:   1   0   0   0   0   0   1   1
+                        │
+                        └── 1&amp;0 = 0 (gelöscht)</code></pre>
+<h3 id="bit-umschalten-mit-xor">9.3) Bit umschalten mit XOR
+(<code>^=</code>)</h3>
+<p><strong>Prinzip:</strong> <code>x ^ 0 = x</code> (bleibt) und
+<code>x ^ 1 = ~x</code> (wird invertiert)</p>
+<p><strong>Code-Muster:</strong></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>ledState <span class="op">^=</span> <span class="op">(</span><span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPos<span class="op">);</span>   <span class="co">// Bit an Position bitPos toggeln</span></span></code></pre></div>
+<p><strong>Anwendungsbeispiel: Bit 4 toggeln</strong></p>
+<pre><code>Fall 1: Bit ist 0 → wird 1
+    ledState:   0b0000.0000
+    Maske:      0b0001.0000
+                ───────────  XOR
+    Ergebnis:   0b0001.0000   (0 ^ 1 = 1)
+
+Fall 2: Bit ist 1 → wird 0
+    ledState:   0b0001.0000
+    Maske:      0b0001.0000
+                ───────────  XOR
+    Ergebnis:   0b0000.0000   (1 ^ 1 = 0)</code></pre>
+<p><em>Anwendung:</em> Blinken ohne Zustandsvariable – jeder Aufruf
+wechselt den Zustand.</p>
+<h3 id="bit-prüfen-mit-and">9.4) Bit prüfen mit AND
+(<code>&amp;</code>)</h3>
+<p><strong>Prinzip:</strong> AND mit Maske isoliert das gewünschte Bit.
+Ergebnis ≠ 0 bedeutet „gesetzt”.</p>
+<p><strong>Code-Muster:</strong></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>ledState <span class="op">&amp;</span> <span class="op">(</span><span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPos<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Bit ist gesetzt (= 1)</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Bit ist nicht gesetzt (= 0)</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Anwendungsbeispiel: Bit 4 prüfen</strong></p>
+<pre><code>Fall 1: Bit 4 ist gesetzt
+    ledState:   0b0001.0000
+    Maske:      0b0001.0000
+                ───────────  AND
+    Ergebnis:   0b0001.0000 = 16 ≠ 0 → true
+
+Fall 2: Bit 4 ist nicht gesetzt
+    ledState:   0b0000.0000
+    Maske:      0b0001.0000
+                ───────────  AND
+    Ergebnis:   0b0000.0000 = 0 → false</code></pre>
+<hr />
+<h2 id="zusammenfassung">10) Zusammenfassung</h2>
+<h3 id="die-vier-bit-operationen">10.1) Die vier Bit-Operationen</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 28%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Code</th>
+<th>Wirkung</th>
+<th>Wahrheitstabelle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bit setzen</td>
+<td><code>x \|= (1u &lt;&lt; n);</code></td>
+<td>0→1, 1→1</td>
+<td><code>x \| 1 = 1</code></td>
+</tr>
+<tr>
+<td>Bit löschen</td>
+<td><code>x &amp;= ~(1u &lt;&lt; n);</code></td>
+<td>1→0, 0→0</td>
+<td><code>x &amp; 0 = 0</code></td>
+</tr>
+<tr>
+<td>Bit umschalten</td>
+<td><code>x ^= (1u &lt;&lt; n);</code></td>
+<td>0→1, 1→0</td>
+<td><code>x ^ 1 = ~x</code></td>
+</tr>
+<tr>
+<td>Bit prüfen</td>
+<td><code>if (x &amp; (1u &lt;&lt; n))</code></td>
+<td>Ergebnis ≠0 wenn 1</td>
+<td>Isolation des Bits</td>
+</tr>
+</tbody>
+</table>
+<h3 id="adressierungsformeln-1-basierte-ids">10.2) Adressierungsformeln
+(1-basierte IDs)</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Berechnung</th>
+<th>Formel</th>
+<th>Beispiel (ID=87)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Byte-Anzahl</td>
+<td><code>(count + 7) / 8</code></td>
+<td>(100+7)/8 = 13</td>
+</tr>
+<tr>
+<td>Byte-Index</td>
+<td><code>(id - 1) / 8</code></td>
+<td>(87−1)/8 = 10</td>
+</tr>
+<tr>
+<td>Bit-Position</td>
+<td><code>(id - 1) % 8</code></td>
+<td>(87−1)%8 = 6</td>
+</tr>
+<tr>
+<td>Maske</td>
+<td><code>1u &lt;&lt; bitPosition</code></td>
+<td>1u &lt;&lt; 6 = 0x40</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hex-masken-referenz">10.3) Hex-Masken-Referenz</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: center;">Bit</th>
+<th style="text-align: right;">Dezimal</th>
+<th style="text-align: center;">Hex</th>
+<th></th>
+<th style="text-align: center;">Bit</th>
+<th style="text-align: right;">Dezimal</th>
+<th style="text-align: center;">Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: center;"><code>0x01</code></td>
+<td></td>
+<td style="text-align: center;">4</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: center;"><code>0x10</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: center;"><code>0x02</code></td>
+<td></td>
+<td style="text-align: center;">5</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: center;"><code>0x20</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: center;"><code>0x04</code></td>
+<td></td>
+<td style="text-align: center;">6</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: center;"><code>0x40</code></td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: center;"><code>0x08</code></td>
+<td></td>
+<td style="text-align: center;">7</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: center;"><code>0x80</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Merkregel:</strong> Low-Nibble: 1, 2, 4, 8 → High-Nibble: 10,
+20, 40, 80 (in Hex)</p>
+</blockquote>
+<hr />
+<h2 id="vollständiges-anwendungsbeispiel">11) Vollständiges
+Anwendungsbeispiel</h2>
+<h3 id="aufgabe-led-5-einschalten">11.1) Aufgabe: LED 5 einschalten</h3>
+<div class="sourceCode" id="cb28"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Ziel: LED 5 einschalten</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> selected_id <span class="op">=</span> <span class="dv">5</span><span class="op">;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Schritt 1: Nullbasierter Index</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> bit <span class="op">=</span> selected_id <span class="op">-</span> <span class="dv">1</span><span class="op">;</span>        <span class="co">// bit = 4</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Schritt 2: Byte-Index</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> byteIndex <span class="op">=</span> bit <span class="op">/</span> <span class="dv">8</span><span class="op">;</span>          <span class="co">// 4 / 8 = 0</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Schritt 3: Bit-Position</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> bitPosition <span class="op">=</span> bit <span class="op">%</span> <span class="dv">8</span><span class="op">;</span>        <span class="co">// 4 % 8 = 4</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Schritt 4: Maske</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> mask <span class="op">=</span> <span class="dv">1</span><span class="bu">u</span> <span class="op">&lt;&lt;</span> bitPosition<span class="op">;</span>     <span class="co">// 1 &lt;&lt; 4 = 0x10</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a><span class="co">// Schritt 5: Bit setzen</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>ledState<span class="op">[</span>byteIndex<span class="op">]</span> <span class="op">|=</span> mask<span class="op">;</span></span></code></pre></div>
+<h3 id="visualisierung-2">11.2) Visualisierung</h3>
+<pre><code>LED-Nummern:      1    2    3    4    5    6    7    8
+                  │    │    │    │    │    │    │    │
+Bit-Positionen:   0    1    2    3    4    5    6    7
+                                      ▲
+                                      └── LED 5 = Bit 4
+
+Byte vorher:     0b0000.0000
+Maske (0x10):    0b0001.0000
+                 ───────────  OR
+Byte nachher:    0b0001.0000    ← LED 5 ist an</code></pre>
+<h3 id="komplette-umrechnungstabelle-leds-110">11.3) Komplette
+Umrechnungstabelle (LEDs 1–10)</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th style="text-align: right;">LED</th>
+<th style="text-align: right;">bit</th>
+<th style="text-align: right;">Byte</th>
+<th style="text-align: right;">Bit-Pos</th>
+<th>Maske (binär)</th>
+<th style="text-align: center;">Maske (hex)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td><code>0b0000.0001</code></td>
+<td style="text-align: center;"><code>0x01</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td><code>0b0000.0010</code></td>
+<td style="text-align: center;"><code>0x02</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">2</td>
+<td><code>0b0000.0100</code></td>
+<td style="text-align: center;"><code>0x04</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3</td>
+<td><code>0b0000.1000</code></td>
+<td style="text-align: center;"><code>0x08</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">4</td>
+<td><code>0b0001.0000</code></td>
+<td style="text-align: center;"><code>0x10</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">5</td>
+<td><code>0b0010.0000</code></td>
+<td style="text-align: center;"><code>0x20</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">6</td>
+<td><code>0b0100.0000</code></td>
+<td style="text-align: center;"><code>0x40</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">7</td>
+<td><code>0b1000.0000</code></td>
+<td style="text-align: center;"><code>0x80</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td><code>0b0000.0001</code></td>
+<td style="text-align: center;"><code>0x01</code></td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td><code>0b0000.0010</code></td>
+<td style="text-align: center;"><code>0x02</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</body>
+</html>

@@ -1,0 +1,159 @@
+% =============================================================================
+% embedded_mindset.tex – Fragment für techdoc.cls
+% =============================================================================
+% Einbinden in main.tex mit: \input{content/embedded_mindset}
+% =============================================================================
+
+\section{Desktop → Embedded Mindset (10 Regeln)}
+\label{sec:embedded-mindset}
+
+\begin{enumerate}
+  \item \textbf{Hardware ist die API}\\
+    Pins, Busse, Register sind \glqq die Schnittstelle\grqq. OS-Abstraktionen fehlen oft.
+
+  \item \textbf{Worst-Case zählt, nicht der Durchschnitt}\\
+    Plane Deadlines/Latenzen, nicht \glqq läuft meistens\grqq.
+
+  \item \textbf{Kein Blockieren im kritischen Pfad}\\
+    Keine langen ISR, keine Busy-Waits, kein \code{delay()} in Logik/Tasks.
+
+  \item \textbf{ISR = minimal}\\
+    ISR setzt Flag/Queue + Timestamp. Verarbeitung im Task/Mainloop.
+
+  \item \textbf{Speicher ist ein Budget}\\
+    Stack/RAM sind eng. Große Daten statisch oder in Pools. Rekursion vermeiden.
+
+  \item \textbf{Nebenläufigkeit ist überall}\\
+    ISR ↔ Task ↔ Main: Ownership und Synchronisation (Queue/Atomics) festlegen.
+
+  \item \textbf{C++ Feature-Set bewusst wählen}\\
+    \code{constexpr}, \code{enum class}, kleine POD-Structs: ja. Exceptions/RTTI/iostream: meist nein.
+
+  \item \textbf{I/O entkoppeln}\\
+    \code{read\_inputs()} → \code{logic\_update()} → \code{write\_outputs()} (testbar, deterministisch).
+
+  \item \textbf{Fehler sind Normalfall}\\
+    Timeouts, Brownout, Disconnect: Recovery + Watchdog einplanen.
+
+  \item \textbf{Observability ist knapp}\\
+    Logging sparsam, Counters, Debug-Pins/Tracing. Debugbarkeit mitdesignen.
+\end{enumerate}
+
+% -----------------------------------------------------------------------------
+\subsection{Beispiel: Selection Panel (One-Hot) -- \glqq Taster i wählt LED i\grqq}
+\label{sec:selection-panel-beispiel}
+
+\textbf{Ziel:} 10~Taster, 10~LEDs. Bei Tastendruck wird \highlight{genau eine} LED aktiv (One-Hot). Ein neuer Tastendruck schaltet \textbf{sofort} auf die neue Auswahl um.
+
+\subsubsection{Konventionen (wichtig, konsistent)}
+
+\begin{itemize}
+  \item \textbf{Buttons sind active-low (Hardware):} \code{raw\_bit = 0} bedeutet \glqq gedrückt\grqq{} (\zB CD4021).
+  \item \textbf{Logik arbeitet normalisiert:} \code{pressed = !raw\_bit} → dann gilt in der Logik: \code{1 = gedrückt}.
+  \item \textbf{Auswahl wird als ID geführt:}\\
+    \code{selected\_id} $\in \{0..10\}$\\
+    \code{0} = keine Auswahl, \code{1..10} = LED/Taster-ID
+\end{itemize}
+
+\subsubsection{Datenfluss (Architekturregel)}
+
+\begin{lstlisting}[style=base,numbers=none]
+read_inputs_raw() -> normalize_active_low() -> debounce_update()
+                  -> selection_update() -> write_outputs_onehot()
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Datenfluss-Funktionen im Detail}
+\label{tab:datenfluss-funktionen}
+\begin{tabularx}{\textwidth}{l X}
+\toprule
+\textbf{Funktion} & \textbf{Beschreibung} \\
+\midrule
+\code{read\_inputs\_raw()}      & Liest Bits aus dem Schieberegister (\zB 2~Bytes für 10~Taster) \\
+\code{normalize\_active\_low()} & Invertiert Bits → Logik-Semantik \code{1 = pressed} \\
+\code{debounce\_update()}       & Macht aus prellenden Rohwerten stabile Zustände \\
+\code{selection\_update()}      & Setzt \code{selected\_id} bei neuem Press-Event \\
+\code{write\_outputs\_onehot()} & Setzt genau \textbf{ein} LED-Bit (alle anderen 0) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Arduino-Loop vs.\ FreeRTOS (Prinzip, nicht Code)}
+\label{sec:loop-vs-rtos}
+
+\subsubsection{Variante A: Arduino-Loop (ohne eigene Tasks)}
+
+\code{loop()} läuft zyklisch (Polling), \zB alle \SI{1}{\milli\second}. Alle Schritte passieren sequentiell:
+
+\begin{lstlisting}[style=base,numbers=none]
+Inputs lesen -> normalisieren -> entprellen -> Event erkennen -> LED schreiben
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\caption{Arduino-Loop: Stärken und Risiken}
+\label{tab:arduino-loop}
+\begin{tabularx}{\textwidth}{l X}
+\toprule
+\textbf{Stärke} & Simpel, wenige Nebenläufigkeitsprobleme \\
+\textbf{Risiko} & \code{loop()} darf nicht blockieren (Regel~3) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Variante B: FreeRTOS (Task-basiert)}
+
+\begin{itemize}
+  \item \textbf{IO-Task (high prio)} besitzt SPI und macht:\\
+    Inputs lesen → normalisieren → entprellen → \code{selected\_id} bestimmen
+  \item Optional: \textbf{App-Task} bekommt Events per Queue (\zB für Serial/Web)
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{FreeRTOS: Stärken und Risiken}
+\label{tab:freertos}
+\begin{tabularx}{\textwidth}{l X}
+\toprule
+\textbf{Stärke} & Klare Prioritäten, gute Trennung IO ↔ App \\
+\textbf{Risiko} & Ownership/Synchronisation sauber halten (Regel~6) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{One-Hot-Ausgabe (Definition, byte-basiert)}
+\label{sec:one-hot-ausgabe}
+
+\textbf{Regel:} Erst löschen, dann genau 1~Bit setzen.
+
+\begin{lstlisting}[style=arduino]
+// Pseudo-Code
+clear(led_bytes);
+if (selected_id != 0) {
+    uint8_t bit = selected_id - 1;
+    led_bytes[bit / 8] |= (1u << (bit % 8));
+}
+\end{lstlisting}
+
+\begin{infobox}[Passend zum verifizierten Mapping]
+\begin{itemize}
+  \item \code{OUT[0]}: LED1..LED8 → Bit0..Bit7
+  \item \code{OUT[1]}: LED9..LED10 → Bit0..Bit1
+\end{itemize}
+\end{infobox}
+
+% -----------------------------------------------------------------------------
+\subsection{One-Hot-Checkliste (damit es wirklich immer stimmt)}
+\label{sec:one-hot-checkliste}
+
+\begin{itemize}
+  \item[$\square$] \code{selected\_id} ist \textbf{ein} Wert (\code{0..10}), kein Bitfeld
+  \item[$\square$] Active-low wird \textbf{einmal} normalisiert (\code{pressed = !raw\_bit})
+  \item[$\square$] Event ist \textbf{Press-Edge} (released → pressed), nicht \glqq level\grqq
+  \item[$\square$] LED-Ausgabe hat \textbf{einen zentralen Pfad}: \code{clear} → \code{set one bit}
+  \item[$\square$] Reset/Boot setzt deterministischen Zustand (\zB \code{selected\_id=0}, alle LEDs aus)
+  \item[$\square$] Debug/Logs: nur Events loggen (nicht jeden Scan)
+\end{itemize}

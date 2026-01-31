@@ -1,0 +1,547 @@
+% =============================================================================
+% embedded-entwicklung.tex – Engineering-Regeln
+% =============================================================================
+
+\section{Embedded-Entwicklung – Engineering-Regeln}
+
+\subsection{Begriffsrahmen und Zielsetzung}
+
+Embedded-Entwicklung unterscheidet sich von Desktop-Software durch drei Eigenschaften: begrenzte Ressourcen, harte Echtzeitanforderungen, physische Schnittstellen. Die folgenden Regeln sind keine abstrakten Best Practices, sondern konkrete Antworten auf konkrete Probleme, die bei der Arbeit mit ESP32-S3, CD4021 und 74HC595 auftreten.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Begriff} & \textbf{Definition} \\
+\midrule
+Determinismus & Gleiches Eingangssignal führt immer zum gleichen Verhalten \\
+SSOT          & Single Source of Truth – jede Information hat genau eine Quelle \\
+Hot-Path      & Code, der in jedem Scan-Zyklus ausgeführt wird \\
+Edge          & Zustandsübergang (Flanke), nicht der Zustand selbst \\
+Invariante    & Bedingung, die zu jedem Zeitpunkt gelten muss \\
+\bottomrule
+\end{tabular}
+\caption{Begriffsrahmen Embedded-Entwicklung}
+\label{tab:embedded-begriffe}
+\end{table}
+
+\textbf{Ziel:} Code, der deterministisch läuft, isoliert testbar ist und von 10 auf 100 Kanäle skaliert, ohne dass du die Logik ändern musst.
+
+% -----------------------------------------------------------------------------
+\subsection{Hardware ist die API}
+
+\textbf{Problem:} In Desktop-Software definierst du Interfaces mit Methoden und Typen. In Embedded-Systemen ist die \glqq API\grqq{} physisch: Pins, Spannungspegel, Timing-Constraints. Diese Schnittstelle ist nicht verhandelbar.
+
+\textbf{Regel:} Behandle Hardware-Konfiguration mit derselben Sorgfalt wie Software-Interfaces – dokumentiert, versioniert, an einer Stelle definiert.
+
+\textbf{SSOT im Projekt:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Aspekt} & \textbf{SSOT-Datei} & \textbf{Beispielinhalt} \\
+\midrule
+Pins          & \code{firmware/include/hw/board\_pins.h} & \code{PIN\_SCK = D8} \\
+Counts/Masks  & \code{firmware/include/hw/io\_counts.h}  & \code{LED\_COUNT = 10} \\
+SPI-Parameter & \code{firmware/include/hw/spi\_params.h} & \code{CD4021\_FREQ = 500000} \\
+\bottomrule
+\end{tabular}
+\caption{SSOT-Dateien für Hardware-Konfiguration}
+\label{tab:ssot-dateien}
+\end{table}
+
+\textbf{Konsequenz:} Wenn du einen Pin änderst, änderst du ihn in \code{board\_pins.h} – nirgendwo sonst. Der Compiler erzwingt Konsistenz, weil alle anderen Dateien diese Header einbinden.
+
+\textbf{Verboten:}
+
+\begin{lstlisting}[style=arduino]
+// Schlecht: Pin hardkodiert in Treiber
+void cd4021_init() {
+    pinMode(D1, OUTPUT);  // Wo kommt D1 her? Was ist D1?
+}
+
+// Gut: Pin aus SSOT
+#include "hw/board_pins.h"
+void cd4021_init() {
+    pinMode(PIN_BTN_PS, OUTPUT);  // Selbstdokumentierend
+}
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+\subsection{Determinismus vor Flexibilität}
+
+\textbf{Problem:} Embedded-Systeme müssen in definierten Zeitfenstern reagieren. Ein Scan-Zyklus von \SI{10}{\milli\second} bedeutet: Nach \SI{10}{\milli\second} muss die nächste Messung starten – nicht \glqq ungefähr \SI{10}{\milli\second}\grqq, nicht \glqq wenn gerade Zeit ist\grqq.
+
+\textbf{Regel:} Der Worst-Case zählt, nicht der Durchschnitt. Wenn eine Operation manchmal \SI{5}{\milli\second} und manchmal \SI{50}{\milli\second} dauert, ist sie im \SI{10}{\milli\second}-Zyklus unbrauchbar.
+
+\textbf{Scan-Zyklus-Struktur:}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    phase/.style={draw, fill=CodeBg, minimum width=2.5cm, minimum height=1cm,
+                  font=\small, rounded corners=2pt, align=center},
+    arr/.style={-{Stealth[length=2mm]}, thick, color=ArduinoDark},
+    label/.style={font=\footnotesize\ttfamily, color=MutedText}
+]
+\node[phase] (read) at (0,0) {read(raw)\\CD4021};
+\node[phase] (update) at (3.5,0) {update(state)\\Debounce};
+\node[phase] (derive) at (7,0) {derive(output)\\One-Hot};
+\node[phase] (write) at (10.5,0) {write()\\HC595};
+
+\draw[arr] (read) -- (update);
+\draw[arr] (update) -- (derive);
+\draw[arr] (derive) -- (write);
+
+\node[label, below=0.2cm of read] {$\sim$\SI{20}{\micro\second}};
+\node[label, below=0.2cm of update] {$\sim$\SI{5}{\micro\second}};
+\node[label, below=0.2cm of derive] {$\sim$\SI{1}{\micro\second}};
+\node[label, below=0.2cm of write] {$\sim$\SI{20}{\micro\second}};
+\end{tikzpicture}
+\caption{Scan-Zyklus-Struktur mit Timing}
+\label{fig:scan-zyklus}
+\end{figure}
+
+\textbf{Timing-Budget (\SI{10}{\milli\second} = \SI{10000}{\micro\second}):}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Phase} & \textbf{Dauer} & \textbf{Anteil} \\
+\midrule
+read()      & $\sim$\SI{20}{\micro\second}   & 0,2\,\% \\
+update()    & $\sim$\SI{5}{\micro\second}    & 0,05\,\% \\
+derive()    & $\sim$\SI{1}{\micro\second}    & 0,01\,\% \\
+write()     & $\sim$\SI{20}{\micro\second}   & 0,2\,\% \\
+\textbf{Summe}   & $\sim$\SI{46}{\micro\second}   & $\sim$0,5\,\% \\
+\textbf{Reserve} & $\sim$\SI{9954}{\micro\second} & 99,5\,\% \\
+\bottomrule
+\end{tabular}
+\caption{Timing-Budget pro Scan-Zyklus}
+\label{tab:timing-budget-scan}
+\end{table}
+
+\textbf{Was zerstört Determinismus:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Gut} & \textbf{Schlecht} & \textbf{Warum schlecht} \\
+\midrule
+\code{vTaskDelayUntil()} & \code{vTaskDelay()}        & Drift akkumuliert \\
+Logging bei Events       & Logging pro Scan           & UART blockiert \\
+Feste Zykluszeit         & \code{delay()} im Hot-Path & Timing wird unvorhersagbar \\
+\bottomrule
+\end{tabular}
+\caption{Determinismus-Killer vermeiden}
+\label{tab:determinismus}
+\end{table}
+
+\textbf{FreeRTOS-Beispiel:}
+
+\begin{lstlisting}[style=arduino]
+// Schlecht: Drift akkumuliert
+void io_task(void* param) {
+    while (true) {
+        scan_cycle();
+        vTaskDelay(pdMS_TO_TICKS(10));  // 10 ms NACH Ende des Zyklus
+    }
+}
+
+// Gut: Feste Periode
+void io_task(void* param) {
+    TickType_t lastWake = xTaskGetTickCount();
+    while (true) {
+        scan_cycle();
+        vTaskDelayUntil(&lastWake, pdMS_TO_TICKS(10));  // 10 ms AB Start
+    }
+}
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+\subsection{Edges statt Pegel}
+
+\textbf{Problem:} Wenn du auf den Pegel \glqq Button ist gedrückt\grqq{} reagierst, feuert die Logik in jedem Scan-Zyklus. Bei \SI{10}{\milli\second} Intervall sind das 100 Events pro Sekunde, solange der Benutzer die Taste hält.
+
+\textbf{Regel:} UI-Aktionen reagieren auf Flanken (Edges), nicht auf Pegel.
+
+\textbf{Visualisierung:}
+
+\begin{lstlisting}[style=wrap,numbers=none]
+Pegel:    ****************************  (Taste 500 ms gehalten)
+          ^                          ^
+        Press                     Release
+
+Edge:     ^                          ^   (zwei Events)
+\end{lstlisting}
+
+\textbf{Umsetzung im Projekt:}
+
+\begin{center}
+\code{CD4021 (Pegel) → Debounce (stabil) → Edge-Detection → Selection}
+\end{center}
+
+\textbf{Code-Beispiel:}
+
+\begin{lstlisting}[style=arduino]
+typedef struct {
+    uint8_t stable;      // Letzter stabiler Zustand
+    uint8_t previous;    // Fuer Edge-Detection
+} ButtonState;
+
+bool detectPressEdge(ButtonState* state, uint8_t current, uint8_t mask) {
+    // Debounce hier ausgelassen fuer Klarheit
+
+    bool wasPressed = (state->previous & mask) == 0;  // Active-low
+    bool isPressed  = (current & mask) == 0;
+
+    state->previous = current;
+
+    // Press-Edge: war nicht gedrueckt, ist jetzt gedrueckt
+    return (!wasPressed && isPressed);
+}
+\end{lstlisting}
+
+\begin{tipbox}[Konsequenz]
+Die Selection-Logik sieht nur \glqq Button 3 wurde gerade gedrückt\grqq, nicht \glqq Button 3 ist seit \SI{500}{\milli\second} gedrückt\grqq. Das macht das Verhalten vorhersagbar und testbar.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{One-Hot ist Pflicht}
+
+\textbf{Problem:} Bei einem Selection Panel mit 100 LEDs wäre es fatal, wenn versehentlich zwei LEDs gleichzeitig leuchten. Das kann passieren, wenn du LEDs an verschiedenen Stellen im Code setzt/löschst.
+
+\textbf{Regel:} One-Hot-Zustände entstehen an genau einer Stelle im Code – nicht verteilt.
+
+\textbf{Invariante:}
+
+\begin{itemize}
+\item \code{selectedId == 0} → alle LEDs aus
+\item \code{selectedId} $\in$ \code{[1..N]} → genau LED \code{selectedId} an
+\end{itemize}
+
+\textbf{Zentrale Implementierung:}
+
+\begin{lstlisting}[style=arduino]
+void setOneHot(uint8_t selectedId, uint8_t* ledState, size_t bytes) {
+    // 1. ALLE Bits loeschen (garantiert sauberen Zustand)
+    memset(ledState, 0x00, bytes);
+
+    // 2. Genau EIN Bit setzen (wenn ID > 0)
+    if (selectedId >= 1 && selectedId <= LED_COUNT) {
+        uint8_t byteIdx = (selectedId - 1) / 8;
+        uint8_t bitPos  = 7 - ((selectedId - 1) % 8);  // MSB-first
+        ledState[byteIdx] |= (1u << bitPos);
+    }
+
+    // 3. Ungueltige Bits im letzten Byte maskieren
+    ledState[bytes - 1] &= LED_LAST_MASK;
+}
+\end{lstlisting}
+
+\textbf{Warum} \code{memset} \textbf{zuerst?}
+
+Alternative Ansätze wie \glqq altes Bit löschen, neues Bit setzen\grqq{} können bei Bugs, Race Conditions oder vergessenen Aufrufen zu Zuständen mit zwei gesetzten Bits führen:
+
+\begin{lstlisting}[style=arduino]
+// Gefaehrlich: Zwei Operationen, dazwischen kann etwas schiefgehen
+ledState[oldByte] &= ~oldMask;  // Was wenn hier ein Interrupt kommt?
+ledState[newByte] |= newMask;   // Jetzt sind kurzzeitig zwei Bits gesetzt
+
+// Sicher: Atomare Operation auf dem Zustand
+memset(ledState, 0, bytes);     // Alles aus
+ledState[byteIdx] |= mask;      // Genau eins an
+\end{lstlisting}
+
+\begin{warnbox}[Verboten]
+\begin{lstlisting}[style=arduino,numbers=none]
+// Schlecht: LEDs "nebenbei" setzen
+void handleSpecialCase() {
+    ledState[0] |= 0x80;  // LED 1 zusaetzlich an - bricht One-Hot!
+}
+\end{lstlisting}
+\end{warnbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Skalierung durch Formeln}
+
+\textbf{Problem:} Code mit hardkodierten Werten wie \code{uint8\_t leds[2]} oder \code{for (int i = 0; i < 10; i++)} muss bei Skalierung manuell angepasst werden. Das ist fehleranfällig.
+
+\textbf{Regel:} Alle Größen, die von der Kanalzahl abhängen, werden aus \code{*\_COUNT} abgeleitet.
+
+\textbf{SSOT-Definitionen:}
+
+\begin{lstlisting}[style=arduino]
+// io_counts.h
+#define BTN_COUNT  10
+#define LED_COUNT  10
+
+// Abgeleitete Werte (automatisch korrekt)
+#define BTN_BYTES  ((BTN_COUNT + 7) / 8)  // = 2
+#define LED_BYTES  ((LED_COUNT + 7) / 8)  // = 2
+
+// Maske fuer ungueltige Bits im letzten Byte
+// Bei 10 Kanaelen: 10 % 8 = 2 gueltige Bits -> Maske = 0xC0
+#define LED_LAST_MASK  (0xFF << (8 - (LED_COUNT % 8 == 0 ? 8 : LED_COUNT % 8)))
+\end{lstlisting}
+
+\textbf{Vergleich:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Richtig} & \textbf{Falsch} & \textbf{Warum falsch} \\
+\midrule
+\code{LED\_COUNT}     & \code{10}   & Bei Änderung vergessen \\
+\code{LED\_BYTES}     & \code{2}    & Inkonsistent bei Skalierung \\
+\code{LED\_LAST\_MASK} & \code{0xC0} & Muss neu berechnet werden \\
+\bottomrule
+\end{tabular}
+\caption{Richtige vs. falsche Parametrisierung}
+\label{tab:parametrisierung}
+\end{table}
+
+\textbf{Skalierungsbeispiel:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lrll@{}}
+\toprule
+\textbf{Parameter} & \textbf{10 Kanäle} & \textbf{100 Kanäle} & \textbf{Änderung nötig} \\
+\midrule
+\code{LED\_COUNT}     & 10        & 100       & ✓ (einmal) \\
+\code{LED\_BYTES}     & 2         & 13        & Automatisch \\
+\code{LED\_LAST\_MASK} & \code{0xC0} & \code{0xF0} & Automatisch \\
+Logik-Code            & –         & –         & Keine \\
+\bottomrule
+\end{tabular}
+\caption{Skalierung von 10 auf 100 Kanäle}
+\label{tab:skalierung-beispiel}
+\end{table}
+
+\begin{tipbox}[Konsequenz]
+Skalierung von 10 auf 100 Kanäle erfordert eine Zeile Änderung in \code{io\_counts.h}.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Schichten einhalten}
+
+\textbf{Problem:} Wenn Treiber Geschäftslogik enthalten und Logik Hardware-Zugriffe macht, wird das System untestbar und unwartbar.
+
+\textbf{Regel:} Abhängigkeiten zeigen nach unten. Höhere Schichten nutzen niedrigere, nie umgekehrt.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    layer/.style={draw, fill=CodeBg, minimum width=11cm, minimum height=1cm,
+                  font=\small, rounded corners=2pt, align=center},
+    arr/.style={-{Stealth[length=2mm]}, thick, color=ArduinoDark}
+]
+\node[layer] (app) at (0,3) {\textbf{app/}\hspace{1cm}Orchestrierung (Loop/Task, Timing) – Ruft auf, implementiert nichts};
+\node[layer] (logic) at (0,2) {\textbf{logic/}\hspace{1cm}Regeln (Debounce, Selection, Pipeline) – Keine Hardware-Abhängigkeiten};
+\node[layer] (drivers) at (0,1) {\textbf{drivers/}\hspace{1cm}IC-Zugriff (CD4021, HC595) – Keine Geschäftslogik};
+\node[layer] (hal) at (0,0) {\textbf{hal/}\hspace{1cm}Hardware-Abstraktion (SPI-Transfer) – Plattform-spezifisch};
+\draw[arr] (app.south) -- (logic.north);
+\draw[arr] (logic.south) -- (drivers.north);
+\draw[arr] (drivers.south) -- (hal.north);
+\end{tikzpicture}
+\caption{Schichtenmodell mit Verantwortlichkeiten}
+\label{fig:schichten-embedded}
+\end{figure}
+
+\textbf{Was darf wo?}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Schicht} & \textbf{Darf} & \textbf{Darf nicht} \\
+\midrule
+\code{app/}     & Schichten orchestrieren, Timing      & Logik implementieren \\
+\code{logic/}   & Zustände verarbeiten, Entscheidungen & Pins kennen, SPI aufrufen \\
+\code{drivers/} & Bytes lesen/schreiben                & Debounce-Entscheidungen \\
+\code{hal/}     & Register beschreiben                 & IC-Protokolle kennen \\
+\bottomrule
+\end{tabular}
+\caption{Zuständigkeiten der Schichten}
+\label{tab:schichten-embedded}
+\end{table}
+
+\textbf{Warum ist das wichtig?}
+
+Die \code{logic/}-Schicht ist hardware-unabhängig. Du kannst sie auf dem Host-PC testen:
+
+\begin{lstlisting}[style=arduino]
+// test_selection.cpp - laeuft ohne ESP32
+void test_selection_toggles_on_repress() {
+    SelectionState state = {0};
+
+    // Simuliere: Button 3 gedrueckt
+    selection_update(&state, 3, true);
+    TEST_ASSERT_EQUAL(3, state.selectedId);
+
+    // Simuliere: Button 3 nochmal gedrueckt -> Toggle aus
+    selection_update(&state, 3, true);
+    TEST_ASSERT_EQUAL(0, state.selectedId);
+}
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+\subsection{Testen ist Pflicht}
+
+\textbf{Problem:} Embedded-Bugs sind schwer zu debuggen. Du siehst nicht, was auf der Leitung passiert. Ohne Tests merkst du Regressionen erst, wenn das Gerät falsch reagiert.
+
+\textbf{Regel:} Jede Änderung erfordert den passenden Test.
+
+\textbf{Zweistufige Strategie:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Test-Typ} & \textbf{Befehl} & \textbf{Testet} \\
+\midrule
+Unit & \code{pio test -e seeed\_xiao\_esp32s3\_test -v} & Logik isoliert \\
+E2E  & \code{pio test -e seeed\_xiao\_esp32s3\_e2e -f test\_e2e\_hw -v} & Hardware-Integration \\
+\bottomrule
+\end{tabular}
+\caption{Test-Strategie}
+\label{tab:test-strategie}
+\end{table}
+
+\textbf{Wann welcher Test?}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Änderung} & \textbf{Unit-Test} & \textbf{E2E-Test} \\
+\midrule
+Debounce-Algorithmus & ✓ & – \\
+Selection-Policy     & ✓ & – \\
+Pin-Zuordnung        & – & ✓ \\
+SPI-Timing           & – & ✓ \\
+Neuer Kanal-Count    & ✓ & ✓ \\
+\bottomrule
+\end{tabular}
+\caption{Test-Zuordnung nach Änderungstyp}
+\label{tab:test-zuordnung}
+\end{table}
+
+\textbf{Unit-Test-Beispiel:}
+
+\begin{lstlisting}[style=arduino]
+void test_debounce_filters_noise() {
+    DebounceState state = {.stable = 0xFF, .counter = 0};
+
+    // Prellen simulieren: 1 -> 0 -> 1 -> 0 -> 0 -> 0
+    TEST_ASSERT_FALSE(debounce_update(&state, 0xFE, 3));  // Zaehler = 1
+    TEST_ASSERT_FALSE(debounce_update(&state, 0xFF, 3));  // Reset
+    TEST_ASSERT_FALSE(debounce_update(&state, 0xFE, 3));  // Zaehler = 1
+    TEST_ASSERT_FALSE(debounce_update(&state, 0xFE, 3));  // Zaehler = 2
+    TEST_ASSERT_TRUE(debounce_update(&state, 0xFE, 3));   // Zaehler = 3 -> Edge!
+}
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+\subsection{Debugging-Strategie}
+
+\textbf{Regel:} Debugge von unten nach oben – Hardware vor Software.
+
+\textbf{Reihenfolge:}
+
+\begin{enumerate}
+\item \textbf{Verkabelung} – Spannung, GND, Signale korrekt?
+\item \textbf{SPI-Signale} – Clock, MOSI, MISO sichtbar?
+\item \textbf{Raw-Daten} – Erwartete Bytes vom CD4021?
+\item \textbf{Logik-Zustand} – Debounce, Selection korrekt?
+\item \textbf{Output} – LEDs wie erwartet?
+\end{enumerate}
+
+\textbf{Werkzeuge:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Ebene} & \textbf{Werkzeug} & \textbf{Prüfung} \\
+\midrule
+Verkabelung & Multimeter     & VCC = \SI{3,3}{\volt}? GND verbunden? \\
+SPI         & Logic Analyzer & Timing, Pegel, Protokoll \\
+Raw-Daten   & Serial Monitor & \code{RAW: 0xFD 0xFF} \\
+Logik       & Unit-Tests     & Algorithmen isoliert \\
+Output      & Augen          & LED 5 leuchtet? \\
+\bottomrule
+\end{tabular}
+\caption{Debugging-Werkzeuge nach Ebene}
+\label{tab:debug-werkzeuge}
+\end{table}
+
+\textbf{Typische Fehlerbilder:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Symptom} & \textbf{Wahrscheinliche Ursache} & \textbf{Prüfung} \\
+\midrule
+RAW = 0xFF (immer) & Pullups fehlen oder PS falsch & Verkabelung \\
+RAW = 0x00 (immer) & Kurzschluss nach GND          & Verkabelung \\
+Falsche ID erkannt & MSB/LSB vertauscht            & Bit-Mapping prüfen \\
+LEDs flackern      & Timing zu schnell             & SPI-Frequenz senken \\
+Doppelte Events    & Debounce zu kurz              & Threshold erhöhen \\
+\bottomrule
+\end{tabular}
+\caption{Typische Fehlerbilder und Diagnose}
+\label{tab:fehlerbilder}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Häufige Fehler}
+
+\begin{table}[htbp]
+\centering
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+\textbf{Fehler} & \textbf{Konsequenz} & \textbf{Lösung} \\
+\midrule
+\code{delay()} im Scan    & Timing gestört & \code{millis()}-basiert oder \code{vTaskDelayUntil()} \\
+Logging pro Scan          & Serial überlastet (\SI{4}{\milli\second} pro Zeile) & Nur bei Events loggen \\
+Globale Variablen         & Race Conditions bei Interrupts & Zentraler State mit Mutex \\
+Feste Array-Größen        & Nicht skalierbar & \code{*\_BYTES} Makros verwenden \\
+LEDs verteilt setzen      & One-Hot gebrochen & Zentrale \code{setOneHot()} Funktion \\
+Pin in Treiber            & SSOT verletzt & \code{board\_pins.h} verwenden \\
+\bottomrule
+\end{tabularx}
+\caption{Häufige Fehler und Lösungen}
+\label{tab:haeufige-fehler}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Checkliste vor Commit}
+
+\begin{itemize}
+\item[$\square$] Pins/Counts nur in SSOT-Dateien (\code{include/hw/*})
+\item[$\square$] Kein \code{delay()} im Scan-Pfad
+\item[$\square$] One-Hot zentral in einer Funktion erzeugt
+\item[$\square$] Letztes Byte mit \code{*\_LAST\_MASK} maskiert
+\item[$\square$] \code{logic/} enthält keine Hardware-Includes
+\item[$\square$] Unit-Tests grün: \code{pio test -e seeed\_xiao\_esp32s3\_test -v}
+\item[$\square$] Bei HW-Änderung: E2E grün: \code{pio test -e seeed\_xiao\_esp32s3\_e2e -f test\_e2e\_hw -v}
+\item[$\square$] Dokumentation aktualisiert (bei Änderungen an Wiring, Architektur)
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+\subsection{Weiterführende Dokumentation}
+
+\begin{description}
+\item[\code{firmware/docs/architecture.md}] Schichtenmodell-Details
+\item[\code{firmware/docs/wiring.md}] Hardware-Verdrahtung
+\item[\code{firmware/docs/test-plan.md}] Testabdeckung
+\item[\code{firmware/docs/debug-playbook.md}] Erweiterte Fehlerbehebung
+\item[\code{docs/embedded-grundlagen.md}] Konzeptuelle Grundlagen
+\end{description}

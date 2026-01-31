@@ -1,0 +1,486 @@
+% =============================================================================
+% Serial-Protokoll.tex – Robuste Frames mit COBS + CRC
+% =============================================================================
+% Fragment für \input{} – keine Präambel, nutzt techdoc.cls
+% =============================================================================
+
+\section{Serial-Protokoll -- Robuste Frames mit COBS + CRC}
+\label{sec:serial-protokoll}
+
+\subsection{Begriffsrahmen und Zielsetzung}
+\label{subsec:serial-begriffsrahmen}
+
+Der ESP32-S3 kommuniziert mit dem Raspberry Pi über USB-CDC (virtueller Serial-Port).
+Die Herausforderung: Serielle Kommunikation ist ein kontinuierlicher Byte-Strom ohne
+inhärente Nachrichtengrenzen.
+
+\begin{table}[H]
+\centering
+\caption{Zentrale Begriffe des Serial-Protokolls}
+\label{tab:serial-begriffe}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Begriff} & \textbf{Definition} \\
+\midrule
+USB-CDC  & USB Communication Device Class -- emuliert einen seriellen Port über USB \\
+Frame    & Ein abgegrenztes Datenpaket mit definiertem Anfang und Ende \\
+COBS     & Consistent Overhead Byte Stuffing -- Framing-Verfahren mit \code{0x00} als Delimiter \\
+CRC-16   & Cyclic Redundancy Check -- Prüfsumme zur Fehlererkennung \\
+Payload  & Nutzdaten innerhalb eines Frames \\
+ACK      & Acknowledgment -- Empfangsbestätigung \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{tipbox}[Ziel]
+Zuverlässige, bidirektionale Kommunikation mit Fehlererkennung und Retry-Mechanik.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Das Grundproblem -- Byte-Strom vs.\ Nachrichten}
+\label{subsec:serial-grundproblem}
+
+Wenn du Bytes über eine serielle Leitung schickst, sieht der Empfänger nur einen
+kontinuierlichen Strom:
+
+\begin{lstlisting}[style=base,numbers=none]
+Sender:   [Nachricht A: 5 Bytes][Nachricht B: 3 Bytes][Nachricht C: 7 Bytes]
+Leitung:  0x12 0x34 0x56 0x78 0x9A 0xBC 0xDE 0xF0 0x11 0x22 0x33 0x44 0x55 0x66 0x77
+Empfänger: "Wo fängt Nachricht B an?"
+\end{lstlisting}
+
+Ohne Framing weiß der Empfänger nicht, wo eine Nachricht endet und die nächste beginnt.
+Drei klassische Lösungsansätze existieren:
+
+\begin{table}[H]
+\centering
+\caption{Vergleich der Framing-Ansätze}
+\label{tab:framing-ansaetze}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Ansatz} & \textbf{Prinzip} & \textbf{Nachteil} \\
+\midrule
+Feste Länge & Jede Nachricht hat exakt $N$ Bytes & Unflexibel, verschwendet Bandbreite \\
+Längenfeld  & Erstes Byte gibt Länge an          & Synchronisationsverlust bei Byte-Verlust \\
+Delimiter   & Spezielles Zeichen markiert Ende   & Was, wenn das Zeichen in den Daten vorkommt? \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+COBS kombiniert den Delimiter-Ansatz mit Byte-Stuffing -- das Trennzeichen \code{0x00}
+kann garantiert nicht in den Daten vorkommen.
+
+% -----------------------------------------------------------------------------
+\subsection{COBS -- Consistent Overhead Byte Stuffing}
+\label{subsec:cobs}
+
+Wir transformieren die Daten so, dass \code{0x00} niemals im Inhalt auftritt.
+Dann können wir \code{0x00} als eindeutigen Delimiter verwenden.
+
+\paragraph{Wie COBS funktioniert}
+COBS ersetzt jede \code{0x00} in den Originaldaten durch einen \glqq Zeiger\grqq\ auf
+die nächste Null (oder das Paketende):
+
+\begin{lstlisting}[style=base,numbers=none]
+Original:     [0x11] [0x22] [0x00] [0x33] [0x00] [0x44]
+                             ^             ^
+                          Nullen müssen weg
+
+COBS-kodiert: [0x03] [0x11] [0x22] [0x02] [0x33] [0x02] [0x44]
+               |                    |             |
+               +-- "nach 3 Bytes    +-- "nach 2   +-- "nach 2 Bytes
+                   kommt Ersatz"        Bytes"        kommt Ende"
+\end{lstlisting}
+
+Der Empfänger liest den ersten Byte-Wert (hier \code{0x03}), kopiert die folgenden
+2~Bytes, fügt eine \code{0x00} ein, liest den nächsten Zeiger, und so weiter.
+
+\paragraph{Wire-Frame-Aufbau}
+
+\begin{lstlisting}[style=base,numbers=none]
++---------------------------------------------+-----------+
+|  COBS-kodierte Daten (keine 0x00 enthalten) |   0x00    |
+|                                             | Delimiter |
++---------------------------------------------+-----------+
+\end{lstlisting}
+
+COBS fügt im Worst Case \SI{1}{\byte} pro \SI{254}{\byte} Originaldaten hinzu.
+Bei typischen Paketgrößen unter \SI{100}{\byte} ist der Overhead vernachlässigbar
+(1--2~Bytes).
+
+\begin{infobox}[Konsequenz für den Empfänger]
+Du sammelst Bytes, bis du \code{0x00} siehst. Dann dekodierst du alles davor mit COBS
+und hast das Original-Paket.
+\end{infobox}
+
+% -----------------------------------------------------------------------------
+\subsection{CRC-16 -- Integritätsprüfung}
+\label{subsec:crc16}
+
+Auch mit korrektem Framing können Bytes auf der Leitung verfälscht werden -- durch EMI,
+Timing-Probleme oder Buffer-Überläufe. Der Sender berechnet eine Prüfsumme über die
+Daten und hängt sie an. Der Empfänger berechnet dieselbe Prüfsumme und vergleicht.
+
+\paragraph{CRC-16/CCITT-FALSE Parameter}
+
+\begin{table}[H]
+\centering
+\caption{CRC-16/CCITT-FALSE Konfiguration}
+\label{tab:crc16-parameter}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Wert} & \textbf{Bedeutung} \\
+\midrule
+Polynom      & \code{0x1021} & Mathematische Basis der Berechnung \\
+Init         & \code{0xFFFF} & Startwert \\
+XorOut       & \code{0x0000} & Finaler XOR (hier: keiner) \\
+RefIn/RefOut & \code{false}  & Keine Bit-Spiegelung \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Dieses Polynom erkennt alle Einzelbitfehler, alle Doppelbitfehler, und die meisten
+Burst-Fehler bis \SI{16}{\bit} Länge. Die Erkennungswahrscheinlichkeit für zufällige
+Fehler liegt bei $1 - 2^{-16} \approx 99{,}998\,\%$.
+
+\paragraph{Berechnung (Python-Referenz)}
+
+\begin{lstlisting}[style=python,caption={CRC-16/CCITT-FALSE Implementierung},label={lst:crc16-python}]
+def crc16_ccitt_false(data: bytes) -> int:
+    crc = 0xFFFF
+    for b in data:
+        crc ^= (b << 8) & 0xFFFF
+        for _ in range(8):
+            if crc & 0x8000:
+                crc = ((crc << 1) ^ 0x1021) & 0xFFFF
+            else:
+                crc = (crc << 1) & 0xFFFF
+    return crc
+\end{lstlisting}
+
+Wenn CRC nicht stimmt, verwirft der Empfänger das Paket. Der Sender muss es erneut
+senden (siehe \cref{subsec:ack-retry}).
+
+% -----------------------------------------------------------------------------
+\subsection{Packet-Layout -- Der Header}
+\label{subsec:packet-layout}
+
+Bevor COBS angewendet wird, bauen wir das \glqq Raw-Packet\grqq\ mit einem strukturierten Header:
+
+\begin{table}[H]
+\centering
+\caption{Packet-Header-Struktur}
+\label{tab:packet-header}
+\begin{tabular}{@{}cllp{6cm}@{}}
+\toprule
+\textbf{Offset} & \textbf{Feld} & \textbf{Größe} & \textbf{Beschreibung} \\
+\midrule
+0       & magic0     & 1 & \code{'S'} (\code{0x53}) \\
+1       & magic1     & 1 & \code{'P'} (\code{0x50}) \\
+2       & ver\_major & 1 & 1 \\
+3       & ver\_minor & 1 & 0 \\
+4       & type       & 1 & Message-Typ \\
+5       & flags      & 1 & Bitflags \\
+6--7    & seq        & 2 & Sequenznummer (Little-Endian) \\
+8--9    & len        & 2 & Payload-Länge (Little-Endian) \\
+10..    & payload    & len & Nutzdaten \\
+10+len  & crc16      & 2 & CRC über Bytes 0..(10+len-1) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Warum diese Felder?}
+
+\textbf{Magic Bytes (\code{SP}):} Wenn wir mitten in einem Datenstrom einsteigen oder
+ein Frame korrupt ist, erkennen wir sofort, dass etwas nicht stimmt. Die Wahrscheinlichkeit,
+dass zufällige Daten mit \code{0x53 0x50} beginnen, liegt bei $1/65536 \approx 0{,}0015\,\%$.
+
+\textbf{Version:} Ermöglicht Protokoll-Evolution. Regel: Major-Mismatch führt zum Verwerfen
+des Frames. Minor-Mismatch wird akzeptiert (abwärtskompatibel).
+
+\textbf{Sequenznummer:} Identifiziert Pakete für ACK-Zuordnung. Bereich 1--65535, Wert~0
+wird übersprungen.
+
+\paragraph{Flags}
+
+\begin{table}[H]
+\centering
+\caption{Flag-Bits im Header}
+\label{tab:header-flags}
+\begin{tabular}{@{}cll@{}}
+\toprule
+\textbf{Bit} & \textbf{Name} & \textbf{Bedeutung} \\
+\midrule
+0 & \code{ACK\_REQ} & Sender erwartet Bestätigung \\
+1 & \code{IS\_ACK}  & Dieses Paket ist eine Bestätigung \\
+2 & \code{IS\_ERR}  & Dieses Paket meldet einen Fehler \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Sende- und Empfangsprozess}
+\label{subsec:sende-empfang}
+
+\paragraph{Senden (4 Schritte)}
+
+\begin{enumerate}
+\item \textbf{Header + Payload zusammenbauen:} Header (\SI{10}{\byte}) gefolgt von Payload.
+\item \textbf{CRC-16 berechnen und anhängen:} CRC über gesamten Inhalt, dann 2~Bytes anfügen.
+\item \textbf{COBS-encode:} Eliminiert alle \code{0x00} aus dem Datenstrom.
+\item \textbf{Delimiter anhängen und senden:} \code{0x00} markiert das Frame-Ende.
+\end{enumerate}
+
+\paragraph{Empfangen (4 Schritte)}
+
+\begin{enumerate}
+\item Bytes sammeln bis \code{0x00}.
+\item COBS-decode.
+\item CRC prüfen (letzte 2~Bytes vs.\ Berechnung).
+\item Header parsen, Payload extrahieren.
+\end{enumerate}
+
+% -----------------------------------------------------------------------------
+\subsection{Message-Typen}
+\label{subsec:message-typen}
+
+\paragraph{ESP32 → Pi (Events)}
+
+\begin{table}[H]
+\centering
+\caption{Event-Typen vom ESP32 zum Pi}
+\label{tab:msg-esp-to-pi}
+\begin{tabular}{@{}llp{7cm}@{}}
+\toprule
+\textbf{Type} & \textbf{Hex} & \textbf{Zweck} \\
+\midrule
+HELLO           & \code{0x01} & Fähigkeiten nach Reset melden \\
+BTN\_EVENT      & \code{0x10} & Button gedrückt/losgelassen \\
+SELECTION\_STATE & \code{0x12} & Aktuell gewählter Kanal \\
+SNAPSHOT        & \code{0x11} & Kompletter Button/LED-Zustand \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Pi → ESP32 (Commands)}
+
+\begin{table}[H]
+\centering
+\caption{Command-Typen vom Pi zum ESP32}
+\label{tab:msg-pi-to-esp}
+\begin{tabular}{@{}llp{7cm}@{}}
+\toprule
+\textbf{Type} & \textbf{Hex} & \textbf{Zweck} \\
+\midrule
+HELLO\_ACK         & \code{0x02} & HELLO bestätigen \\
+CMD\_SET\_SELECTION & \code{0x20} & Kanal vom Dashboard setzen \\
+CMD\_REQ\_SNAPSHOT  & \code{0x23} & Debug-Snapshot anfordern \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Bidirektional (Control)}
+
+\begin{table}[H]
+\centering
+\caption{Bidirektionale Control-Typen}
+\label{tab:msg-bidirektional}
+\begin{tabular}{@{}llp{7cm}@{}}
+\toprule
+\textbf{Type} & \textbf{Hex} & \textbf{Zweck} \\
+\midrule
+ACK  & \code{0x30} & Empfangsbestätigung \\
+ERR  & \code{0x50} & Fehler melden \\
+PING & \code{0x03} & Keepalive-Anfrage \\
+PONG & \code{0x04} & Keepalive-Antwort \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{SELECTION\_STATE -- Das zentrale Event}
+
+Dieses Paket synchronisiert den Zustand zwischen ESP32, Pi und Browser:
+
+\begin{table}[H]
+\centering
+\caption{SELECTION\_STATE Payload-Struktur}
+\label{tab:selection-state}
+\begin{tabular}{@{}cllp{5cm}@{}}
+\toprule
+\textbf{Offset} & \textbf{Feld} & \textbf{Typ} & \textbf{Beschreibung} \\
+\midrule
+0--1 & selected\_id & u16 & 0 = keiner, 1..100 = Kanal \\
+2    & source       & u8  & Wer hat ausgelöst? \\
+3    & reserved     & u8  & 0 \\
+4--7 & t\_ms        & u32 & \code{millis()} seit Boot \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Source-Werte für SELECTION\_STATE}
+\label{tab:source-werte}
+\begin{tabular}{@{}clp{7cm}@{}}
+\toprule
+\textbf{Wert} & \textbf{Name} & \textbf{Bedeutung} \\
+\midrule
+0 & \code{local\_btn} & Physischer Button am Panel \\
+1 & \code{host\_cmd}  & Dashboard-Klick (via Pi) \\
+2 & \code{reset}      & Nach ESP32-Neustart \\
+3 & \code{recover}    & Wiederherstellung nach Verbindungsabbruch \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{ACK/Retry-Mechanik}
+\label{subsec:ack-retry}
+
+Bei Commands wie \code{CMD\_SET\_SELECTION} muss der Pi wissen, ob der ESP32 das Kommando
+erhalten und verarbeitet hat. Die Lösung: Request-Response mit Timeout und Retry.
+
+\paragraph{Ablauf}
+
+\begin{lstlisting}[style=base,numbers=none]
+Pi                                 ESP32
+ |                                   |
+ |--- CMD_SET_SELECTION ------------>|  seq=42, ACK_REQ=1
+ |         (Timer startet)           |
+ |                                   |  (verarbeitet...)
+ |<---------- ACK -------------------|  seq=42, IS_ACK=1
+ |         (Timer stoppt)            |
+ |                                   |
+ |<-- SELECTION_STATE ---------------|  selected_id=7, source=host_cmd
+\end{lstlisting}
+
+\paragraph{Fehlerfall}
+
+\begin{lstlisting}[style=base,numbers=none]
+Pi                                 ESP32
+ |                                   |
+ |--- CMD_SET_SELECTION ------------>|  seq=43, ACK_REQ=1
+ |         (Timer: 600ms)            |
+ |              ...                  |  (keine Antwort)
+ |         (Timeout!)                |
+ |--- CMD_SET_SELECTION ------------>|  seq=43, Retry #1
+ |              ...                  |
+ |         (Timeout!)                |
+ |--- CMD_SET_SELECTION ------------>|  seq=43, Retry #2
+ |              ...                  |
+ |<---------- ACK -------------------|  (endlich!)
+\end{lstlisting}
+
+\paragraph{Parameter (bridge.py)}
+
+\begin{table}[H]
+\centering
+\caption{ACK/Retry-Parameter}
+\label{tab:ack-retry-parameter}
+\begin{tabular}{@{}llp{6cm}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Bedeutung} \\
+\midrule
+\code{--ack-timeout} & \SI{0,6}{\second} & Wartezeit auf ACK \\
+\code{--retries}     & 4                 & Maximale Wiederholungen \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{warnbox}[Fehlerbehandlung]
+Nach 5 fehlgeschlagenen Versuchen (1 + 4 Retries) meldet die Bridge einen Fehler
+an den Browser (\code{error code=21}).
+\end{warnbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Datenfluss -- Vom Button zum Browser}
+\label{subsec:datenfluss}
+
+Wenn du Button~7 am Panel drückst, passiert folgendes:
+
+\begin{enumerate}
+\item \textbf{ESP32:} CD4021BE liest Button-Matrix (alle \SI{10}{\milli\second}).
+      Debounce erkennt stabile Flanke nach \SI{50}{\milli\second}.
+
+\item \textbf{ESP32:} Baut \code{SELECTION\_STATE}-Paket.
+      Header: \code{magic=SP}, \code{type=0x12}, \code{seq=1234}, \code{len=8}.
+      Payload: \code{selected\_id=7}, \code{source=0}, \code{t\_ms=45678}.
+      CRC16 anhängen, COBS-encode, \code{0x00} Delimiter.
+
+\item \textbf{Pi (bridge.py):} Empfängt Frame über USB-CDC Serial.
+      COBS-decode, CRC prüfen, Header parsen. Erkennt \code{SELECTION\_STATE}.
+
+\item \textbf{Pi:} Wandelt in JSON für WebSocket:
+\begin{lstlisting}[style=json]
+{"type":"selection","selected":7,"source":"local_btn","tMs":45678}
+\end{lstlisting}
+
+\item \textbf{Browser (React):} \code{useBridgeWs} empfängt JSON.
+      State-Update führt dazu, dass LED~7 im Dashboard leuchtet.
+\end{enumerate}
+
+\begin{infobox}[Latenz]
+Vom Button-Druck bis zur Browser-Anzeige vergehen typisch \SIrange{20}{50}{\milli\second}
+(abhängig von Debounce-Zeit und Netzwerk).
+\end{infobox}
+
+% -----------------------------------------------------------------------------
+\subsection{Größenrahmen und Limits}
+\label{subsec:groessenrahmen}
+
+\begin{table}[H]
+\centering
+\caption{Protokoll-Konstanten und Limits}
+\label{tab:protokoll-limits}
+\begin{tabular}{@{}llp{6cm}@{}}
+\toprule
+\textbf{Konstante} & \textbf{Wert} & \textbf{Bedeutung} \\
+\midrule
+\code{HEADER\_LEN}     & \SI{10}{\byte}    & Feste Header-Größe \\
+\code{CRC\_LEN}        & \SI{2}{\byte}     & CRC-16 \\
+\code{MAX\_PAYLOAD}    & \SI{256}{\byte}   & Firmware-Limit \\
+\code{MAX\_PACKET}     & \SI{268}{\byte}   & Header + Payload + CRC \\
+\code{MAX\_WIRE\_FRAME} & $\sim$\SI{270}{\byte} & Nach COBS + Delimiter \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ein \code{SELECTION\_STATE}-Paket ist \SI{10}{\byte} (Header) + \SI{8}{\byte} (Payload)
++ \SI{2}{\byte} (CRC) = \SI{20}{\byte} vor COBS, etwa 21--22~Bytes on-wire.
+
+% -----------------------------------------------------------------------------
+\subsection{Fehlerbehandlung}
+\label{subsec:fehlerbehandlung}
+
+\begin{table}[H]
+\centering
+\caption{Fehlerarten und Reaktionen}
+\label{tab:fehlerbehandlung}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Fehlerart} & \textbf{Erkennung} & \textbf{Reaktion} \\
+\midrule
+CRC-Mismatch       & CRC-Prüfung                     & Frame verwerfen \\
+Magic falsch       & Header-Prüfung                  & Frame verwerfen, Resync \\
+Länge inkonsistent & \code{len} vs.\ tatsächliche Größe & Frame verwerfen \\
+ACK-Timeout        & Timer                           & Retry, dann Error \\
+Unbekannter Type   & Dispatch                        & Ignorieren (forward-compatible) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{tipbox}[Resynchronisation]
+Da \code{0x00} garantiert nur als Delimiter vorkommt, findet der Empfänger nach einem
+korrupten Frame automatisch den nächsten gültigen Frame-Start.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Siehe auch}
+\label{subsec:serial-siehe-auch}
+
+\begin{itemize}
+\item \code{apps/bridge/docs/PROTOCOL.md} -- SSOT für Wire-Format und WebSocket-Events
+\item \code{apps/bridge/bridge.py} -- Python-Implementation
+\item \code{firmware/src/protocol/} -- ESP32-Implementation
+\item \code{apps/dashboard/src/lib/} -- TypeScript-Typen für WebSocket-Events
+\end{itemize}

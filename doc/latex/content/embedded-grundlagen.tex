@@ -1,0 +1,705 @@
+% =============================================================================
+% embedded-grundlagen.tex – Systematische Einführung
+% =============================================================================
+
+\section{Embedded-Grundlagen – Systematische Einführung}
+
+\subsection{Begriffsrahmen und Zielsetzung}
+
+Embedded-Systeme unterscheiden sich fundamental von Desktop-Software. Die \glqq API\grqq{} ist physisch – Pins, Spannungspegel, Timing. Fehler führen nicht zu Exceptions, sondern zu falschen Signalen, zerstörter Hardware oder unerklärlichem Verhalten.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Begriff} & \textbf{Definition} \\
+\midrule
+GPIO            & General Purpose Input/Output – frei konfigurierbarer Pin \\
+HAL             & Hardware Abstraction Layer – Schicht zwischen Software und Registern \\
+Active-Low      & Signal ist aktiv bei Pegel 0 (GND) \\
+Active-High     & Signal ist aktiv bei Pegel 1 (VCC) \\
+Debouncing      & Entprellung – Filterung mechanischer Prellvorgänge \\
+SPI             & Serial Peripheral Interface – synchroner Datenbus \\
+Schieberegister & IC, das parallele und serielle Daten konvertiert \\
+\bottomrule
+\end{tabular}
+\caption{Begriffsrahmen Embedded-Grundlagen}
+\label{tab:grundlagen-begriffe}
+\end{table}
+
+\textbf{Ziel:} Du verstehst die physikalischen Grundlagen, die hinter dem Selection-Panel-Code stehen.
+
+% -----------------------------------------------------------------------------
+\subsection{Hardware ist die Schnittstelle}
+
+\textbf{Problem:} In Desktop-Software rufst du Funktionen auf und bekommst Rückgabewerte. In Embedded-Systemen kommunizierst du mit der Außenwelt über elektrische Signale.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    layer/.style={draw, fill=CodeBg, minimum width=11cm, minimum height=0.8cm,
+                  font=\small, rounded corners=2pt},
+    arr/.style={-{Stealth[length=2mm]}, thick, color=ArduinoDark}
+]
+\node[layer] (app) at (0,4) {Anwendungslogik (Selection, Debounce)};
+\node[layer] (drv) at (0,3) {Treiber (CD4021, HC595)};
+\node[layer] (hal) at (0,2) {HAL (SPI-Transfer, GPIO-Zugriff)};
+\node[layer] (reg) at (0,1) {Register (ESP32-S3 Peripherie)};
+\node[layer] (pin) at (0,0) {Physische Pins (\SI{3,3}{\volt} / GND)};
+\draw[arr] (app.south) -- (drv.north);
+\draw[arr] (drv.south) -- (hal.north);
+\draw[arr] (hal.south) -- (reg.north);
+\draw[arr] (reg.south) -- (pin.north);
+\end{tikzpicture}
+\caption{Schichten vom Code zur Hardware}
+\label{fig:hardware-schichten}
+\end{figure}
+
+\begin{warnbox}[Konsequenz]
+Ein Fehler auf jeder Ebene führt zu Fehlfunktion. Wenn der SPI-Modus falsch ist, liefert der CD4021 Müll – auch wenn dein Code syntaktisch korrekt ist.
+\end{warnbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Spannungspegel – Die Sprache der Hardware}
+
+\textbf{Grundprinzip:} Digitale Signale kennen zwei Zustände: HIGH und LOW.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Zustand} & \textbf{Spannung (\SI{3,3}{\volt} Logik)} & \textbf{Bedeutung} \\
+\midrule
+LOW         & \SI{0}{\volt} – \SI{0,8}{\volt}   & Logisch 0 \\
+HIGH        & \SI{2,0}{\volt} – \SI{3,3}{\volt} & Logisch 1 \\
+Undefiniert & \SI{0,8}{\volt} – \SI{2,0}{\volt} & Verboten! \\
+\bottomrule
+\end{tabular}
+\caption{Spannungspegel bei \SI{3,3}{\volt}-Logik}
+\label{tab:spannungspegel}
+\end{table}
+
+\textbf{Warum Pullups/Pulldowns?}
+
+Ein offener Pin (nicht verbunden) hat keinen definierten Pegel – er \glqq schwebt\grqq{} und nimmt zufällige Werte an. Ein Pullup-Widerstand zieht den Pin auf HIGH, solange nichts anderes ihn auf LOW zieht.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    comp/.style={font=\small},
+    wire/.style={thick}
+]
+% VCC
+\node[comp] (vcc) at (0,3) {VCC (\SI{3,3}{\volt})};
+\draw[wire] (0,2.7) -- (0,2.3);
+
+% Resistor (simple rectangle)
+\draw[wire] (-0.15,2.3) rectangle (0.15,1.5);
+\node[comp, right=0.3cm] at (0.15,1.9) {\SI{10}{\kilo\ohm} (Pullup)};
+
+% Junction and wire to pin
+\draw[wire] (0,1.5) -- (0,1);
+\filldraw (0,1) circle (2pt);
+\draw[wire] (0,1) -- (2,1);
+\node[comp, right] at (2,1) {zum Pin};
+
+% Switch (simple representation)
+\draw[wire] (0,1) -- (0,0.3);
+\draw[wire] (-0.3,0.3) -- (0.3,0) node[comp, right=0.2cm] {Taster};
+\draw[wire] (0,-0.3) -- (0,-0.7);
+\node[comp] at (0,-1) {GND};
+
+% Labels
+\node[comp, color=MutedText, align=left] at (4,0.5) {offen = HIGH\\gedrückt = LOW};
+\end{tikzpicture}
+\caption{Pull-up-Beschaltung für Taster}
+\label{fig:pullup}
+\end{figure}
+
+\begin{infobox}[Anwendung im Projekt]
+Die CD4021-Eingänge haben externe Pullups. Im Ruhezustand liest du HIGH (1), bei gedrücktem Taster LOW (0) – das ist Active-Low.
+\end{infobox}
+
+% -----------------------------------------------------------------------------
+\subsection{Active-Low vs. Active-High}
+
+\textbf{Problem:} Warum ist ein gedrückter Taster \glqq 0\grqq{} und eine leuchtende LED \glqq 1\grqq? Das scheint unintuitiv.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Typ} & \textbf{Aktiv bei} & \textbf{Inaktiv bei} & \textbf{Typischer Einsatz} \\
+\midrule
+Active-Low  & 0 (GND) & 1 (VCC) & Taster mit Pullup, Reset-Signale \\
+Active-High & 1 (VCC) & 0 (GND) & LEDs, Enable-Signale \\
+\bottomrule
+\end{tabular}
+\caption{Active-Low vs. Active-High}
+\label{tab:active-low-high}
+\end{table}
+
+\textbf{Warum Active-Low für Taster?}
+
+Mit Pullup ist der Ruhezustand definiert (HIGH). Der Taster muss nur nach GND schalten – das ist schaltungstechnisch einfacher und robuster gegen Störungen.
+
+\textbf{Warum Active-High für LEDs?}
+
+LEDs leuchten, wenn Strom fließt. Bei Active-High: Pin HIGH → Strom fließt durch LED nach GND → LED leuchtet.
+
+\begin{center}
+\code{Pin (HIGH) -{}- 330$\Omega$ -{}- LED -{}- GND}\\[0.5em]
+\footnotesize\color{MutedText} \SI{3,3}{\volt} \hspace{1.5cm} $\sim$\SI{2}{\volt} \hspace{1cm} $\sim$\SI{0}{\volt}
+\end{center}
+
+\textbf{Konsequenz im Code:}
+
+\begin{lstlisting}[style=arduino]
+// Button lesen (Active-Low)
+bool isPressed = (raw & mask) == 0;  // Gedrueckt wenn Bit = 0
+
+// LED setzen (Active-High)
+if (ledOn) {
+    ledState |= mask;   // Bit = 1 -> LED an
+} else {
+    ledState &= ~mask;  // Bit = 0 -> LED aus
+}
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------
+\subsection{Schieberegister – Pins multiplizieren}
+
+\textbf{Problem:} Der ESP32-S3 hat begrenzte GPIO-Pins. Für 100 Buttons und 100 LEDs bräuchtest du 200 Pins – die gibt es nicht.
+
+\textbf{Lösung:} Schieberegister wandeln zwischen parallelen und seriellen Daten um.
+
+\paragraph{CD4021 – Parallel zu Seriell (Buttons lesen)}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    ic/.style={draw, fill=CodeBg, minimum width=5cm, minimum height=1.5cm,
+               font=\small, rounded corners=2pt},
+    arr/.style={-{Stealth[length=2mm]}, thick, color=ArduinoDark},
+    pin/.style={font=\footnotesize}
+]
+% Input pins
+\foreach \i in {0,...,7} {
+    \node[pin] at ({-2.5+\i*0.7},2.5) {D\pgfmathparse{int(7-\i)}\pgfmathresult};
+    \draw[arr] ({-2.5+\i*0.7},2.2) -- ({-2.5+\i*0.7},1.5);
+}
+\node[pin, color=MutedText] at (0,3) {← 8 Buttons parallel};
+
+% IC
+\node[ic] (cd4021) at (0,0.5) {CD4021 Schieberegister};
+
+% Output
+\draw[arr] (cd4021.east) -- ++(1.5,0) node[right, font=\small] {Serial Out → ESP32};
+\node[pin, color=MutedText] at (4.5,-0.2) {(1 Pin)};
+\end{tikzpicture}
+\caption{CD4021: Parallel-zu-Seriell-Wandlung}
+\label{fig:cd4021}
+\end{figure}
+
+\textbf{Ablauf:}
+\begin{enumerate}
+\item \textbf{PS/LOAD = HIGH:} Parallele Eingänge werden ins Register übernommen
+\item \textbf{PS/LOAD = LOW:} Register ist bereit zum Auslesen
+\item \textbf{8× CLK-Pulse:} Bits werden nacheinander auf Serial Out geschoben
+\end{enumerate}
+
+\textbf{Timing:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Phase} & \textbf{PS/LOAD} & \textbf{CLK} & \textbf{Dauer} \\
+\midrule
+Load  & HIGH & –      & \SI{1}{\micro\second} \\
+Shift & LOW  & $\uparrow\downarrow$ × 8 & $\sim$\SI{16}{\micro\second} \\
+\bottomrule
+\end{tabular}
+\caption{CD4021-Timing}
+\label{tab:cd4021-timing}
+\end{table}
+
+\paragraph{74HC595 – Seriell zu Parallel (LEDs schreiben)}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    ic/.style={draw, fill=CodeBg, minimum width=5cm, minimum height=1.5cm,
+               font=\small, rounded corners=2pt},
+    arr/.style={-{Stealth[length=2mm]}, thick, color=ArduinoDark},
+    pin/.style={font=\footnotesize}
+]
+% Input
+\node[font=\small] at (-4,0.5) {ESP32 →};
+\draw[arr] (-3,0.5) -- (-2.5,0.5);
+\node[pin, color=MutedText] at (-3.5,0) {(1 Pin)};
+
+% IC
+\node[ic] (hc595) at (0,0.5) {74HC595 Schieberegister};
+
+% Output pins
+\foreach \i in {0,...,7} {
+    \draw[arr] ({-2.5+\i*0.7},-0.5) -- ({-2.5+\i*0.7},-1.2);
+    \node[pin] at ({-2.5+\i*0.7},-1.5) {Q\pgfmathparse{int(7-\i)}\pgfmathresult};
+}
+\node[pin, color=MutedText] at (0,-2) {← 8 LEDs parallel};
+\end{tikzpicture}
+\caption{74HC595: Seriell-zu-Parallel-Wandlung}
+\label{fig:hc595}
+\end{figure}
+
+\textbf{Ablauf:}
+\begin{enumerate}
+\item \textbf{8× SRCLK-Pulse:} Bits werden ins Schieberegister geschoben
+\item \textbf{LATCH-Puls (RCK):} Daten werden an die Ausgänge übernommen
+\end{enumerate}
+
+\begin{infobox}[Warum der LATCH?]
+Ohne Latch würden die LEDs während des Schiebens flackern. Der Latch hält die alten Werte, bis alle neuen Bits da sind.
+\end{infobox}
+
+\paragraph{Kaskadierung – Mehr als 8 Kanäle}
+
+Mehrere Schieberegister werden in Reihe geschaltet:
+
+\begin{lstlisting}[style=wrap,numbers=none]
+CD4021 (IC1) --> CD4021 (IC0) --> ESP32
+   Buttons 9-16     Buttons 1-8      MISO
+
+ESP32 --> HC595 (IC0) --> HC595 (IC1)
+   MOSI     LEDs 1-8        LEDs 9-16
+\end{lstlisting}
+
+\begin{tipbox}[Konsequenz]
+Mit 13 CD4021 und 13 HC595 steuerst du 100 Buttons und 100 LEDs über nur 5 Pins (SCK, MISO, MOSI, PS, LATCH).
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{SPI – Der Datenbus}
+
+\textbf{Problem:} Wie überträgst du Daten zwischen ESP32 und Schieberegistern synchron und zuverlässig?
+
+\textbf{Lösung:} SPI (Serial Peripheral Interface) – ein synchroner Bus mit Takt.
+
+\paragraph{Signale}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Signal} & \textbf{Richtung} & \textbf{Funktion} \\
+\midrule
+SCK   & Master → Slave & Taktsignal (synchronisiert Übertragung) \\
+MOSI  & Master → Slave & Master Out, Slave In (Daten zum Slave) \\
+MISO  & Slave → Master & Master In, Slave Out (Daten vom Slave) \\
+CS/SS & Master → Slave & Chip Select (welcher Slave ist aktiv) \\
+\bottomrule
+\end{tabular}
+\caption{SPI-Signale}
+\label{tab:spi-signale}
+\end{table}
+
+\paragraph{SPI-Modi}
+
+\textbf{Problem:} Wann genau wird ein Bit gelesen – bei steigender oder fallender Flanke? Das hängt vom SPI-Modus ab.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}cccll@{}}
+\toprule
+\textbf{Mode} & \textbf{CPOL} & \textbf{CPHA} & \textbf{Clock Idle} & \textbf{Sample bei} \\
+\midrule
+0 & 0 & 0 & LOW  & Rising Edge \\
+1 & 0 & 1 & LOW  & Falling Edge \\
+2 & 1 & 0 & HIGH & Falling Edge \\
+3 & 1 & 1 & HIGH & Rising Edge \\
+\bottomrule
+\end{tabular}
+\caption{SPI-Modi}
+\label{tab:spi-modi}
+\end{table}
+
+\textbf{Im Projekt:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lcll@{}}
+\toprule
+\textbf{IC} & \textbf{Mode} & \textbf{Frequenz} & \textbf{Begründung} \\
+\midrule
+CD4021  & 1 & \SI{500}{\kilo\hertz} & Konservativ für Breadboard \\
+74HC595 & 0 & \SI{1}{\mega\hertz}   & Standard \\
+\bottomrule
+\end{tabular}
+\caption{SPI-Konfiguration im Projekt}
+\label{tab:spi-projekt}
+\end{table}
+
+\begin{warnbox}[Konsequenz]
+Wenn du den falschen Modus verwendest, liest du Müll oder die Daten sind um ein Bit verschoben.
+\end{warnbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Timing – Determinismus ist Pflicht}
+
+\textbf{Problem:} Embedded-Software muss in definierten Zeitfenstern reagieren. Wenn du eine Deadline verpasst, funktioniert das System nicht.
+
+\textbf{Beispiel – Button-Scan:}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    phase/.style={draw, fill=InfoBg, minimum height=0.6cm, font=\footnotesize},
+    reserve/.style={draw, fill=TipBg, minimum height=0.6cm, font=\footnotesize}
+]
+% Timeline
+\draw[thick] (0,0) -- (12,0);
+\node[font=\small\bfseries] at (6,0.8) {\SI{10}{\milli\second} Scan-Intervall};
+
+% Phases (not to scale for visibility)
+\node[phase, minimum width=1.5cm] at (0.75,0) {};
+\node[font=\footnotesize] at (0.75,-0.5) {CD4021};
+\node[font=\tiny, color=MutedText] at (0.75,-0.9) {\SI{20}{\micro\second}};
+
+\node[phase, minimum width=1cm] at (2.25,0) {};
+\node[font=\footnotesize] at (2.25,-0.5) {Logic};
+\node[font=\tiny, color=MutedText] at (2.25,-0.9) {\SI{5}{\micro\second}};
+
+\node[phase, minimum width=1.5cm] at (3.5,0) {};
+\node[font=\footnotesize] at (3.5,-0.5) {HC595};
+\node[font=\tiny, color=MutedText] at (3.5,-0.9) {\SI{20}{\micro\second}};
+
+\node[reserve, minimum width=7.5cm] at (8.25,0) {};
+\node[font=\footnotesize] at (8.25,-0.5) {Reserve};
+\node[font=\tiny, color=MutedText] at (8.25,-0.9) {\SI{9955}{\micro\second}};
+\end{tikzpicture}
+\caption{Timing-Budget eines Scan-Zyklus}
+\label{fig:timing-budget}
+\end{figure}
+
+\textbf{Budget bei \SI{10}{\milli\second} Intervall:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Operation} & \textbf{Dauer} & \textbf{Anteil} \\
+\midrule
+CD4021 read (2 Bytes) & $\sim$\SI{20}{\micro\second}   & 0,2\,\% \\
+Debounce + Selection  & $\sim$\SI{5}{\micro\second}    & 0,05\,\% \\
+HC595 write (2 Bytes) & $\sim$\SI{20}{\micro\second}   & 0,2\,\% \\
+\textbf{Summe}        & $\sim$\SI{45}{\micro\second}   & $\sim$0,5\,\% \\
+\textbf{Reserve}      & $\sim$\SI{9955}{\micro\second} & 99,5\,\% \\
+\bottomrule
+\end{tabular}
+\caption{Timing-Budget}
+\label{tab:timing-grundlagen}
+\end{table}
+
+\textbf{Was zerstört Timing?}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Gut} & \textbf{Schlecht} \\
+\midrule
+\code{vTaskDelayUntil()} (FreeRTOS) & \code{delay()} im Hot-Path \\
+Logging bei Zustandsänderung        & Logging pro Zyklus \\
+Kurze SPI-Transfers                 & Blockierende UART-Ausgabe \\
+\bottomrule
+\end{tabular}
+\caption{Timing-Killer vermeiden}
+\label{tab:timing-killer}
+\end{table}
+
+\textbf{Rechnung – UART-Overhead:}
+
+Bei \SI{115200}{Baud} dauert ein Zeichen $\frac{10\,\text{Bits}}{115200\,\text{Baud}} \approx \SI{87}{\micro\second}$.
+Eine Debug-Zeile mit 50 Zeichen: $50 \times \SI{87}{\micro\second} = \SI{4,35}{\milli\second}$ – fast die Hälfte des Scan-Intervalls!
+
+\begin{warnbox}[Konsequenz]
+Debug-Ausgaben nur bei Events (Zustandsänderungen), nie pro Scan-Zyklus.
+\end{warnbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Debouncing – Mechanisches Prellen filtern}
+
+\textbf{Problem:} Mechanische Taster prellen. Ein einzelner Druck erzeugt mehrere Flanken in wenigen Millisekunden.
+
+\begin{lstlisting}[style=wrap,numbers=none]
+Ideal:     ----+          +----
+               |          |
+               +----------+
+                 gedrueckt
+
+Real:      ----+ ++ ++    +++----
+               | || ||    |||
+               +-++-++----++-
+                   Prellen
+\end{lstlisting}
+
+\textbf{Messwerte:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Parameter} & \textbf{Typischer Wert} \\
+\midrule
+Prellzeit     & 5–\SI{50}{\milli\second} \\
+Prellvorgänge & 3–20 Flanken \\
+\bottomrule
+\end{tabular}
+\caption{Typische Prellwerte}
+\label{tab:prellwerte}
+\end{table}
+
+\textbf{Lösung – Software-Debounce:}
+
+\begin{lstlisting}[style=arduino]
+typedef struct {
+    uint8_t stable;     // Letzter stabiler Zustand
+    uint8_t counter;    // Zaehler fuer aufeinanderfolgende gleiche Samples
+} DebounceState;
+
+bool debounce_update(DebounceState* state, uint8_t current, uint8_t threshold) {
+    if (current == state->stable) {
+        state->counter = 0;  // Zustand bestaetigt, Reset
+        return false;
+    }
+
+    state->counter++;
+    if (state->counter >= threshold) {
+        // Neuer Zustand ist stabil
+        bool wasLow = (state->stable == 0);
+        bool isLow  = (current == 0);
+        state->stable = current;
+        state->counter = 0;
+
+        // Press-Edge: Active-Low, war HIGH, ist jetzt LOW
+        return (wasLow == false && isLow == true);
+    }
+    return false;  // Noch nicht stabil
+}
+\end{lstlisting}
+
+\textbf{Berechnung des Threshold:}
+
+Bei \SI{10}{\milli\second} Scan-Intervall und gewünschter \SI{50}{\milli\second} Debounce-Zeit:
+\[
+\text{threshold} = \frac{\SI{50}{\milli\second}}{\SI{10}{\milli\second}} = 5
+\]
+
+\begin{tipbox}[Konsequenz]
+Die Logik sieht nur stabile Zustände und saubere Flanken, kein Prellen.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{One-Hot-Encoding – Die Invariante}
+
+\textbf{Problem:} Bei einem Selection Panel soll immer genau eine Auswahl aktiv sein (oder keine). Wie stellst du das sicher?
+
+\textbf{One-Hot-Prinzip:}
+
+\begin{lstlisting}[style=wrap,numbers=none]
+selectedId = 0:  00000000 00000000  (nichts ausgewaehlt)
+selectedId = 1:  10000000 00000000  (ID 1 aktiv)
+selectedId = 2:  01000000 00000000  (ID 2 aktiv)
+selectedId = 9:  00000000 10000000  (ID 9 aktiv)
+\end{lstlisting}
+
+\textbf{Invariante:} Zu jedem Zeitpunkt ist höchstens ein Bit gesetzt.
+
+\textbf{Implementierung:}
+
+\begin{lstlisting}[style=arduino]
+void setOneHot(uint8_t selectedId, uint8_t* ledState, size_t bytes) {
+    // 1. ALLE Bits loeschen (garantiert sauberen Zustand)
+    memset(ledState, 0x00, bytes);
+
+    // 2. Genau EIN Bit setzen (wenn ID > 0)
+    if (selectedId >= 1 && selectedId <= LED_COUNT) {
+        uint8_t byteIdx = (selectedId - 1) / 8;
+        uint8_t bitPos  = 7 - ((selectedId - 1) % 8);  // MSB-first
+        ledState[byteIdx] |= (1u << bitPos);
+    }
+
+    // 3. Ungueltige Bits im letzten Byte maskieren
+    ledState[bytes - 1] &= LED_LAST_MASK;
+}
+\end{lstlisting}
+
+\begin{infobox}[Warum \code{memset} zuerst?]
+Andere Ansätze wie \glqq altes Bit löschen, neues setzen\grqq{} können bei Bugs oder Race Conditions zu Zuständen mit zwei gesetzten Bits führen. Mit \code{memset} + einem \code{|=} ist die Invariante garantiert.
+\end{infobox}
+
+% -----------------------------------------------------------------------------
+\subsection{SSOT – Single Source of Truth}
+
+\textbf{Problem:} Wenn Pin-Definitionen in drei Dateien stehen und du eine änderst, sind die anderen falsch.
+
+\textbf{Regel:} Jede Information hat genau eine autoritative Quelle.
+
+\textbf{Im Projekt:}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Aspekt} & \textbf{SSOT-Datei} \\
+\midrule
+Pin-Zuordnung & \code{firmware/include/hw/board\_pins.h} \\
+Kanal-Anzahl  & \code{firmware/include/hw/io\_counts.h} \\
+SPI-Parameter & \code{firmware/include/hw/spi\_params.h} \\
+\bottomrule
+\end{tabular}
+\caption{SSOT-Dateien im Projekt}
+\label{tab:ssot-grundlagen}
+\end{table}
+
+\textbf{Beispiel –} \code{io\_counts.h}:
+
+\begin{lstlisting}[style=arduino]
+#define BTN_COUNT  10
+#define LED_COUNT  10
+
+// Abgeleitete Werte (automatisch korrekt bei Aenderung von COUNT)
+#define BTN_BYTES  ((BTN_COUNT + 7) / 8)
+#define LED_BYTES  ((LED_COUNT + 7) / 8)
+
+// Maske fuer ungueltige Bits im letzten Byte
+#define LED_LAST_MASK  0xC0  // Bei 10 LEDs: nur Bit 7, 6 gueltig
+\end{lstlisting}
+
+\begin{tipbox}[Konsequenz]
+Änderung von 10 auf 100 Kanäle erfordert nur zwei Zeilen in einer Datei.
+\end{tipbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Test-Strategie – Vertrauen durch Verifikation}
+
+\textbf{Problem:} Embedded-Bugs sind schwer zu debuggen. Du siehst nicht, was auf der Leitung passiert.
+
+\textbf{Lösung:} Zweistufige Test-Strategie.
+
+\paragraph{Unit-Tests (Logik isoliert)}
+
+\begin{lstlisting}[style=shell]
+pio test -d firmware -e seeed_xiao_esp32s3_test -v
+\end{lstlisting}
+
+\textbf{Was wird getestet:}
+\begin{itemize}
+\item Debounce-Algorithmus (filtert Prellen korrekt?)
+\item Selection-Logik (One-Hot-Invariante garantiert?)
+\item Bit-Mapping (ID → Byte/Bit korrekt?)
+\end{itemize}
+
+\textbf{Vorteil:} Läuft in Sekunden, keine Hardware nötig.
+
+\paragraph{E2E-Tests (Hardware verifiziert)}
+
+\begin{lstlisting}[style=shell]
+pio test -d firmware -e seeed_xiao_esp32s3_e2e -f test_e2e_hw -v
+\end{lstlisting}
+
+\textbf{Was wird getestet:}
+\begin{itemize}
+\item SPI-Timing (Daten kommen korrekt an?)
+\item Pin-Zuordnung (Button 1 → Bit 7 von Byte 0?)
+\item LED-Mapping (selectedId=5 → LED 5 leuchtet?)
+\end{itemize}
+
+\textbf{Ablauf (interaktiv):}
+\begin{enumerate}
+\item Idle-Test: Nichts drücken, RAW sollte 0xFF sein
+\item Button 1 drücken: RAW Bit 7 = 0?
+\item Button 10 drücken: RAW Byte 1, Bit 6 = 0?
+\item Walking-One: LEDs durchlaufen, visuell prüfen
+\end{enumerate}
+
+\begin{warnbox}[Konsequenz]
+Nach Änderungen an SSOT-Dateien oder Verkabelung müssen beide Test-Stufen grün sein.
+\end{warnbox}
+
+% -----------------------------------------------------------------------------
+\subsection{Zusammenfassung – Merkregeln}
+
+\paragraph{Spannungspegel}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Zustand} & \textbf{\SI{3,3}{\volt} Logik} \\
+\midrule
+LOW  & \SI{0}{\volt} – \SI{0,8}{\volt} \\
+HIGH & \SI{2,0}{\volt} – \SI{3,3}{\volt} \\
+\bottomrule
+\end{tabular}
+\caption{Spannungspegel-Referenz}
+\label{tab:pegel-referenz}
+\end{table}
+
+\paragraph{Active-Low/High}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Komponente} & \textbf{Typ} & \textbf{Aktiv =} \\
+\midrule
+Buttons (mit Pullup) & Active-Low  & 0 \\
+LEDs                 & Active-High & 1 \\
+\bottomrule
+\end{tabular}
+\caption{Active-Low/High im Projekt}
+\label{tab:active-referenz}
+\end{table}
+
+\paragraph{SPI-Modi (im Projekt)}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}lcll@{}}
+\toprule
+\textbf{IC} & \textbf{Mode} & \textbf{CLK Idle} & \textbf{Sample bei} \\
+\midrule
+CD4021  & 1 & LOW & Falling Edge \\
+74HC595 & 0 & LOW & Rising Edge \\
+\bottomrule
+\end{tabular}
+\caption{SPI-Modi-Referenz}
+\label{tab:spi-referenz}
+\end{table}
+
+\paragraph{Timing-Budget}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{@{}rrr@{}}
+\toprule
+\textbf{Scan-Intervall} & \textbf{IO-Operationen} & \textbf{Reserve} \\
+\midrule
+\SI{10000}{\micro\second} & $\sim$\SI{45}{\micro\second} & $\sim$\SI{9955}{\micro\second} \\
+\bottomrule
+\end{tabular}
+\caption{Timing-Budget-Referenz}
+\label{tab:timing-referenz}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Weiterführende Dokumentation}
+
+\begin{description}
+\item[\code{firmware/docs/wiring.md}] Hardware-Verdrahtung
+\item[\code{firmware/docs/architecture.md}] Software-Architektur
+\item[\code{docs/grundlagen-bit-operationen.md}] Bit-Manipulation
+\item[\code{docs/bit-mapping-schieberegister.md}] ID-zu-Bit-Zuordnung
+\end{description}

@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>architekturprinzip.mathjax_tmp</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="main-container">
+<h1
+id="architekturprinzipien-für-robuste-embedded-software">Architekturprinzipien
+für robuste Embedded-Software</h1>
+<h2 id="begriffsrahmen-und-zielsetzung">0) Begriffsrahmen und
+Zielsetzung</h2>
+<h3 id="anwendungskontext">Anwendungskontext</h3>
+<p>Diese Dokumentation richtet sich an Embedded-Entwickler, die ein
+Selection-Panel mit 10–100 Buttons und LEDs über Schieberegister
+(CD4021B, 74HC595) steuern. Die Firmware läuft auf einem ESP32-S3 unter
+FreeRTOS. Die Architekturprinzipien gelten jedoch allgemein für
+IO-intensive Embedded-Systeme.</p>
+<h3 id="lernziele">Lernziele</h3>
+<p>Nach dem Durcharbeiten dieses Dokuments kannst du:</p>
+<ol type="1">
+<li><strong>SSOT anwenden</strong> – Konfigurationen an genau einer
+Stelle definieren und referenzieren</li>
+<li><strong>Schichten trennen</strong> – Abhängigkeiten gerichtet
+halten, Logik von Hardware isolieren</li>
+<li><strong>Pipelines konstruieren</strong> – Datenflüsse sequentiell
+und vorhersagbar gestalten</li>
+<li><strong>Invarianten durchsetzen</strong> – Systemweite Garantien (z.
+B. One-Hot) implementieren</li>
+<li><strong>Edge-basiert denken</strong> – Ereignisse statt Pegel für
+UI-Aktionen verwenden</li>
+<li><strong>Testbar entwerfen</strong> – Logik isoliert prüfen, Hardware
+end-to-end validieren</li>
+</ol>
+<h3 id="begriffsdefinitionen">Begriffsdefinitionen</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 68%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr>
+<th>Begriff</th>
+<th>Definition</th>
+<th>Quelle/Norm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SSOT</strong></td>
+<td>Single Source of Truth – eine Konfiguration existiert an genau einer
+Stelle</td>
+<td>Design-Patterns</td>
+</tr>
+<tr>
+<td><strong>Invariante</strong></td>
+<td>Bedingung, die zu jedem Zeitpunkt gelten muss (vgl.
+Hoare-Logik)</td>
+<td>Dijkstra (1976)</td>
+</tr>
+<tr>
+<td><strong>One-Hot</strong></td>
+<td>Codierung: genau ein Bit gesetzt (oder keins), niemals mehrere</td>
+<td>Digital-Design</td>
+</tr>
+<tr>
+<td><strong>Pipeline</strong></td>
+<td>Sequenz von Verarbeitungsstufen mit definierten Ein-/Ausgängen</td>
+<td>Hennessy/Patterson</td>
+</tr>
+<tr>
+<td><strong>Edge</strong></td>
+<td>Zustandsübergang (Flanke), nicht der Zustand selbst</td>
+<td>IEC 61131-3</td>
+</tr>
+<tr>
+<td><strong>HAL</strong></td>
+<td>Hardware Abstraction Layer – trennt Hardware-Zugriff von
+Anwendungslogik</td>
+<td>AUTOSAR, CMSIS</td>
+</tr>
+<tr>
+<td><strong>Debounce</strong></td>
+<td>Entprellung – Filterung mechanischer Prellsignale durch
+Zeit-Schwellwert</td>
+<td>Embedded-Praxis</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ssot-hardware-konfiguration-ist-kein-detail">1) SSOT –
+Hardware-Konfiguration ist kein „Detail”</h2>
+<h3 id="problemstellung">Problemstellung</h3>
+<p>Wenn Pins, Zählerstände oder SPI-Parameter an mehreren Stellen
+definiert sind, entstehen Inkonsistenzen. Du änderst einen Pin in
+<code>main.cpp</code>, vergisst aber den Treiber – das System verhält
+sich unerklärlich.</p>
+<blockquote>
+<p><strong>Merkregel:</strong> Eine Zahl, eine Stelle. Wer kopiert,
+verliert.</p>
+</blockquote>
+<h3 id="herleitung">Herleitung</h3>
+<p>Wir betrachten ein Beispiel: <code>BTN_COUNT</code> erscheint in drei
+Dateien – <code>main.cpp</code>, <code>cd4021.cpp</code>,
+<code>debounce.cpp</code>. Bei einer Änderung von 10 auf 100 Kanäle
+vergisst du eine Stelle. Das Ergebnis: Der Treiber liest 13 Bytes (100
+Buttons), aber die Logik erwartet 2 Bytes (10 Buttons). Das Array
+überläuft – ein klassischer Buffer-Overflow.</p>
+<h3 id="regel">Regel</h3>
+<p>Jede Konfiguration existiert an genau einer Stelle. Alle anderen
+Dateien referenzieren diese Quelle.</p>
+<h3 id="anwendung">Anwendung</h3>
+<p>Die SSOT-Dateien liegen im Header-Verzeichnis:</p>
+<pre><code>firmware/include/hw/
+├── board_pins.h    # Pin-Definitionen (GPIO-Nummern)
+├── io_counts.h     # Kanalzähler und Masken
+└── spi_params.h    # SPI-Frequenz, Mode, Bit-Order</code></pre>
+<p><strong>Beispiel aus <code>io_counts.h</code>:</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define BTN_COUNT       </span><span class="dv">10</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_COUNT       </span><span class="dv">10</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#define BTN_BYTES       </span><span class="op">((</span><span class="pp">BTN_COUNT </span><span class="op">+</span><span class="pp"> </span><span class="dv">7</span><span class="op">)</span><span class="pp"> </span><span class="op">/</span><span class="pp"> </span><span class="dv">8</span><span class="op">)</span><span class="pp">  </span><span class="co">// = 2 (bei 10)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_BYTES       </span><span class="op">((</span>LED_COUNT<span class="pp"> </span><span class="op">+</span><span class="pp"> </span><span class="dv">7</span><span class="op">)</span><span class="pp"> </span><span class="op">/</span><span class="pp"> </span><span class="dv">8</span><span class="op">)</span><span class="pp">  </span><span class="co">// = 2 (bei 10)</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Maske für gültige Bits im letzten Byte</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">// Bei 10 LEDs: 16 Bits verfügbar, nur 10 genutzt</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">// Byte[1]: Bits 7,6 gültig → Maske = 0xC0</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_LAST_MASK   </span><span class="bn">0xC0</span></span></code></pre></div>
+<p><strong>Zahlenbeispiel zur Byte-Berechnung:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>BTN_COUNT</th>
+<th>Berechnung</th>
+<th>BTN_BYTES</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td>(8 + 7) / 8 = 15 / 8</td>
+<td>1</td>
+</tr>
+<tr>
+<td>10</td>
+<td>(10 + 7) / 8 = 17 / 8</td>
+<td>2</td>
+</tr>
+<tr>
+<td>16</td>
+<td>(16 + 7) / 8 = 23 / 8</td>
+<td>2</td>
+</tr>
+<tr>
+<td>100</td>
+<td>(100 + 7) / 8 = 107 / 8</td>
+<td>13</td>
+</tr>
+</tbody>
+</table>
+<p>Die Division ist ganzzahlig (Integer-Arithmetik). Der Trick
+<code>+7</code> rundet auf – ohne ihn würde <code>BTN_COUNT=9</code> nur
+1 Byte ergeben, obwohl 9 Bits nicht in 8 Bits passen.</p>
+<blockquote>
+<p><strong>Merkregel:</strong> <code>(n + 7) / 8</code> = Anzahl Bytes
+für n Bits (Aufrunden durch Integer-Division).</p>
+</blockquote>
+<h3 id="zusammenfassung">Zusammenfassung</h3>
+<p>Wenn du von 10 auf 100 Kanäle skalierst, änderst du
+<code>BTN_COUNT</code> und <code>LED_COUNT</code> an dieser einen
+Stelle. Die abgeleiteten Makros <code>BTN_BYTES</code> und
+<code>LED_LAST_MASK</code> berechnen sich automatisch – keine weiteren
+Code-Anpassungen nötig.</p>
+<hr />
+<h2 id="schichtenmodell-abhängigkeiten-zeigen-nach-unten">2)
+Schichtenmodell – Abhängigkeiten zeigen nach unten</h2>
+<h3 id="problemstellung-1">Problemstellung</h3>
+<p>Ohne klare Schichtung entsteht „Spaghetti-Code”: Der Treiber ruft
+Logik auf, die Logik greift auf Hardware zu, die Anwendung dupliziert
+Regeln. Änderungen haben unvorhersehbare Auswirkungen.</p>
+<h3 id="regel-1">Regel</h3>
+<p>Abhängigkeiten sind gerichtet. Höhere Schichten dürfen niedrigere
+nutzen, aber nicht umgekehrt.</p>
+<h3 id="herleitung-1">Herleitung</h3>
+<p>Wir zeichnen das Schichtenmodell als Stapel. Jeder Pfeil zeigt nach
+unten (erlaubte Abhängigkeit) oder ist verboten (nach oben):</p>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│  app/         Orchestrierung (Loop/Task, Scheduling)        │  ← darf alles darunter nutzen
+├─────────────────────────────────────────────────────────────┤
+│  logic/       Regeln (Debounce, Selection, Pipeline)        │  ← darf drivers/ und darunter nutzen
+├─────────────────────────────────────────────────────────────┤
+│  drivers/     IC-spezifisch (CD4021 read, 74HC595 write)    │  ← darf hal/ und hw/ nutzen
+├─────────────────────────────────────────────────────────────┤
+│  hal/         SPI-Bus-Zugriff (Transfer, Settings)          │  ← darf nur hw/ nutzen
+├─────────────────────────────────────────────────────────────┤
+│  include/hw/  SSOT (Pins, Counts, SPI-Params)               │  ← Basis, keine Abhängigkeiten
+└─────────────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Verzeichnisstruktur (konkret):</strong></p>
+<pre><code>firmware/src/
+├── hal/
+│   └── spi_bus.cpp         # SPI-Init, Transfer-Funktion
+├── drivers/
+│   ├── cd4021.cpp          # Button-Input (liest Bytes)
+│   └── hc595.cpp           # LED-Output (schreibt Bytes)
+├── logic/
+│   ├── debounce.cpp        # Entprellung → Press-Edges
+│   ├── selection.cpp       # Selection-Policy → selectedId
+│   └── io_pipeline.cpp     # Orchestriert Logik-Module
+└── app/
+    ├── io_loop.cpp         # Arduino-Variante (loop())
+    └── io_task.cpp         # FreeRTOS-Variante (Task)</code></pre>
+<h3 id="anwendung-was-darf-welche-schicht">Anwendung: Was darf welche
+Schicht?</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 43%" />
+<col style="width: 42%" />
+</colgroup>
+<thead>
+<tr>
+<th>Schicht</th>
+<th>Darf</th>
+<th>Darf nicht</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/</code></td>
+<td>Schichten orchestrieren, Tasks starten</td>
+<td>Regeln duplizieren, direkt SPI nutzen</td>
+</tr>
+<tr>
+<td><code>logic/</code></td>
+<td>IDs, Zustände, Edges verarbeiten</td>
+<td>Pins kennen, SPI aufrufen</td>
+</tr>
+<tr>
+<td><code>drivers/</code></td>
+<td>Bytes lesen/schreiben über HAL</td>
+<td>Debounce-Entscheidungen treffen</td>
+</tr>
+<tr>
+<td><code>hal/</code></td>
+<td>SPI-Register konfigurieren</td>
+<td>Button-Logik, LED-Zustände kennen</td>
+</tr>
+</tbody>
+</table>
+<h3 id="zusammenfassung-1">Zusammenfassung</h3>
+<p>Die <code>logic/</code>-Schicht ist hardware-unabhängig. Du kannst
+sie auf dem Host-PC unit-testen – ohne ESP32, ohne SPI, ohne echte
+Hardware. Das ist der Kern der Testbarkeit (siehe Abschnitt 8).</p>
+<blockquote>
+<p><strong>Merkregel:</strong> „Logik kennt keine Pins.” Wenn deine
+Logik <code>#include &lt;Arduino.h&gt;</code> braucht, ist die Trennung
+gebrochen.</p>
+</blockquote>
+<hr />
+<h2 id="datenfluss-ist-eine-pipeline">3) Datenfluss ist eine
+Pipeline</h2>
+<h3 id="problemstellung-2">Problemstellung</h3>
+<p>Wenn IO-Code „verstreut” ist – hier ein LED-Update, dort ein
+Button-Check – wird das System unvorhersehbar. Die One-Hot-Invariante
+(Abschnitt 4) kann brechen, weil zwei Codepfade unabhängig LEDs
+setzen.</p>
+<h3 id="regel-2">Regel</h3>
+<p>Der gesamte IO-Zyklus folgt einer klaren Sequenz:</p>
+<pre><code>read(raw) → logic(process) → derive(outputs) → write(outputs)</code></pre>
+<h3 id="herleitung-2">Herleitung</h3>
+<p>Wir betrachten den konkreten Datenfluss im Selection Panel:</p>
+<pre><code>CD4021::read(rawButtons)        ← Hardware-Input
+         │
+         ▼
+┌────────────────────────────────────────────────────┐
+│                    io_pipeline                     │
+│  ┌──────────┐   ┌────────────┐   ┌──────────────┐  │
+│  │ Debounce │ → │Press-Guard │ → │  Selection   │  │
+│  │ (Edges)  │   │ (optional) │   │  (Policy)    │  │
+│  └──────────┘   └────────────┘   └──────────────┘  │
+└────────────────────────────────────────────────────┘
+         │
+         ▼ selectedId (uint8_t, 0..N)
+    setOneHot(selectedId) → ledState[]
+         │
+         ▼
+HC595::write(ledState)          ← Hardware-Output</code></pre>
+<p><strong>Was passiert in jeder Stufe?</strong></p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 21%" />
+<col style="width: 23%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>Stufe</th>
+<th>Eingabe</th>
+<th>Ausgabe</th>
+<th>Funktion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CD4021::read()</td>
+<td>–</td>
+<td>rawButtons[BTN_BYTES]</td>
+<td>Liest Schieberegister (active-low)</td>
+</tr>
+<tr>
+<td>Debounce</td>
+<td>rawButtons[]</td>
+<td>pressEdges (Bitfeld)</td>
+<td>Filtert Prellen, erzeugt Flanken</td>
+</tr>
+<tr>
+<td>Press-Guard</td>
+<td>pressEdges</td>
+<td>validEdge (bool)</td>
+<td>Verhindert Doppel-Press (optional)</td>
+</tr>
+<tr>
+<td>Selection</td>
+<td>validEdge, buttonId</td>
+<td>selectedId</td>
+<td>Wendet Policy an (Toggle, Radio, etc.)</td>
+</tr>
+<tr>
+<td>setOneHot()</td>
+<td>selectedId</td>
+<td>ledState[LED_BYTES]</td>
+<td>Wandelt ID in Byte-Array</td>
+</tr>
+<tr>
+<td>HC595::write()</td>
+<td>ledState[]</td>
+<td>–</td>
+<td>Schiebt Bytes zum Schieberegister</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anwendung-1">Anwendung</h3>
+<p><strong>Kernregel:</strong> LED-Zustände entstehen an genau einer
+Stelle (<code>setOneHot</code>). Kein anderer Code darf LEDs direkt
+setzen – das würde die Pipeline umgehen und könnte One-Hot brechen.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ✗ Schlecht: LED direkt setzen (umgeht Pipeline)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ledState<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">|=</span> <span class="bn">0x80</span><span class="op">;</span>  <span class="co">// Setzt LED 1 „nebenbei&quot;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">// ✓ Gut: Immer über Pipeline</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> newSelection <span class="op">=</span> computeSelection<span class="op">(</span>currentSelection<span class="op">,</span> pressedButton<span class="op">);</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>setOneHot<span class="op">(</span>newSelection<span class="op">,</span> ledState<span class="op">,</span> LED_BYTES<span class="op">);</span></span></code></pre></div>
+<h3 id="zusammenfassung-2">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Ein Eingang, ein Ausgang, eine
+Richtung.” Die Pipeline ist ein Fließband – Teile überspringen erzeugt
+Chaos.</p>
+</blockquote>
+<hr />
+<h2 id="one-hot-ist-eine-systemweite-invariante">4) One-Hot ist eine
+systemweite Invariante</h2>
+<h3 id="problemstellung-3">Problemstellung</h3>
+<p>Bei einem Panel mit 100 LEDs wäre es fatal, wenn versehentlich zwei
+LEDs gleichzeitig leuchten oder ein ungültiger Index adressiert wird.
+Das Ergebnis: Verwirrung für den Nutzer, möglicherweise Überstrom durch
+die Treiber-ICs.</p>
+<h3 id="regel-3">Regel</h3>
+<p>One-Hot ist ein Vertrag, der zu jedem Zeitpunkt gilt:</p>
+<ul>
+<li><code>selectedId == 0</code> → alle LEDs aus</li>
+<li><code>selectedId ∈ [1..N]</code> → genau eine LED an (LED Nummer
+<code>selectedId</code>)</li>
+<li>Andere Zustände sind verboten (undefiniertes Verhalten)</li>
+</ul>
+<h3 id="herleitung-3">Herleitung</h3>
+<p>Wir implementieren die Invariante zentral in einer Funktion:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> setOneHot<span class="op">(</span><span class="dt">uint8_t</span> selectedId<span class="op">,</span> <span class="dt">uint8_t</span><span class="op">*</span> ledState<span class="op">,</span> <span class="dt">size_t</span> ledBytes<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Schritt 1: Alle LEDs aus (clear)</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    memset<span class="op">(</span>ledState<span class="op">,</span> <span class="bn">0x00</span><span class="op">,</span> ledBytes<span class="op">);</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Schritt 2: Genau eine LED setzen (wenn selectedId &gt; 0)</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>selectedId <span class="op">&gt;=</span> <span class="dv">1</span> <span class="op">&amp;&amp;</span> selectedId <span class="op">&lt;=</span> LED_COUNT<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">uint8_t</span> byteIdx <span class="op">=</span> <span class="op">(</span>selectedId <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">/</span> <span class="dv">8</span><span class="op">;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">uint8_t</span> bitIdx  <span class="op">=</span> <span class="dv">7</span> <span class="op">-</span> <span class="op">((</span>selectedId <span class="op">-</span> <span class="dv">1</span><span class="op">)</span> <span class="op">%</span> <span class="dv">8</span><span class="op">);</span>  <span class="co">// MSB-first</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        ledState<span class="op">[</span>byteIdx<span class="op">]</span> <span class="op">|=</span> <span class="op">(</span><span class="dv">1</span> <span class="op">&lt;&lt;</span> bitIdx<span class="op">);</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Schritt 3: Ungültige Bits im letzten Byte maskieren</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    ledState<span class="op">[</span>ledBytes <span class="op">-</span> <span class="dv">1</span><span class="op">]</span> <span class="op">&amp;=</span> LED_LAST_MASK<span class="op">;</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Warum Schritt 3?</strong> Bei 10 LEDs brauchst du 2 Bytes (16
+Bits), aber nur 10 sind gültig. Die Bits 5–0 im zweiten Byte könnten
+durch Bugs oder Speicherfehler gesetzt sein. Die Maske garantiert, dass
+sie niemals an den 74HC595 gelangen.</p>
+<h3 id="anwendung-zahlenbeispiel">Anwendung: Zahlenbeispiel</h3>
+<p>Für 10 LEDs, MSB-first-Anordnung:</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>selectedId</th>
+<th>Byte[0]</th>
+<th>Byte[1]</th>
+<th>Hex</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 (aus)</td>
+<td><code>00000000</code></td>
+<td><code>00000000</code></td>
+<td><code>0x00 0x00</code></td>
+<td>Alle LEDs aus</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>10000000</code></td>
+<td><code>00000000</code></td>
+<td><code>0x80 0x00</code></td>
+<td>LED 1 an</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>00000001</code></td>
+<td><code>00000000</code></td>
+<td><code>0x01 0x00</code></td>
+<td>LED 8 an</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>00000000</code></td>
+<td><code>10000000</code></td>
+<td><code>0x00 0x80</code></td>
+<td>LED 9 an</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>00000000</code></td>
+<td><code>01000000</code></td>
+<td><code>0x00 0x40</code></td>
+<td>LED 10 an</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Bit-Position-Berechnung (Schritt 2):</strong></p>
+<pre><code>selectedId = 9
+byteIdx = (9 - 1) / 8 = 8 / 8 = 1  → Byte[1]
+bitIdx  = 7 - ((9 - 1) % 8) = 7 - 0 = 7  → Bit 7 (MSB)
+Ergebnis: Byte[1] = 0b10000000 = 0x80</code></pre>
+<blockquote>
+<p><strong>Merkregel:</strong> „One-Hot = Clear-then-Set.” Erst alles
+löschen, dann genau eines setzen – niemals umgekehrt.</p>
+</blockquote>
+<h3 id="zusammenfassung-3">Zusammenfassung</h3>
+<p>Die Funktion <code>setOneHot()</code> ist die einzige Stelle, die
+LED-Zustände erzeugt. Sie garantiert die Invariante durch Konstruktion:
+Es ist unmöglich, zwei LEDs gleichzeitig zu setzen, solange alle
+LED-Updates durch diese Funktion laufen.</p>
+<hr />
+<h2 id="ereignisse-statt-pegel-buttons-sind-edge-getrieben">5)
+Ereignisse statt Pegel – Buttons sind Edge-getrieben</h2>
+<h3 id="problemstellung-4">Problemstellung</h3>
+<p>Wenn die Logik auf „Button ist gedrückt” (Pegel) reagiert, feuert sie
+bei jedem Scan-Zyklus. Bei 10 ms Scan-Intervall wären das 100 Events pro
+Sekunde, solange du die Taste hältst – ein „Event-Spam”, der die
+Selection-Logik überflutet.</p>
+<h3 id="regel-4">Regel</h3>
+<p>UI-Aktionen basieren auf Press-Edges (Flanken), nicht auf Pegeln.</p>
+<pre><code>CD4021 (Pegel)      Debounce            Selection
+     │                  │                   │
+  active-low    →   pressed edges    →   reagiert nur
+  (0=gedrückt)     (stabil+Flanke)       auf Edges</code></pre>
+<h3 id="herleitung-4">Herleitung</h3>
+<p><em>Analogie:</em> Ein Lichtschalter reagiert auf das Umlegen
+(Flanke), nicht auf die Position (Pegel). Würde das Licht bei jedem
+„Schalter ist oben”-Check ein-/ausschalten, flackerte es im Takt der
+Abfrage. Die Analogie endet dort, wo es um Timing geht: Mechanische
+Schalter prellen (10–50 ms), digitale Signale nicht.</p>
+<p><strong>Debounce-Algorithmus (vereinfacht):</strong></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="kw">struct</span> <span class="op">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> stable<span class="op">;</span>      <span class="co">// Letzter stabiler Zustand (0 oder 1)</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> counter<span class="op">;</span>     <span class="co">// Zähler für stabile Abtastwerte</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> DebounceState<span class="op">;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> debounce_update<span class="op">(</span>DebounceState<span class="op">*</span> state<span class="op">,</span> <span class="dt">uint8_t</span> raw<span class="op">,</span> <span class="dt">uint8_t</span> threshold<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>raw <span class="op">==</span> state<span class="op">-&gt;</span>stable<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        state<span class="op">-&gt;</span>counter <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>   <span class="co">// Zustand unverändert → Reset</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    state<span class="op">-&gt;</span>counter<span class="op">++;</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>state<span class="op">-&gt;</span>counter <span class="op">&gt;=</span> threshold<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">bool</span> wasPressed <span class="op">=</span> <span class="op">(</span>state<span class="op">-&gt;</span>stable <span class="op">!=</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>        <span class="dt">bool</span> isPressed  <span class="op">=</span> <span class="op">(</span>raw <span class="op">!=</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>        state<span class="op">-&gt;</span>stable <span class="op">=</span> raw<span class="op">;</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        state<span class="op">-&gt;</span>counter <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Press-Edge: war nicht gedrückt, ist jetzt gedrückt</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="op">(!</span>wasPressed <span class="op">&amp;&amp;</span> isPressed<span class="op">);</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span>  <span class="co">// Noch nicht stabil genug</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Timing-Berechnung:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Wert</th>
+<th>Berechnung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scan-Intervall</td>
+<td>10 ms</td>
+<td>Vorgabe (Task-Periode)</td>
+</tr>
+<tr>
+<td>Threshold</td>
+<td>3</td>
+<td>Anzahl stabiler Samples</td>
+</tr>
+<tr>
+<td>Entprellzeit</td>
+<td>30 ms</td>
+<td>3 × 10 ms</td>
+</tr>
+<tr>
+<td>Typisches Prellen</td>
+<td>10–50 ms</td>
+<td>Mechanische Taster</td>
+</tr>
+</tbody>
+</table>
+<p>Mit <code>threshold = 3</code> bei 10 ms Scan-Intervall ergibt sich
+eine Entprellzeit von 30 ms – ausreichend für typische mechanische
+Taster.</p>
+<h3 id="anwendung-2">Anwendung</h3>
+<p>Die Selection-Logik sieht nur „Button 7 wurde gerade gedrückt” (ein
+einziges Event), nicht „Button 7 ist seit 500 ms gedrückt” (50 Events).
+Das verhindert Event-Spam und macht das Verhalten vorhersagbar.</p>
+<h3 id="zusammenfassung-4">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Flanke statt Pegel – ein Button, ein
+Event.”</p>
+</blockquote>
+<hr />
+<h2 id="determinismus-timing-bleibt-stabil">6) Determinismus – Timing
+bleibt stabil</h2>
+<h3 id="problemstellung-5">Problemstellung</h3>
+<p>Im Embedded-Kontext kann ein einzelner <code>Serial.printf()</code>
+im Hot-Path das gesamte Timing zerstören. UART bei 115200 Baud braucht
+etwa 87 µs pro Zeichen. Bei 50 Zeichen sind das 4,35 ms – fast die
+Hälfte eines 10-ms-Scan-Intervalls.</p>
+<p><strong>Berechnung:</strong></p>
+<pre><code>Baudrate: 115200 Bit/s
+Bits pro Zeichen: 10 (8 Daten + 1 Start + 1 Stop)
+Zeit pro Zeichen: 10 / 115200 = 86,8 µs ≈ 87 µs
+50 Zeichen: 50 × 87 µs = 4,35 ms</code></pre>
+<h3 id="regel-5">Regel</h3>
+<p>Der Scan-Pfad läuft ohne Blockierungen. Logging erfolgt nur bei
+Zustandsänderungen.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Erlaubt</th>
+<th>Verboten</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logging bei Selection-Change</td>
+<td>Logging pro Scan-Zyklus</td>
+</tr>
+<tr>
+<td><code>vTaskDelayUntil()</code> (FreeRTOS)</td>
+<td>Busy-loops mit <code>delay()</code></td>
+</tr>
+<tr>
+<td>Kurze SPI-Transfers (~10 µs)</td>
+<td>Lange UART-Ausgaben im Hot-Path</td>
+</tr>
+</tbody>
+</table>
+<h3 id="herleitung-timing-budget">Herleitung: Timing-Budget</h3>
+<p>Wir berechnen das Timing für 10 Kanäle:</p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 49%" />
+<col style="width: 22%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Typische Dauer</th>
+<th>Quelle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CD4021 read (2 Bytes @ 1 MHz SPI)</td>
+<td>~20 µs</td>
+<td>Datenblatt CD4021B</td>
+</tr>
+<tr>
+<td>Debounce + Selection</td>
+<td>~5 µs</td>
+<td>Messung</td>
+</tr>
+<tr>
+<td>HC595 write (2 Bytes @ 1 MHz SPI)</td>
+<td>~20 µs</td>
+<td>Datenblatt 74HC595</td>
+</tr>
+<tr>
+<td><strong>Gesamt pro Zyklus</strong></td>
+<td>~50 µs</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Verfügbar bei 10 ms Intervall</strong></td>
+<td>10.000 µs</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Reserve</strong></td>
+<td>9.950 µs</td>
+<td>99,5 %</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anwendung-skalierung-auf-100-kanäle">Anwendung: Skalierung auf
+100 Kanäle</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>10 Kanäle</th>
+<th>100 Kanäle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bytes pro Transfer</td>
+<td>2</td>
+<td>13</td>
+</tr>
+<tr>
+<td>SPI-Transferzeit</td>
+<td>~20 µs</td>
+<td>~130 µs</td>
+</tr>
+<tr>
+<td>Gesamt pro Zyklus</td>
+<td>~50 µs</td>
+<td>~270 µs</td>
+</tr>
+<tr>
+<td>Reserve bei 10 ms</td>
+<td>99,5 %</td>
+<td>97,3 %</td>
+</tr>
+</tbody>
+</table>
+<p>Bei 100 Kanälen bleibt das Timing stabil, solange du keine
+blockierenden Operationen einbaust.</p>
+<h3 id="zusammenfassung-5">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Im Hot-Path kein printf().” Debugging
+gehört in Zustandsänderungen, nicht in jeden Scan.</p>
+</blockquote>
+<hr />
+<h2 id="skalierbarkeit-byte-orientiert-und-maskenbasiert">7)
+Skalierbarkeit – Byte-orientiert und maskenbasiert</h2>
+<h3 id="problemstellung-6">Problemstellung</h3>
+<p>Code mit hartkodierten Werten wie <code>uint8_t buttons[2]</code>
+oder Schleifen <code>for (int i = 0; i &lt; 10; i++)</code> muss bei
+Skalierung manuell angepasst werden. Jede Anpassung ist eine
+Fehlerquelle.</p>
+<h3 id="regel-6">Regel</h3>
+<p>Algorithmen arbeiten mit <code>*_COUNT</code> und
+<code>*_BYTES</code> Makros, nicht mit Literalen.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ✗ Schlecht: hartkodiert</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> ledState<span class="op">[</span><span class="dv">2</span><span class="op">];</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="dv">10</span><span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span> <span class="co">/* ... */</span> <span class="op">}</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ✓ Gut: skalierbar</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="dt">uint8_t</span> ledState<span class="op">[</span>LED_BYTES<span class="op">];</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> LED_COUNT<span class="op">;</span> i<span class="op">++)</span> <span class="op">{</span> <span class="co">/* ... */</span> <span class="op">}</span></span></code></pre></div>
+<h3 id="herleitung-automatische-masken-berechnung">Herleitung:
+Automatische Masken-Berechnung</h3>
+<p>Die Maske für das letzte Byte muss die ungenutzten Bits
+ausblenden:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_COUNT       </span><span class="dv">100</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_BYTES       </span><span class="op">((</span>LED_COUNT<span class="pp"> </span><span class="op">+</span><span class="pp"> </span><span class="dv">7</span><span class="op">)</span><span class="pp"> </span><span class="op">/</span><span class="pp"> </span><span class="dv">8</span><span class="op">)</span><span class="pp">  </span><span class="co">// = 13</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Berechnung der Maske:</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">// 100 % 8 = 4 → 4 LEDs im letzten Byte gültig</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Bits 7, 6, 5, 4 → Maske = 0xF0</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_LAST_MASK   </span><span class="op">(</span><span class="bn">0xFF</span><span class="pp"> </span><span class="op">&lt;&lt;</span><span class="pp"> </span><span class="op">(</span><span class="dv">8</span><span class="pp"> </span><span class="op">-</span><span class="pp"> </span><span class="op">(</span>LED_COUNT<span class="pp"> </span><span class="op">%</span><span class="pp"> </span><span class="dv">8</span><span class="op">)))</span><span class="pp"> </span><span class="op">&amp;</span><span class="pp"> </span><span class="bn">0xFF</span></span></code></pre></div>
+<p><strong>Zahlenbeispiele:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>LED_COUNT</th>
+<th>LED_COUNT % 8</th>
+<th>Gültige Bits</th>
+<th>Maske Binär</th>
+<th>Maske Hex</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td>0</td>
+<td>alle 8</td>
+<td><code>11111111</code></td>
+<td><code>0xFF</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td>2</td>
+<td>Bit 7, 6</td>
+<td><code>11000000</code></td>
+<td><code>0xC0</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td>4</td>
+<td>Bit 7, 6, 5, 4</td>
+<td><code>11110000</code></td>
+<td><code>0xF0</code></td>
+</tr>
+<tr>
+<td>100</td>
+<td>4</td>
+<td>Bit 7, 6, 5, 4</td>
+<td><code>11110000</code></td>
+<td><code>0xF0</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sonderfall:</strong> Wenn <code>LED_COUNT % 8 == 0</code>,
+ergibt die Formel <code>0xFF &lt;&lt; 8 = 0x00</code> – falsch!
+Korrigierte Formel:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LED_LAST_MASK   </span><span class="op">((</span>LED_COUNT<span class="pp"> </span><span class="op">%</span><span class="pp"> </span><span class="dv">8</span><span class="op">)</span><span class="pp"> </span><span class="op">==</span><span class="pp"> </span><span class="dv">0</span><span class="pp"> </span><span class="op">?</span><span class="pp"> </span><span class="bn">0xFF</span><span class="pp"> </span><span class="op">:</span><span class="pp"> </span><span class="op">\</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="pp">                         </span><span class="op">(</span><span class="bn">0xFF</span><span class="pp"> </span><span class="op">&lt;&lt;</span><span class="pp"> </span><span class="op">(</span><span class="dv">8</span><span class="pp"> </span><span class="op">-</span><span class="pp"> </span><span class="op">(</span>LED_COUNT<span class="pp"> </span><span class="op">%</span><span class="pp"> </span><span class="dv">8</span><span class="op">)))</span><span class="pp"> </span><span class="op">&amp;</span><span class="pp"> </span><span class="bn">0xFF</span><span class="op">)</span></span></code></pre></div>
+<h3 id="anwendung-3">Anwendung</h3>
+<p>Die Änderung <code>BTN_COUNT=10</code> → <code>BTN_COUNT=100</code>
+erfordert keine Anpassung in der Logik. Arrays, Schleifen und Masken
+passen sich automatisch an.</p>
+<h3 id="zusammenfassung-6">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Keine Magic Numbers.
+<code>*_COUNT</code> und <code>*_BYTES</code> sind deine Freunde.”</p>
+</blockquote>
+<hr />
+<h2 id="testbarkeit-ist-ein-architekturziel">8) Testbarkeit ist ein
+Architekturziel</h2>
+<h3 id="problemstellung-7">Problemstellung</h3>
+<p>Wenn Logik und Hardware verwoben sind, kannst du nur am echten Gerät
+testen. Jeder Test braucht Flashen, Verkabeln, manuelles Drücken –
+langsam und fehleranfällig.</p>
+<h3 id="regel-7">Regel</h3>
+<p>Logik muss isoliert testbar sein (Unit-Tests), Hardware-Pfad
+end-to-end (E2E-Tests).</p>
+<h3 id="herleitung-test-environments">Herleitung: Test-Environments</h3>
+<p>In <code>platformio.ini</code> definierst du getrennte
+Umgebungen:</p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 7%" />
+<col style="width: 61%" />
+</colgroup>
+<thead>
+<tr>
+<th>Environment</th>
+<th>Typ</th>
+<th>Was wird getestet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>seeed_xiao_esp32s3_test</code></td>
+<td>Unit</td>
+<td>Nur <code>logic/</code> (Debounce, Selection, Pipeline)</td>
+</tr>
+<tr>
+<td><code>seeed_xiao_esp32s3_e2e</code></td>
+<td>E2E</td>
+<td><code>logic/</code> + <code>drivers/</code> + <code>hal/</code> mit
+echter Hardware</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anwendung-unit-test-beispiel">Anwendung: Unit-Test-Beispiel</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;unity.h&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> test_debounce_filters_noise<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    DebounceState state <span class="op">=</span> <span class="op">{</span><span class="dv">0</span><span class="op">};</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Simuliere Prellen: 0 → 1 → 0 → 1 → 1 → 1</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_FALSE<span class="op">(</span>debounce_update<span class="op">(&amp;</span>state<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">));</span>  <span class="co">// Zähler = 1</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_FALSE<span class="op">(</span>debounce_update<span class="op">(&amp;</span>state<span class="op">,</span> <span class="dv">0</span><span class="op">,</span> <span class="dv">3</span><span class="op">));</span>  <span class="co">// Reset auf 0</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_FALSE<span class="op">(</span>debounce_update<span class="op">(&amp;</span>state<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">));</span>  <span class="co">// Zähler = 1</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_FALSE<span class="op">(</span>debounce_update<span class="op">(&amp;</span>state<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">));</span>  <span class="co">// Zähler = 2</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_TRUE<span class="op">(</span>debounce_update<span class="op">(&amp;</span>state<span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="dv">3</span><span class="op">));</span>   <span class="co">// Zähler = 3 → Edge!</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> test_oneHot_sets_single_led<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">uint8_t</span> ledState<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="bn">0xFF</span><span class="op">,</span> <span class="bn">0xFF</span><span class="op">};</span>  <span class="co">// Absichtlich „verschmutzt&quot;</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    setOneHot<span class="op">(</span><span class="dv">1</span><span class="op">,</span> ledState<span class="op">,</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_EQUAL_HEX8<span class="op">(</span><span class="bn">0x80</span><span class="op">,</span> ledState<span class="op">[</span><span class="dv">0</span><span class="op">]);</span>  <span class="co">// LED 1 an</span></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_EQUAL_HEX8<span class="op">(</span><span class="bn">0x00</span><span class="op">,</span> ledState<span class="op">[</span><span class="dv">1</span><span class="op">]);</span>  <span class="co">// Rest aus</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    setOneHot<span class="op">(</span><span class="dv">10</span><span class="op">,</span> ledState<span class="op">,</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_EQUAL_HEX8<span class="op">(</span><span class="bn">0x00</span><span class="op">,</span> ledState<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    TEST_ASSERT_EQUAL_HEX8<span class="op">(</span><span class="bn">0x40</span><span class="op">,</span> ledState<span class="op">[</span><span class="dv">1</span><span class="op">]);</span>  <span class="co">// LED 10 an</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Testbefehle:</strong></p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Unit-Tests (Logik, läuft in Sekunden)</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pio</span> test <span class="at">-e</span> seeed_xiao_esp32s3_test <span class="at">-v</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># E2E-Hardware-Tests (braucht echte Hardware)</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ex">pio</span> test <span class="at">-e</span> seeed_xiao_esp32s3_e2e <span class="at">-f</span> test_e2e_hw <span class="at">-v</span></span></code></pre></div>
+</div>
+</body>
+</html>

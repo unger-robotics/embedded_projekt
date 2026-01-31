@@ -1,0 +1,195 @@
+\documentclass[10pt,aspectratio=169]{beamer}
+
+% =============================================================================
+% Praesentation: Selection Panel
+% Standard: SSOT-Metadaten, robuste Pfade, minimale/gezielte Pakete.
+% Kommentare erklaeren warum, nicht was.
+%
+% Annahme zur Struktur:
+% - Datei liegt in:   ./latex/main/praesentation.tex
+% - Bilder liegen in: ./latex/images/ und ./latex/covers/
+% - Folieninhalt in:  ./latex/content/folien.tex
+% =============================================================================
+
+% --- Projekt-Metadaten (SSOT: eine Quelle, keine Divergenz) -------------------
+\newcommand{\ProjTitle}{Selection Panel}
+\newcommand{\ProjSubtitle}{100× Taster/LED · FreeRTOS + React · WebSocket}
+\newcommand{\ProjAuthor}{Jan Unger}
+\newcommand{\ProjVersion}{3.0.0}
+\newcommand{\ProjStand}{20.01.2026}
+
+% Warum nur Dateiname:
+% Bilder liegen in ./latex/images/ oder ./latex/covers/ und werden ueber \graphicspath gefunden.
+\newcommand{\CoverPdf}{cover-selection-panel.pdf}
+
+% --- PDF-Verhalten (nicht erzwungen; fuer Praesentation einschaltbar) ---------
+\newif\ifFullscreenPdf
+\FullscreenPdffalse
+% \FullscreenPdftrue % Warum: fuer echten Vortrag im Vollbild, nicht fuer Alltag/Review.
+
+% --- Pakete (nur was real gebraucht wird) ------------------------------------
+\usepackage[ngerman]{babel}   % Warum: Trennung/Bezeichnungen konsistent deutsch.
+\usepackage{fontspec}         % Warum: XeLaTeX-Schriften ohne inputenc/fontenc.
+\usepackage{graphicx}         % Warum: PDF/Bilder als Hintergruende.
+\usepackage{tikz}             % Warum: Overlay-Layout fuer Fullscreen-Slides.
+\usepackage{booktabs}         % Warum: Tabellen ohne "Linien-Matsch".
+\usepackage{colortbl}         % Warum: farbige Tabellenzellen (falls genutzt).
+\usepackage{amssymb}          % Warum: Symbole wie \square (falls genutzt).
+\usepackage{eurosym}          % Warum: \euro (falls genutzt).
+\usepackage{hyperref}         % Warum: \href{run:...} und PDF-Metadaten.
+
+% Bilder liegen in ./latex/images/ und ./latex/covers/
+\graphicspath{{images/}{covers/}}
+
+% --- Fonts (Fallback, damit Linux/CI nicht bricht) ----------------------------
+\defaultfontfeatures{Ligatures=TeX}
+\IfFontExistsTF{Helvetica}{%
+  \setmainfont{Helvetica}
+  \setsansfont{Helvetica}
+}{%
+  \setmainfont{TeX Gyre Heros}
+  \setsansfont{TeX Gyre Heros}
+}
+\usefonttheme{professionalfonts}
+
+% --- Navigation aus (ruhige Optik, weniger Rauschen) --------------------------
+\beamertemplatenavigationsymbolsempty
+
+% =============================================================================
+% Farbdefinitionen (SSOT innerhalb des Dokuments)
+% =============================================================================
+
+% PRIMAER
+\definecolor{ArduinoTeal}{RGB}{0,151,157}
+\definecolor{ArduinoDark}{RGB}{0,92,95}
+\definecolor{RaspberryRed}{RGB}{197,26,74}
+\definecolor{RaspberryPurple}{RGB}{117,38,74}
+
+% HINTERGRUENDE
+\definecolor{GitHubDark}{RGB}{13,17,23}
+\definecolor{SlateDark}{RGB}{30,41,51}
+\definecolor{SlateMedium}{RGB}{45,58,69}
+
+% STATUS
+\definecolor{SuccessGreen}{RGB}{117,169,40}
+\definecolor{WarningOrange}{RGB}{217,119,6}
+
+% SIGNALFARBEN (Schaltplan-Leitungen)
+\definecolor{SignalData}{RGB}{81,207,102}
+\definecolor{SignalClock}{RGB}{255,212,59}
+\definecolor{SignalLatch}{RGB}{77,171,247}
+\definecolor{SignalVCC}{RGB}{255,107,107}
+\definecolor{SignalGND}{RGB}{107,114,128}
+
+% TEXT
+\definecolor{LightText}{RGB}{230,237,243}
+\definecolor{DarkText}{RGB}{13,17,23}
+\definecolor{MutedText}{RGB}{74,85,104}
+
+% Aliase (nur wenn wirklich gebraucht; hier als stabile Namen)
+\colorlet{MainColor}{ArduinoTeal}
+\colorlet{MainColorDark}{ArduinoDark}
+\colorlet{AccentColor}{RaspberryRed}
+
+% Beamer-Farben
+\setbeamercolor{normal text}{fg=DarkText,bg=white}
+\setbeamercolor{structure}{fg=ArduinoTeal}
+\setbeamercolor{frametitle}{fg=ArduinoTeal}
+\setbeamercolor{itemize item}{fg=ArduinoTeal}
+\setbeamercolor{itemize subitem}{fg=ArduinoDark}
+\setbeamercolor{enumerate item}{fg=ArduinoTeal}
+
+% Fusszeile (SSOT: Version kommt aus \ProjVersion)
+\setbeamertemplate{footline}{%
+  \hspace{0.3cm}{\tiny\color{MutedText}\ProjAuthor}%
+  \hfill{\tiny\color{MutedText}\ProjTitle\ v\ProjVersion}%
+  \hfill{\tiny\color{MutedText}\insertframenumber}%
+  \hspace{0.3cm}\vspace{0.15cm}%
+}
+
+% Frametitle (ruhiges, gleiches Raster)
+\setbeamertemplate{frametitle}{%
+  \vspace{0.3cm}%
+  {\usebeamerfont{frametitle}\color{ArduinoTeal}\insertframetitle}%
+  \vspace{0.2cm}\par%
+}
+
+% =============================================================================
+% PDF-Metadaten (nach Titeldefinition, damit keine Divergenz entsteht)
+% =============================================================================
+\title{\ProjTitle}
+\subtitle{\ProjSubtitle}
+\author{\ProjAuthor}
+\date{} % Warum: Datum steht bewusst im Content/Status, nicht als Deck-Metadatum.
+
+\AtBeginDocument{%
+  \hypersetup{%
+    pdftitle={\ProjTitle},%
+    pdfauthor={\ProjAuthor},%
+    pdfstartview={Fit},%
+    pdftoolbar=false,%
+    pdfmenubar=false,%
+    pdfwindowui=false%
+  }%
+  \ifFullscreenPdf
+    \hypersetup{pdfpagemode=FullScreen}%
+  \fi
+}
+
+% =============================================================================
+% Custom Commands (klein, eindeutig, wiederverwendbar)
+% =============================================================================
+\newcommand{\highlight}[1]{\textcolor{ArduinoTeal}{\textbf{#1}}}
+\newcommand{\improvement}[1]{\textcolor{SuccessGreen}{\textbf{#1}}}
+\newcommand{\warning}[1]{\textcolor{WarningOrange}{\textbf{#1}}}
+\newcommand{\critical}[1]{\textcolor{RaspberryRed}{\textbf{#1}}}
+
+% Warum Macro:
+% Einheitliches Titel-Layout ohne Copy/Paste in der Dokumentstruktur.
+% Cover-Bild füllt die Folie, Statuszeile am unteren Rand.
+\newcommand{\titleslide}[2]{%
+  \begin{frame}[plain,noframenumbering]
+    \begin{tikzpicture}[remember picture,overlay]
+      \node[at=(current page.center)] {%
+        \includegraphics[width=\paperwidth,height=\paperheight]{#1}%
+      };
+      % Statuszeile ganz unten
+      \node[anchor=south, text width=0.95\paperwidth, align=center] 
+        at ([yshift=0.15cm]current page.south) {%
+        \footnotesize\color{MutedText}#2%
+      };
+    \end{tikzpicture}
+  \end{frame}%
+}
+
+% Video via Hyperlink (extern; bewusst kein Embedded-Video, weil Viewer/OS sonst zickt)
+\newcommand{\videoslide}[4]{%
+  \begin{frame}{#3}
+    \framesubtitle{#4}
+    \begin{center}
+      \href{run:#1}{\includegraphics[width=12cm,height=6.75cm,keepaspectratio]{#2}}
+      \vspace{0.3cm}
+
+      \href{run:#1}{\textcolor{ArduinoTeal}{\textbf{Klick zum Abspielen}}}
+    \end{center}
+  \end{frame}%
+}
+
+% =============================================================================
+% Dokument
+% =============================================================================
+\begin{document}
+
+% Warum \CoverPdf ohne Pfad:
+% \graphicspath zeigt auf images/ und covers/ und entkoppelt das Deck vom Working-Dir.
+\titleslide{\CoverPdf}{%
+  Stand: \ProjStand\;\textbar\;
+  10× \textcolor{SuccessGreen}{\textbf{funktionsfähig}}\;\textbar\;
+  Dokumentation \textcolor{WarningOrange}{\textbf{in Arbeit}}%
+}
+
+% Warum ../content:
+% Diese Datei liegt in ./latex/main/, der Inhalt liegt in ./latex/content/.
+\input{../content/folien.tex}
+
+\end{document}

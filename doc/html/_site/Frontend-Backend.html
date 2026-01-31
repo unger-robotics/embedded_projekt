@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>frontend-backend.mathjax_tmp</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+  
+  <script>
+  window.MathJax = {
+    loader: {
+      load: ['[tex]/ams']
+    },
+    tex: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      packages: {'[+]': ['ams']},
+      macros: {
+        dd: '{\\,\\mathrm{d}}',
+        degC: '{^{\\circ}\\!\\mathrm{C}}',
+        Ohm: '{\\,\\Omega}',
+        ohm: '{\\,\\Omega}',
+        degree: '{^{\\circ}}'
+      }
+    },
+    options: {
+      skipHtmlTags: ['script','noscript','style','textarea','pre','code','kbd','samp']
+    }
+  };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div class="main-container">
+<h1
+id="react-stack-grundlagen-frontend-entwicklung-für-embedded-systeme">React-Stack
+Grundlagen: Frontend-Entwicklung für Embedded-Systeme</h1>
+<h2 id="begriffsrahmen-und-zielsetzung">0) Begriffsrahmen und
+Zielsetzung</h2>
+<h3 id="anwendungskontext">Anwendungskontext</h3>
+<p>Diese Dokumentation richtet sich an Embedded-Entwickler, die ein
+Browser-basiertes Dashboard für Hardware-Projekte erstellen. Der
+konkrete Anwendungsfall ist das Selection-Panel-Frontend, das über
+WebSocket mit einem Python-Backend kommuniziert und den Zustand von
+10–100 LEDs visualisiert. Der moderne React-Stack ersetzt manuelles
+HTML/CSS/JavaScript durch ein wartbares, typsicheres System.</p>
+<h3 id="lernziele">Lernziele</h3>
+<p>Nach dem Durcharbeiten dieses Dokuments kannst du:</p>
+<ol type="1">
+<li><strong>Das React-Komponentenmodell erklären</strong> – verstehen,
+warum deklarative UIs skalierbarer sind als DOM-Manipulation</li>
+<li><strong>TypeScript-Typen definieren</strong> – Interfaces für Props,
+State und WebSocket-Nachrichten schreiben</li>
+<li><strong>Vite konfigurieren</strong> – Entwicklungsserver starten,
+Proxies einrichten, Production-Builds erstellen</li>
+<li><strong>Code-Qualität automatisieren</strong> – ESLint und Prettier
+integrieren</li>
+<li><strong>Client-seitige Navigation implementieren</strong> – React
+Router ohne WebSocket-Unterbrechung nutzen</li>
+<li><strong>Tailwind CSS anwenden</strong> – Utility-First Styling für
+Hardware-UIs</li>
+</ol>
+<h3 id="begriffsdefinitionen">Begriffsdefinitionen</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 62%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr>
+<th>Begriff</th>
+<th>Definition</th>
+<th>Quelle/Kontext</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>React</strong></td>
+<td>JavaScript-Bibliothek für komponentenbasierte, deklarative UIs</td>
+<td>Meta (Facebook), 2013</td>
+</tr>
+<tr>
+<td><strong>TypeScript</strong></td>
+<td>JavaScript-Erweiterung mit statischer Typisierung</td>
+<td>Microsoft, 2012</td>
+</tr>
+<tr>
+<td><strong>Vite</strong></td>
+<td>Build-Tool und Entwicklungsserver (frz. „vite” = schnell)</td>
+<td>Evan You, 2020</td>
+</tr>
+<tr>
+<td><strong>JSX</strong></td>
+<td>JavaScript XML – HTML-ähnliche Syntax in JavaScript</td>
+<td>React-Spezifikation</td>
+</tr>
+<tr>
+<td><strong>ESLint</strong></td>
+<td>Statische Code-Analyse zur Fehlererkennung vor Laufzeit</td>
+<td>OpenJS Foundation</td>
+</tr>
+<tr>
+<td><strong>Prettier</strong></td>
+<td>Code-Formatter für einheitlichen Stil</td>
+<td>prettier.io</td>
+</tr>
+<tr>
+<td><strong>React Router</strong></td>
+<td>Client-seitige Navigation ohne Seitenneuladen</td>
+<td>Remix Software</td>
+</tr>
+<tr>
+<td><strong>Tailwind CSS</strong></td>
+<td>Utility-First CSS-Framework mit vordefinierten Klassen</td>
+<td>Tailwind Labs</td>
+</tr>
+<tr>
+<td><strong>HMR</strong></td>
+<td>Hot Module Replacement – Code-Änderungen ohne Seitenneuladen</td>
+<td>Webpack/Vite</td>
+</tr>
+<tr>
+<td><strong>Props</strong></td>
+<td>Properties – Eingabeparameter einer React-Komponente</td>
+<td>React-Terminologie</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>Lokaler Zustand einer Komponente, der Re-Renders auslöst</td>
+<td>React-Terminologie</td>
+</tr>
+<tr>
+<td><strong>Hook</strong></td>
+<td>Funktion zum Einbinden von React-Features in
+Funktionskomponenten</td>
+<td>React 16.8+</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="react-komponenten-statt-dom-manipulation">1) React – Komponenten
+statt DOM-Manipulation</h2>
+<h3 id="problemstellung">Problemstellung</h3>
+<p>Bei klassischem JavaScript manipulierst du das DOM direkt – jede
+Zustandsänderung erfordert manuelle Updates aller betroffenen
+Elemente:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Klassisch: imperativ, fehleranfällig bei komplexen Zuständen</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">getElementById</span>(<span class="st">&#39;led-5&#39;</span>)<span class="op">.</span><span class="at">classList</span><span class="op">.</span><span class="fu">add</span>(<span class="st">&#39;active&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">getElementById</span>(<span class="st">&#39;status&#39;</span>)<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> <span class="st">&#39;LED 5 an&#39;</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Und was ist mit dem Counter? Dem Log? Der Statusleiste?</span></span></code></pre></div>
+<p>Bei 100 LEDs mit verschiedenen Zuständen (aktiv, inaktiv, blinkend,
+Fehler) wird dieser Ansatz unwartbar. Wenn sich ein Wert ändert, musst
+du manuell alle betroffenen DOM-Elemente finden und aktualisieren.</p>
+<h3 id="regel">Regel</h3>
+<p>React kehrt das Prinzip um: Du beschreibst den <em>gewünschten
+Zustand</em> (deklarativ), React berechnet die nötigen DOM-Änderungen
+(Reconciliation).</p>
+<h3 id="herleitung-imperativ-vs.-deklarativ">Herleitung: Imperativ
+vs. Deklarativ</h3>
+<p><strong>Imperatives Paradigma (klassisches JS):</strong></p>
+<pre><code>Zustand ändert sich → Entwickler findet betroffene DOM-Elemente → Entwickler aktualisiert jedes Element</code></pre>
+<p><strong>Deklaratives Paradigma (React):</strong></p>
+<pre><code>Zustand ändert sich → React vergleicht alten/neuen Virtual DOM → React aktualisiert nur geänderte Elemente</code></pre>
+<p><em>Analogie:</em> Imperativ ist wie ein Koch, der jeden Handgriff
+einzeln anweist („Nimm das Messer, schneide die Zwiebel, dann…“).
+Deklarativ ist wie ein Rezept („Am Ende soll eine geschnittene Zwiebel
+vorliegen”). Die Analogie endet dort, wo es um Parallelität geht: React
+kann mehrere Änderungen batchen, ein Koch nicht.</p>
+<h3 id="anwendung-komponenten-architektur">Anwendung:
+Komponenten-Architektur</h3>
+<p><strong>Grundstruktur einer Komponente:</strong></p>
+<pre class="tsx"><code>// Eine Komponente ist eine Funktion: Props → JSX
+interface LedButtonProps {
+  id: number;
+  isActive: boolean;
+  onPress: (id: number) =&gt; void;
+}
+
+function LedButton({ id, isActive, onPress }: LedButtonProps) {
+  return (
+    &lt;button
+      className={isActive ? &#39;led active&#39; : &#39;led&#39;}
+      onClick={() =&gt; onPress(id)}
+    &gt;
+      LED {id}
+    &lt;/button&gt;
+  );
+}</code></pre>
+<p><strong>Kernkonzepte:</strong></p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 47%" />
+<col style="width: 34%" />
+</colgroup>
+<thead>
+<tr>
+<th>Konzept</th>
+<th>Bedeutung</th>
+<th>Beispiel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Props</strong></td>
+<td>Eingabeparameter (read-only, von außen)</td>
+<td><code>id</code>, <code>isActive</code>, <code>onPress</code></td>
+</tr>
+<tr>
+<td><strong>JSX</strong></td>
+<td>HTML-ähnliche Syntax, wird zu JS kompiliert</td>
+<td><code>&lt;button&gt;...&lt;/button&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Komposition</strong></td>
+<td>Komponenten enthalten andere Komponenten</td>
+<td><code>LedPanel</code> enthält <code>LedButton</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="anwendung-state-und-hooks">Anwendung: State und Hooks</h3>
+<p>Lokaler Zustand wird mit dem <code>useState</code>-Hook
+verwaltet:</p>
+<pre class="tsx"><code>function LedPanel() {
+  // State: Set von aktiven LED-IDs
+  const [activeIds, setActiveIds] = useState&lt;Set&lt;number&gt;&gt;(new Set());
+
+  // Event-Handler: Toggle einer LED
+  const handlePress = (id: number) =&gt; {
+    setActiveIds(prev =&gt; {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  // Render: 100 LedButtons in einem Grid
+  return (
+    &lt;div className=&quot;grid grid-cols-10&quot;&gt;
+      {Array.from({ length: 100 }, (_, i) =&gt; (
+        &lt;LedButton
+          key={i}
+          id={i}
+          isActive={activeIds.has(i)}
+          onPress={handlePress}
+        /&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+<p><strong>Ablauf bei Button-Klick:</strong></p>
+<pre><code>1. User klickt LED 42
+2. onClick ruft handlePress(42)
+3. setActiveIds erzeugt neues Set mit/ohne 42
+4. React erkennt State-Änderung
+5. React rendert nur LedButton mit id=42 neu
+6. Die anderen 99 Buttons bleiben unberührt (Memoization)</code></pre>
+<h3 id="anwendung-im-selection-panel">Anwendung im Selection Panel</h3>
+<p>Wenn der ESP32 über WebSocket meldet „LED 42 aktiv”, aktualisierst du
+nur den State:</p>
+<pre class="tsx"><code>function useSelectionState() {
+  const [selectedId, setSelectedId] = useState&lt;number | null&gt;(null);
+
+  // WebSocket-Listener
+  useEffect(() =&gt; {
+    const ws = new WebSocket(&#39;ws://rover.local:8081/ws&#39;);
+    ws.onmessage = (event) =&gt; {
+      const msg = JSON.parse(event.data);
+      if (msg.type === &#39;selection&#39;) {
+        setSelectedId(msg.selected);  // Nur diese Zeile!
+      }
+    };
+    return () =&gt; ws.close();
+  }, []);
+
+  return selectedId;
+}</code></pre>
+<p>React rendert automatisch nur die betroffenen Komponenten neu – nicht
+die anderen 99 LEDs.</p>
+<h3 id="zusammenfassung">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „State ist die Wahrheit, UI ist die
+Ableitung. Ändere den State, React ändert das DOM.”</p>
+</blockquote>
+<hr />
+<h2 id="typescript-fehler-vor-laufzeit-finden">2) TypeScript – Fehler
+vor Laufzeit finden</h2>
+<h3 id="problemstellung-1">Problemstellung</h3>
+<p>JavaScript-Fehler treten erst zur Laufzeit auf – im schlimmsten Fall
+beim Benutzer:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">// JavaScript: Fehler erst im Browser sichtbar</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">setLedState</span>(id<span class="op">,</span> state) {</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  websocket<span class="op">.</span><span class="fu">send</span>({ <span class="dt">led</span><span class="op">:</span> id<span class="op">,</span> <span class="dt">state</span><span class="op">:</span> state })<span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">setLedState</span>(<span class="st">&quot;5&quot;</span><span class="op">,</span> <span class="st">&quot;an&quot;</span>)<span class="op">;</span>  <span class="co">// Kompiliert, crasht zur Laufzeit</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">// TypeError: Expected number, got string</span></span></code></pre></div>
+<p>Bei einem 100-LED-Panel mit verschiedenen Message-Typen
+multiplizieren sich die Fehlermöglichkeiten.</p>
+<h3 id="regel-1">Regel</h3>
+<p>TypeScript prüft Typen beim Kompilieren. Fehler erscheinen im Editor,
+bevor du speicherst – nicht erst beim Benutzer.</p>
+<h3 id="herleitung-statische-vs.-dynamische-typisierung">Herleitung:
+Statische vs. Dynamische Typisierung</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 38%" />
+<col style="width: 38%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspekt</th>
+<th>JavaScript (dynamisch)</th>
+<th>TypeScript (statisch)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Typprüfung</td>
+<td>Zur Laufzeit</td>
+<td>Beim Kompilieren</td>
+</tr>
+<tr>
+<td>Fehlererkennung</td>
+<td>Im Browser, beim User</td>
+<td>Im Editor, beim Entwickler</td>
+</tr>
+<tr>
+<td>Refactoring</td>
+<td>Gefährlich (stille Fehler)</td>
+<td>Sicher (Compiler warnt)</td>
+</tr>
+<tr>
+<td>Dokumentation</td>
+<td>Nur Kommentare</td>
+<td>Typen sind Dokumentation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anwendung-typen-für-das-selection-panel">Anwendung: Typen für
+das Selection Panel</h3>
+<p><strong>Interface für Komponenten-Props:</strong></p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Props sind der Vertrag zwischen Parent und Child</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> LedGridProps {</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  leds<span class="op">:</span> <span class="bu">Map</span><span class="op">&lt;</span><span class="dt">number</span><span class="op">,</span> <span class="dt">boolean</span><span class="op">&gt;;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  selectedId<span class="op">:</span> <span class="dt">number</span> <span class="op">|</span> <span class="dt">null</span><span class="op">;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  onLedClick<span class="op">:</span> (id<span class="op">:</span> <span class="dt">number</span>) <span class="kw">=&gt;</span> <span class="dt">void</span><span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">LedGrid</span>({ leds<span class="op">,</span> selectedId<span class="op">,</span> onLedClick }<span class="op">:</span> LedGridProps) {</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="co">// TypeScript garantiert: leds ist eine Map, nicht undefined</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">// TypeScript garantiert: onLedClick ist eine Funktion</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Discriminated Unions für WebSocket-Nachrichten:</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Jede Nachricht hat einen type, der die Struktur bestimmt</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">type</span> WsMessage <span class="op">=</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> { type<span class="op">:</span> <span class="st">&#39;selection&#39;</span><span class="op">;</span> selected<span class="op">:</span> <span class="dt">number</span><span class="op">;</span> source<span class="op">:</span> <span class="dt">string</span> }</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> { type<span class="op">:</span> <span class="st">&#39;button_press&#39;</span><span class="op">;</span> id<span class="op">:</span> <span class="dt">number</span><span class="op">;</span> timestamp<span class="op">:</span> <span class="dt">number</span> }</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> { type<span class="op">:</span> <span class="st">&#39;led_update&#39;</span><span class="op">;</span> id<span class="op">:</span> <span class="dt">number</span><span class="op">;</span> state<span class="op">:</span> <span class="dt">boolean</span> }</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">|</span> { type<span class="op">:</span> <span class="st">&#39;error&#39;</span><span class="op">;</span> code<span class="op">:</span> <span class="dt">number</span><span class="op">;</span> message<span class="op">:</span> <span class="dt">string</span> }<span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">handleMessage</span>(msg<span class="op">:</span> WsMessage) {</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">switch</span> (msg<span class="op">.</span><span class="at">type</span>) {</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> <span class="st">&#39;selection&#39;</span><span class="op">:</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>      <span class="co">// TypeScript weiß: msg hat .selected und .source</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>      <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Selection: </span><span class="sc">${</span>msg<span class="op">.</span><span class="at">selected</span><span class="sc">}</span><span class="vs"> from </span><span class="sc">${</span>msg<span class="op">.</span><span class="at">source</span><span class="sc">}</span><span class="vs">`</span>)<span class="op">;</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>      <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">case</span> <span class="st">&#39;error&#39;</span><span class="op">:</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>      <span class="co">// TypeScript weiß: msg hat .code und .message</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>      <span class="bu">console</span><span class="op">.</span><span class="fu">error</span>(<span class="vs">`Error </span><span class="sc">${</span>msg<span class="op">.</span><span class="at">code</span><span class="sc">}</span><span class="vs">: </span><span class="sc">${</span>msg<span class="op">.</span><span class="at">message</span><span class="sc">}</span><span class="vs">`</span>)<span class="op">;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>      <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Typ-Sicherheit bei API-Aufrufen:</strong></p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> LedCommand {</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  led<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  state<span class="op">:</span> <span class="dt">boolean</span><span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">sendLedCommand</span>(ws<span class="op">:</span> <span class="bu">WebSocket</span><span class="op">,</span> cmd<span class="op">:</span> LedCommand)<span class="op">:</span> <span class="dt">void</span> {</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  ws<span class="op">.</span><span class="fu">send</span>(<span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(cmd))<span class="op">;</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Kompiliert NICHT:</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="fu">sendLedCommand</span>(ws<span class="op">,</span> { led<span class="op">:</span> <span class="st">&quot;5&quot;</span><span class="op">,</span> state<span class="op">:</span> <span class="st">&quot;an&quot;</span> })<span class="op">;</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Error: Type &#39;string&#39; is not assignable to type &#39;number&#39;</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Error: Type &#39;string&#39; is not assignable to type &#39;boolean&#39;</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co">// Kompiliert:</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="fu">sendLedCommand</span>(ws<span class="op">,</span> { led<span class="op">:</span> <span class="dv">5</span><span class="op">,</span> state<span class="op">:</span> <span class="kw">true</span> })<span class="op">;</span></span></code></pre></div>
+<h3 id="anwendung-konfiguration">Anwendung: Konfiguration</h3>
+<p><strong>tsconfig.json (strenge Einstellungen):</strong></p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;compilerOptions&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;target&quot;</span><span class="fu">:</span> <span class="st">&quot;ES2020&quot;</span><span class="fu">,</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;lib&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;ES2020&quot;</span><span class="ot">,</span> <span class="st">&quot;DOM&quot;</span><span class="ot">,</span> <span class="st">&quot;DOM.Iterable&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;module&quot;</span><span class="fu">:</span> <span class="st">&quot;ESNext&quot;</span><span class="fu">,</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;strict&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;noImplicitAny&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;strictNullChecks&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;noUnusedLocals&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;noUnusedParameters&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Option</th>
+<th>Wirkung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>strict</code></td>
+<td>Aktiviert alle strikten Prüfungen</td>
+</tr>
+<tr>
+<td><code>noImplicitAny</code></td>
+<td>Verbietet untypisierte Variablen</td>
+</tr>
+<tr>
+<td><code>strictNullChecks</code></td>
+<td><code>null</code> und <code>undefined</code> müssen explizit
+sein</td>
+</tr>
+<tr>
+<td><code>noUnusedLocals</code></td>
+<td>Warnt bei ungenutzten Variablen</td>
+</tr>
+</tbody>
+</table>
+<h3 id="zusammenfassung-1">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Der Compiler ist dein erster Tester.
+Jeder Typ-Fehler, den er findet, ist ein Bug weniger beim User.”</p>
+</blockquote>
+<hr />
+<h2 id="vite-build-tool-und-entwicklungsserver">3) Vite – Build-Tool und
+Entwicklungsserver</h2>
+<h3 id="problemstellung-2">Problemstellung</h3>
+<p>Browser verstehen weder TypeScript noch JSX direkt. Der Quellcode
+muss transformiert werden:</p>
+<pre><code>Quellcode (.tsx)  →  [Transformation]  →  Browser-Code (.js)
+   TypeScript           Compiler            JavaScript
+   JSX                  Bundler             HTML-kompatibel
+   Imports              Tree-Shaking        Optimiert</code></pre>
+<p>Ältere Tools wie Webpack benötigen für diese Transformation mehrere
+Sekunden bis Minuten bei großen Projekten.</p>
+<h3 id="regel-2">Regel</h3>
+<p>Vite nutzt native ES-Module des Browsers und transformiert nur
+geänderte Dateien. Das Ergebnis: Sub-100ms Hot Module Replacement.</p>
+<h3 id="herleitung-webpack-vs.-vite">Herleitung: Webpack vs. Vite</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 30%" />
+<col style="width: 39%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspekt</th>
+<th>Webpack (traditionell)</th>
+<th>Vite (modern)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Startzeit (Dev)</td>
+<td>10–60 Sekunden</td>
+<td>&lt; 1 Sekunde</td>
+</tr>
+<tr>
+<td>HMR-Geschwindigkeit</td>
+<td>1–5 Sekunden</td>
+<td>&lt; 100 ms</td>
+</tr>
+<tr>
+<td>Bundling (Dev)</td>
+<td>Alles im Voraus</td>
+<td>On-Demand (lazy)</td>
+</tr>
+<tr>
+<td>Browser-Kompatibilität</td>
+<td>Polyfills nötig</td>
+<td>Moderne Browser vorausgesetzt</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Warum ist Vite schneller?</strong></p>
+<pre><code>Webpack (Dev):
+  Alle Dateien → Bundle → Browser lädt 1 große Datei
+
+Vite (Dev):
+  Browser fordert Datei an → Vite transformiert on-the-fly → Browser lädt</code></pre>
+<p>Vite transformiert nur, was der Browser gerade braucht.</p>
+<h3 id="anwendung-projekt-erstellen-und-starten">Anwendung: Projekt
+erstellen und starten</h3>
+<p><strong>Neues Projekt:</strong></p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> create vite@latest dashboard <span class="at">--</span> <span class="at">--template</span> react-ts</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> dashboard</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install</span></code></pre></div>
+<p><strong>Entwicklungsmodus:</strong></p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run dev</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># → http://localhost:5173/</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># → Hot Module Replacement aktiv</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># → Änderungen erscheinen in &lt; 100 ms</span></span></code></pre></div>
+<p><strong>Produktions-Build:</strong></p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run build</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># → Optimierte Dateien in dist/</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co"># → Minifiziert, Tree-Shaken, Code-Split</span></span></code></pre></div>
+<h3 id="anwendung-konfiguration-für-selection-panel">Anwendung:
+Konfiguration für Selection Panel</h3>
+<p><strong>vite.config.ts:</strong></p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { defineConfig } <span class="im">from</span> <span class="st">&#39;vite&#39;</span><span class="op">;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> react <span class="im">from</span> <span class="st">&#39;@vitejs/plugin-react&#39;</span><span class="op">;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="im">default</span> <span class="fu">defineConfig</span>({</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  plugins<span class="op">:</span> [<span class="fu">react</span>()]<span class="op">,</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  server<span class="op">:</span> {</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    port<span class="op">:</span> <span class="dv">5173</span><span class="op">,</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Proxy: WebSocket-Anfragen an Bridge weiterleiten</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    proxy<span class="op">:</span> {</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;/ws&#39;</span><span class="op">:</span> {</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>        target<span class="op">:</span> <span class="st">&#39;ws://localhost:8081&#39;</span><span class="op">,</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>        ws<span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>        changeOrigin<span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  build<span class="op">:</span> {</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    outDir<span class="op">:</span> <span class="st">&#39;dist&#39;</span><span class="op">,</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    sourcemap<span class="op">:</span> <span class="kw">false</span><span class="op">,</span>  <span class="co">// Produktion: keine Source Maps</span></span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    minify<span class="op">:</span> <span class="st">&#39;esbuild&#39;</span>  <span class="co">// Schnellste Minifizierung</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p><strong>Proxy-Erklärung:</strong></p>
+<pre><code>Browser (localhost:5173)  ──► /ws  ──► Vite Proxy  ──► bridge.py (localhost:8081)</code></pre>
+<p>So kannst du während der Entwicklung gegen die echte Bridge testen,
+ohne CORS-Probleme.</p>
+<h3 id="zwei-modi-im-vergleich">Zwei Modi im Vergleich</h3>
+<table class="table table-compact" style="width:100%;">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 41%" />
+<col style="width: 41%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspekt</th>
+<th><code>npm run dev</code></th>
+<th><code>npm run build</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ziel</td>
+<td>Entwicklung</td>
+<td>Produktion</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>Kein Dateisystem, nur Memory</td>
+<td><code>dist/</code> mit statischen Files</td>
+</tr>
+<tr>
+<td>Optimierung</td>
+<td>Keine (schnellster Start)</td>
+<td>Voll (kleinste Dateien)</td>
+</tr>
+<tr>
+<td>Source Maps</td>
+<td>Ja (für Debugging)</td>
+<td>Nein (für Sicherheit)</td>
+</tr>
+<tr>
+<td>HMR</td>
+<td>Ja</td>
+<td>N/A</td>
+</tr>
+</tbody>
+</table>
+<h3 id="zusammenfassung-2">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „npm run dev zum Entwickeln (schnell),
+npm run build vor Deploy (optimiert). Proxy löst CORS.”</p>
+</blockquote>
+<hr />
+<h2 id="eslint-prettier-code-qualität-automatisieren">4) ESLint +
+Prettier – Code-Qualität automatisieren</h2>
+<h3 id="problemstellung-3">Problemstellung</h3>
+<p>Inkonsistenter Code erschwert Reviews und Zusammenarbeit:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Entwickler A</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">foo</span>(){<span class="cf">return</span> <span class="dv">42</span>}</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Entwickler B</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">bar</span>() {</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">42</span><span class="op">;</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Zusätzlich bleiben potenzielle Bugs unentdeckt, bis sie zur Laufzeit
+crashen.</p>
+<h3 id="regel-3">Regel</h3>
+<p>ESLint findet problematische Muster (Analyse), Prettier erzwingt
+einheitlichen Stil (Formatierung). Beide arbeiten zusammen, aber haben
+getrennte Verantwortlichkeiten.</p>
+<h3 id="herleitung-analyse-vs.-formatierung">Herleitung: Analyse
+vs. Formatierung</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 43%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Aufgabe</th>
+<th>Beispiel-Regeln</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ESLint</td>
+<td>Fehler finden, Best Practices</td>
+<td><code>no-unused-vars</code>, <code>react-hooks/rules</code></td>
+</tr>
+<tr>
+<td>Prettier</td>
+<td>Formatierung (Whitespace, Klammern)</td>
+<td>Einrückung, Semikolons, Zeilenlänge</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Warum zwei Tools?</strong> ESLint ist konfigurierbar bis ins
+Detail, Prettier hat bewusst wenige Optionen („opinionated”). Die
+Trennung verhindert Konflikte.</p>
+<h3 id="anwendung-eslint-einrichten">Anwendung: ESLint einrichten</h3>
+<p><strong>Installation:</strong></p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-D</span> eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-D</span> eslint-plugin-react eslint-plugin-react-hooks</span></code></pre></div>
+<p><strong>eslint.config.js (Flat Config, ESLint 9+):</strong></p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tsParser <span class="im">from</span> <span class="st">&#39;@typescript-eslint/parser&#39;</span><span class="op">;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tsPlugin <span class="im">from</span> <span class="st">&#39;@typescript-eslint/eslint-plugin&#39;</span><span class="op">;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> reactPlugin <span class="im">from</span> <span class="st">&#39;eslint-plugin-react&#39;</span><span class="op">;</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> hooksPlugin <span class="im">from</span> <span class="st">&#39;eslint-plugin-react-hooks&#39;</span><span class="op">;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="im">default</span> [</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">files</span><span class="op">:</span> [<span class="st">&#39;**/*.{ts,tsx}&#39;</span>]<span class="op">,</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">languageOptions</span><span class="op">:</span> {</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">parser</span><span class="op">:</span> tsParser<span class="op">,</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">parserOptions</span><span class="op">:</span> {</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">ecmaFeatures</span><span class="op">:</span> { <span class="dt">jsx</span><span class="op">:</span> <span class="kw">true</span> }</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">plugins</span><span class="op">:</span> {</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;@typescript-eslint&#39;</span><span class="op">:</span> tsPlugin<span class="op">,</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;react&#39;</span><span class="op">:</span> reactPlugin<span class="op">,</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;react-hooks&#39;</span><span class="op">:</span> hooksPlugin</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rules</span><span class="op">:</span> {</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>      <span class="co">// TypeScript</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;@typescript-eslint/no-unused-vars&#39;</span><span class="op">:</span> <span class="st">&#39;error&#39;</span><span class="op">,</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;@typescript-eslint/no-explicit-any&#39;</span><span class="op">:</span> <span class="st">&#39;warn&#39;</span><span class="op">,</span></span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>      <span class="co">// React</span></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;react/jsx-uses-react&#39;</span><span class="op">:</span> <span class="st">&#39;off&#39;</span><span class="op">,</span>  <span class="co">// React 17+ braucht kein Import</span></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;react/react-in-jsx-scope&#39;</span><span class="op">:</span> <span class="st">&#39;off&#39;</span><span class="op">,</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>      <span class="co">// Hooks</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;react-hooks/rules-of-hooks&#39;</span><span class="op">:</span> <span class="st">&#39;error&#39;</span><span class="op">,</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>      <span class="st">&#39;react-hooks/exhaustive-deps&#39;</span><span class="op">:</span> <span class="st">&#39;warn&#39;</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>]<span class="op">;</span></span></code></pre></div>
+<h3 id="anwendung-prettier-einrichten">Anwendung: Prettier
+einrichten</h3>
+<p><strong>Installation:</strong></p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-D</span> prettier eslint-config-prettier</span></code></pre></div>
+<p><strong>.prettierrc:</strong></p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;semi&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;singleQuote&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;tabWidth&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;trailingComma&quot;</span><span class="fu">:</span> <span class="st">&quot;es5&quot;</span><span class="fu">,</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;printWidth&quot;</span><span class="fu">:</span> <span class="dv">100</span><span class="fu">,</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;bracketSpacing&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;jsxSingleQuote&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Option</th>
+<th>Wert</th>
+<th>Wirkung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>semi</code></td>
+<td><code>true</code></td>
+<td>Semikolons am Zeilenende</td>
+</tr>
+<tr>
+<td><code>singleQuote</code></td>
+<td><code>true</code></td>
+<td>Einfache Anführungszeichen in JS</td>
+</tr>
+<tr>
+<td><code>tabWidth</code></td>
+<td><code>2</code></td>
+<td>2 Leerzeichen Einrückung</td>
+</tr>
+<tr>
+<td><code>trailingComma</code></td>
+<td><code>"es5"</code></td>
+<td>Trailing Commas wo ES5 es erlaubt</td>
+</tr>
+<tr>
+<td><code>printWidth</code></td>
+<td><code>100</code></td>
+<td>Maximale Zeilenlänge</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anwendung-vs-code-integration">Anwendung: VS Code
+Integration</h3>
+<p><strong>.vscode/settings.json:</strong></p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;editor.formatOnSave&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;editor.defaultFormatter&quot;</span><span class="fu">:</span> <span class="st">&quot;esbenp.prettier-vscode&quot;</span><span class="fu">,</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;editor.codeActionsOnSave&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;source.fixAll.eslint&quot;</span><span class="fu">:</span> <span class="st">&quot;explicit&quot;</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;[typescript]&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;editor.defaultFormatter&quot;</span><span class="fu">:</span> <span class="st">&quot;esbenp.prettier-vscode&quot;</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;[typescriptreact]&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;editor.defaultFormatter&quot;</span><span class="fu">:</span> <span class="st">&quot;esbenp.prettier-vscode&quot;</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Workflow beim Speichern:</strong></p>
+<pre><code>1. Du speicherst eine Datei (Ctrl+S / Cmd+S)
+2. Prettier formatiert automatisch (Whitespace, Klammern)
+3. ESLint fixt automatisch fixbare Probleme
+4. Verbleibende ESLint-Fehler erscheinen als Unterstreichungen</code></pre>
+<h3 id="npm-scripts">npm-Scripts</h3>
+<p><strong>package.json:</strong></p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;scripts&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;lint&quot;</span><span class="fu">:</span> <span class="st">&quot;eslint src/&quot;</span><span class="fu">,</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;lint:fix&quot;</span><span class="fu">:</span> <span class="st">&quot;eslint src/ --fix&quot;</span><span class="fu">,</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;format&quot;</span><span class="fu">:</span> <span class="st">&quot;prettier --write src/&quot;</span><span class="fu">,</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;typecheck&quot;</span><span class="fu">:</span> <span class="st">&quot;tsc --noEmit&quot;</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Vor jedem Commit:</strong></p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run lint <span class="kw">&amp;&amp;</span> <span class="ex">npm</span> run typecheck <span class="kw">&amp;&amp;</span> <span class="ex">npm</span> run build</span></code></pre></div>
+<h3 id="zusammenfassung-3">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „ESLint findet Bugs, Prettier formatiert.
+Beim Speichern automatisch, vor Commit manuell prüfen.”</p>
+</blockquote>
+<hr />
+<h2 id="react-router-client-seitige-navigation">5) React Router –
+Client-seitige Navigation</h2>
+<h3 id="problemstellung-4">Problemstellung</h3>
+<p>Bei klassischen Webseiten lädt jeder Seitenwechsel die komplette
+Seite neu:</p>
+<pre><code>User klickt Link → Browser fordert neue HTML-Seite an → Kompletter Neuaufbau</code></pre>
+<p>Für das Selection Panel bedeutet das: Der WebSocket würde bei jedem
+Seitenwechsel getrennt und müsste neu verbunden werden. Der aktuelle
+LED-Zustand ginge verloren.</p>
+<h3 id="regel-4">Regel</h3>
+<p>React Router wechselt nur die Komponenten innerhalb der Seite, ohne
+den Browser neu zu laden. Die WebSocket-Verbindung bleibt bestehen.</p>
+<h3 id="herleitung-server-side-vs.-client-side-routing">Herleitung:
+Server-side vs. Client-side Routing</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 28%" />
+<col style="width: 48%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspekt</th>
+<th>Server-side Routing</th>
+<th>Client-side Routing (React Router)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Seitenwechsel</td>
+<td>Kompletter Reload</td>
+<td>Nur Komponenten-Austausch</td>
+</tr>
+<tr>
+<td>Netzwerk</td>
+<td>Neue HTML-Anfrage</td>
+<td>Keine (JS läuft weiter)</td>
+</tr>
+<tr>
+<td>Zustand (State)</td>
+<td>Verloren</td>
+<td>Erhalten</td>
+</tr>
+<tr>
+<td>WebSocket</td>
+<td>Getrennt</td>
+<td>Verbunden</td>
+</tr>
+<tr>
+<td>URL-Änderung</td>
+<td>Browser lädt neu</td>
+<td>History API (kein Reload)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anwendung-basis-setup">Anwendung: Basis-Setup</h3>
+<p><strong>Installation:</strong></p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install react-router-dom</span></code></pre></div>
+<p><strong>App.tsx mit Routing:</strong></p>
+<pre class="tsx"><code>import { BrowserRouter, Routes, Route, Link } from &#39;react-router-dom&#39;;
+import { DashboardPage } from &#39;./pages/DashboardPage&#39;;
+import { SettingsPage } from &#39;./pages/SettingsPage&#39;;
+import { DebugPage } from &#39;./pages/DebugPage&#39;;
+
+function App() {
+  return (
+    &lt;BrowserRouter&gt;
+      {/* Navigation – bleibt bei jedem Route-Wechsel sichtbar */}
+      &lt;nav className=&quot;flex gap-4 p-4 bg-gray-800&quot;&gt;
+        &lt;Link to=&quot;/&quot; className=&quot;text-white hover:text-blue-400&quot;&gt;
+          Dashboard
+        &lt;/Link&gt;
+        &lt;Link to=&quot;/settings&quot; className=&quot;text-white hover:text-blue-400&quot;&gt;
+          Einstellungen
+        &lt;/Link&gt;
+        &lt;Link to=&quot;/debug&quot; className=&quot;text-white hover:text-blue-400&quot;&gt;
+          Debug
+        &lt;/Link&gt;
+      &lt;/nav&gt;
+
+      {/* Nur dieser Bereich ändert sich beim Routing */}
+      &lt;main className=&quot;p-4&quot;&gt;
+        &lt;Routes&gt;
+          &lt;Route path=&quot;/&quot; element={&lt;DashboardPage /&gt;} /&gt;
+          &lt;Route path=&quot;/settings&quot; element={&lt;SettingsPage /&gt;} /&gt;
+          &lt;Route path=&quot;/debug&quot; element={&lt;DebugPage /&gt;} /&gt;
+        &lt;/Routes&gt;
+      &lt;/main&gt;
+    &lt;/BrowserRouter&gt;
+  );
+}</code></pre>
+<h3 id="anwendung-websocket-oberhalb-des-routers">Anwendung: WebSocket
+oberhalb des Routers</h3>
+<p><strong>Kritisch für Selection Panel:</strong> Der WebSocket-Hook
+muss oberhalb des <code>&lt;BrowserRouter&gt;</code> leben, damit die
+Verbindung bei Navigation erhalten bleibt:</p>
+<pre class="tsx"><code>import { createContext, useContext } from &#39;react&#39;;
+import { useBridgeWebSocket } from &#39;./hooks/useBridgeWebSocket&#39;;
+
+// Context für globalen WebSocket-Zugriff
+const WsContext = createContext&lt;ReturnType&lt;typeof useBridgeWebSocket&gt; | null&gt;(null);
+
+export function useWs() {
+  const ctx = useContext(WsContext);
+  if (!ctx) throw new Error(&#39;useWs must be used within WsProvider&#39;);
+  return ctx;
+}
+
+function App() {
+  // WebSocket-Hook auf oberster Ebene
+  const ws = useBridgeWebSocket(&#39;ws://rover.local:8081/ws&#39;);
+
+  return (
+    &lt;WsContext.Provider value={ws}&gt;
+      &lt;BrowserRouter&gt;
+        &lt;nav&gt;...&lt;/nav&gt;
+        &lt;Routes&gt;
+          &lt;Route path=&quot;/&quot; element={&lt;DashboardPage /&gt;} /&gt;
+          {/* Alle Pages können useWs() nutzen */}
+        &lt;/Routes&gt;
+      &lt;/BrowserRouter&gt;
+    &lt;/WsContext.Provider&gt;
+  );
+}</code></pre>
+<p><strong>Komponenten-Hierarchie:</strong></p>
+<pre><code>App
+├── WsContext.Provider    ← WebSocket lebt hier (persistent)
+│   └── BrowserRouter
+│       ├── &lt;nav&gt;         ← Immer sichtbar
+│       └── &lt;Routes&gt;
+│           ├── /         → DashboardPage (mounted/unmounted)
+│           ├── /settings → SettingsPage  (mounted/unmounted)
+│           └── /debug    → DebugPage     (mounted/unmounted)</code></pre>
+<p>Wenn du von <code>/</code> zu <code>/settings</code> navigierst, wird
+<code>DashboardPage</code> unmounted und <code>SettingsPage</code>
+mounted – aber <code>WsContext.Provider</code> bleibt. Die
+WebSocket-Verbindung ist davon nicht betroffen.</p>
+<h3 id="zusammenfassung-4">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „WebSocket über Router, nicht in Router.
+Navigation wechselt Seiten, nicht Verbindungen.”</p>
+</blockquote>
+<hr />
+<h2 id="tailwind-css-utility-first-styling">6) Tailwind CSS –
+Utility-First Styling</h2>
+<h3 id="problemstellung-5">Problemstellung</h3>
+<p>Traditionelles CSS erfordert separate Dateien und erfundene
+Klassennamen:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* styles.css */</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">.led-button</span> { <span class="co">/* ... */</span> }</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">.led-button--active</span> { <span class="co">/* ... */</span> }</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">.led-button--disabled</span> { <span class="co">/* ... */</span> }</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="fu">.led-button--blinking</span> { <span class="co">/* ... */</span> }</span></code></pre></div>
+<p>Bei 100 LEDs mit verschiedenen Zuständen wächst die CSS-Datei
+unkontrolliert. Spezifitätskonflikte entstehen, Refactoring wird
+riskant.</p>
+<h3 id="regel-5">Regel</h3>
+<p>Tailwind bietet vordefinierte Utility-Klassen direkt im Markup. Du
+erfindest keine Klassennamen, sondern kombinierst Utilities.</p>
+<h3 id="herleitung-bem-vs.-utility-first">Herleitung: BEM
+vs. Utility-First</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 37%" />
+<col style="width: 37%" />
+</colgroup>
+<thead>
+<tr>
+<th>Aspekt</th>
+<th>BEM (traditionell)</th>
+<th>Utility-First (Tailwind)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Klassennamen</td>
+<td>Selbst erfunden (<code>.led-button</code>)</td>
+<td>Vordefiniert (<code>bg-green-500</code>)</td>
+</tr>
+<tr>
+<td>CSS-Dateien</td>
+<td>Wachsen mit Features</td>
+<td>Konstant (nur genutzte Klassen)</td>
+</tr>
+<tr>
+<td>Spezifität</td>
+<td>Konflikte möglich</td>
+<td>Alle Utilities gleich spezifisch</td>
+</tr>
+<tr>
+<td>Komponenten-Kopplung</td>
+<td>CSS + HTML in getrennten Dateien</td>
+<td>Alles im Markup</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anwendung-setup">Anwendung: Setup</h3>
+<p><strong>Installation:</strong></p>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-D</span> tailwindcss postcss autoprefixer</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npx</span> tailwindcss init <span class="at">-p</span></span></code></pre></div>
+<p><strong>tailwind.config.js:</strong></p>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">/** </span><span class="an">@type</span><span class="co"> {import(&#39;tailwindcss&#39;).Config} */</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="im">default</span> {</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">content</span><span class="op">:</span> [</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;./index.html&#39;</span><span class="op">,</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;./src/**/*.{js,ts,jsx,tsx}&#39;</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  ]<span class="op">,</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">theme</span><span class="op">:</span> {</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">extend</span><span class="op">:</span> {</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">colors</span><span class="op">:</span> {</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;led-active&#39;</span><span class="op">:</span> <span class="st">&#39;#22c55e&#39;</span><span class="op">,</span>      <span class="co">// Grün für aktive LED</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;led-inactive&#39;</span><span class="op">:</span> <span class="st">&#39;#374151&#39;</span><span class="op">,</span>    <span class="co">// Grau für inaktive LED</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;led-error&#39;</span><span class="op">:</span> <span class="st">&#39;#ef4444&#39;</span>        <span class="co">// Rot für Fehler</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>      }<span class="op">,</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">animation</span><span class="op">:</span> {</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;pulse-led&#39;</span><span class="op">:</span> <span class="st">&#39;pulse 1s ease-in-out infinite&#39;</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>  <span class="dt">plugins</span><span class="op">:</span> []</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p><strong>src/index.css:</strong></p>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="im">@tailwind</span> base<span class="op">;</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="im">@tailwind</span> components<span class="op">;</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="im">@tailwind</span> utilities<span class="op">;</span></span></code></pre></div>
+<h3 id="anwendung-led-button-komponente">Anwendung:
+LED-Button-Komponente</h3>
+<pre class="tsx"><code>interface LedButtonProps {
+  id: number;
+  isActive: boolean;
+  isSelected: boolean;
+  onClick: (id: number) =&gt; void;
+}
+
+function LedButton({ id, isActive, isSelected, onClick }: LedButtonProps) {
+  return (
+    &lt;button
+      onClick={() =&gt; onClick(id)}
+      className={`
+        w-12 h-12 rounded-full
+        transition-all duration-150
+        flex items-center justify-center
+        text-xs font-mono
+        ${isActive
+          ? &#39;bg-led-active shadow-lg shadow-green-500/50&#39;
+          : &#39;bg-led-inactive hover:bg-gray-600&#39;}
+        ${isSelected
+          ? &#39;ring-2 ring-white ring-offset-2 ring-offset-gray-900&#39;
+          : &#39;&#39;}
+      `}
+    &gt;
+      {id}
+    &lt;/button&gt;
+  );
+}</code></pre>
+<p><strong>Utility-Klassen erklärt:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Klasse</th>
+<th>CSS-Äquivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>w-12</code></td>
+<td><code>width: 3rem</code> (48px)</td>
+</tr>
+<tr>
+<td><code>h-12</code></td>
+<td><code>height: 3rem</code></td>
+</tr>
+<tr>
+<td><code>rounded-full</code></td>
+<td><code>border-radius: 9999px</code></td>
+</tr>
+<tr>
+<td><code>transition-all</code></td>
+<td><code>transition-property: all</code></td>
+</tr>
+<tr>
+<td><code>duration-150</code></td>
+<td><code>transition-duration: 150ms</code></td>
+</tr>
+<tr>
+<td><code>shadow-lg</code></td>
+<td>Großer Box-Shadow</td>
+</tr>
+<tr>
+<td><code>shadow-green-500/50</code></td>
+<td>Shadow-Farbe grün mit 50% Opacity</td>
+</tr>
+<tr>
+<td><code>ring-2</code></td>
+<td>2px Outline (Focus-Ring)</td>
+</tr>
+<tr>
+<td><code>ring-offset-2</code></td>
+<td>2px Abstand zwischen Ring und Element</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anwendung-grid-für-100-leds">Anwendung: Grid für 100 LEDs</h3>
+<pre class="tsx"><code>function LedGrid({ leds, selectedId, onLedClick }: LedGridProps) {
+  return (
+    &lt;div className=&quot;
+      grid grid-cols-10 gap-2
+      p-4 bg-gray-900 rounded-lg
+      max-w-fit mx-auto
+    &quot;&gt;
+      {Array.from({ length: 100 }, (_, i) =&gt; (
+        &lt;LedButton
+          key={i}
+          id={i + 1}
+          isActive={leds.get(i + 1) ?? false}
+          isSelected={selectedId === i + 1}
+          onClick={onLedClick}
+        /&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+<p><strong>Grid-Klassen:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Klasse</th>
+<th>Wirkung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>grid</code></td>
+<td>Display: grid</td>
+</tr>
+<tr>
+<td><code>grid-cols-10</code></td>
+<td>10 Spalten</td>
+</tr>
+<tr>
+<td><code>gap-2</code></td>
+<td>0.5rem Abstand zwischen Items</td>
+</tr>
+<tr>
+<td><code>max-w-fit</code></td>
+<td>Breite passt sich Inhalt an</td>
+</tr>
+<tr>
+<td><code>mx-auto</code></td>
+<td>Horizontales Zentrieren</td>
+</tr>
+</tbody>
+</table>
+<h3 id="zusammenfassung-5">Zusammenfassung</h3>
+<blockquote>
+<p><strong>Merkregel:</strong> „Keine CSS-Dateien mehr. Utilities im
+Markup, Theme in der Config. Build entfernt Ungenutztes.”</p>
+</blockquote>
+<hr />
+<h2 id="zusammenspiel-im-selection-panel-projekt">7) Zusammenspiel im
+Selection-Panel-Projekt</h2>
+<h3 id="entwicklungsumgebung-mac">Entwicklungsumgebung (Mac)</h3>
+<pre><code>┌────────────────────────────────────────────────────────────────────────┐
+│  ENTWICKLUNG (Mac)                                                     │
+│                                                                        │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐              │
+│  │   VS Code    │    │  Vite Dev    │    │   ESLint/    │              │
+│  │ + Extensions │───►│ Server :5173 │◄───│   Prettier   │              │
+│  └──────────────┘    └──────┬───────┘    └──────────────┘              │
+│         │                   │                                          │
+│    Live Edit          Proxy /ws                                        │
+│         │                   │                                          │
+│         ▼                   ▼                                          │
+│  ┌──────────────────────────────────────┐                              │
+│  │          bridge.py :8081             │◄──── USB-CDC ────► ESP32-S3  │
+│  │    (läuft auf Mac oder Pi)           │                              │
+│  └──────────────────────────────────────┘                              │
+└────────────────────────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Workflow:</strong></p>
+<ol type="1">
+<li><code>npm run dev</code> startet Vite auf <code>:5173</code></li>
+<li>Browser öffnet <code>http://localhost:5173</code></li>
+<li>WebSocket-Anfragen (<code>/ws</code>) werden zu <code>:8081</code>
+geproxied</li>
+<li>Änderungen im Code → HMR → Browser aktualisiert in &lt; 100 ms</li>
+<li>ESLint/Prettier formatieren beim Speichern</li>
+</ol>
+<h3 id="produktionsumgebung-raspberry-pi">Produktionsumgebung (Raspberry
+Pi)</h3>
+<pre><code>┌────────────────────────────────────────────────────────────────────────┐
+│  PRODUKTION (Raspberry Pi)                                             │
+│                                                                        │
+│  ┌──────────────────────────────────────┐                              │
+│  │          bridge.py :8081             │                              │
+│  │                                      │                              │
+│  │  ├─ HTTP: liefert dist/              │                              │
+│  │  └─ WS: /ws für Echtzeit-Updates     │                              │
+│  └──────────────────┬───────────────────┘                              │
+│                     │                                                  │
+│                USB-CDC Serial                                          │
+│                     │                                                  │
+│                     ▼                                                  │
+│              ┌──────────────┐                                          │
+│              │   ESP32-S3   │                                          │
+│              │  + CD4021B   │                                          │
+│              │  + 74HC595   │                                          │
+│              └──────────────┘                                          │
+└────────────────────────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Deployment:</strong></p>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Lokal bauen</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> apps/dashboard</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> run lint <span class="kw">&amp;&amp;</span> <span class="ex">npm</span> run typecheck <span class="kw">&amp;&amp;</span> <span class="ex">npm</span> run build</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Auf Pi kopieren</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-avh</span> <span class="at">--delete</span> <span class="dt">\</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>  ./dist/ <span class="dt">\</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  pi@rover:/home/pi/embedded_projekt/apps/dashboard/dist/</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Service neu starten (optional, wenn nur Frontend geändert)</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> pi@rover <span class="st">&quot;sudo systemctl restart embedded-bridge.service&quot;</span></span></code></pre></div>
+<h3 id="datenfluss-button-druck-browser-update">Datenfluss: Button-Druck
+→ Browser-Update</h3>
+<pre><code>1. User drückt Button 7 am Panel
+   └─► CD4021B → ESP32 Firmware
+
+2. Firmware sendet SELECTION_STATE
+   └─► Serial (COBS/CRC) → bridge.py
+
+3. Bridge wandelt in JSON
+   └─► {&quot;type&quot;:&quot;selection&quot;,&quot;selected&quot;:7}
+
+4. WebSocket pusht zu allen Clients
+   └─► Browser empfängt via useBridgeWs()
+
+5. React State-Update
+   └─► setSelectedId(7)
+
+6. React rendert nur LED 7 neu
+   └─► CSS-Klasse wechselt zu &#39;bg-led-active&#39;
+
+Gesamtlatenz: 40–75 ms</code></pre>
+</div>
+</body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>embedded-programmierung.mathjax_tmp</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="main-container">
+<h1
+id="embedded-programmierung-grundlagen-und-methodik">Embedded-Programmierung
+– Grundlagen und Methodik</h1>
+<h2 id="begriffe-und-rahmen">0 | Begriffe und Rahmen</h2>
+<p><strong>Embedded-Programmierung</strong> bezeichnet die Entwicklung
+von Software für eingebettete Systeme – Computer, die in ein größeres
+Gerät integriert sind und dedizierte Aufgaben erfüllen (Waschmaschine,
+ABS-Steuergerät, dein AMR-Roboter).</p>
+<p><strong>Abgrenzung zur Desktop-/Server-Programmierung:</strong></p>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 29%" />
+<col style="width: 46%" />
+</colgroup>
+<thead>
+<tr>
+<th>Merkmal</th>
+<th>Desktop/Server</th>
+<th>Embedded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Betriebssystem</td>
+<td>Windows, Linux (voll)</td>
+<td>Bare-Metal, RTOS, Linux (embedded)</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>8–128 GB</td>
+<td>64 KB – 8 MB (typisch)</td>
+</tr>
+<tr>
+<td>Speicher</td>
+<td>SSD/HDD, TB-Bereich</td>
+<td>Flash, 256 KB – 16 MB</td>
+</tr>
+<tr>
+<td>Echtzeit</td>
+<td>selten kritisch</td>
+<td>oft harte Deadlines</td>
+</tr>
+<tr>
+<td>Hardware-Zugriff</td>
+<td>abstrahiert (Treiber)</td>
+<td>direkt (Register, Peripherie)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Zielplattform dieses Dokuments:</strong> Mikrocontroller
+(MCU), speziell ESP32-S3 und vergleichbare ARM-Cortex-M-Systeme.</p>
+<hr />
+<h2 id="das-kernproblem-begrenzte-ressourcen-harte-anforderungen">1 |
+Das Kernproblem: Begrenzte Ressourcen, harte Anforderungen</h2>
+<p><strong>Beobachtung:</strong> Ein Mikrocontroller hat typischerweise
+100.000× weniger RAM als ein Laptop, muss aber in Echtzeit auf
+physikalische Ereignisse reagieren.</p>
+<p><strong>Konsequenz:</strong> Embedded-Code muss: 1.
+<strong>Deterministisch</strong> sein – vorhersagbare Ausführungszeit 2.
+<strong>Ressourcenschonend</strong> – jedes Byte zählt 3.
+<strong>Hardware-nah</strong> – direkte Kontrolle über Peripherie 4.
+<strong>Robust</strong> – läuft oft jahrelang ohne Neustart</p>
+<p><strong>Regel:</strong> In der Embedded-Programmierung optimieren wir
+nicht auf Entwicklerkomfort, sondern auf Systemverhalten unter realen
+Bedingungen.</p>
+<hr />
+<h2 id="hardware-software-schnittstelle">2 |
+Hardware-Software-Schnittstelle</h2>
+<h3 id="speicherabbildung-memory-mapped-io">2.1 | Speicherabbildung
+(Memory-Mapped I/O)</h3>
+<p><strong>Prinzip:</strong> Peripherie (GPIO, UART, Timer) erscheint
+als Adressen im Speicher. Schreiben an eine Adresse ändert
+Hardware-Zustand.</p>
+<pre><code>Speicherkarte (vereinfacht, ESP32-S3)
+────────────────────────────────────────
+0x0000_0000 ┌──────────────────────────┐
+            │ Boot-ROM                 │
+0x3FC0_0000 ├──────────────────────────┤
+            │ SRAM (512 KB)            │ ← Variablen, Stack, Heap
+0x4200_0000 ├──────────────────────────┤
+            │ Flash (extern, gemappt)  │ ← Code, const-Daten
+0x6000_0000 ├──────────────────────────┤
+            │ Peripherie-Register      │ ← GPIO, UART, SPI, I2C
+            └──────────────────────────┘</code></pre>
+<p><strong>Beispiel – GPIO-Pin setzen (Bare-Metal):</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Adresse des GPIO-Output-Registers (ESP32-S3, vereinfacht)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define GPIO_OUT_REG    </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint32_t</span><span class="pp"> </span><span class="op">*)</span><span class="bn">0x60004004</span><span class="op">)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#define GPIO_OUT_SET    </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint32_t</span><span class="pp"> </span><span class="op">*)</span><span class="bn">0x60004008</span><span class="op">)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#define GPIO_OUT_CLR    </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint32_t</span><span class="pp"> </span><span class="op">*)</span><span class="bn">0x6000400C</span><span class="op">)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Pin 2 auf HIGH setzen</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>GPIO_OUT_SET <span class="op">=</span> <span class="op">(</span><span class="dv">1</span> <span class="op">&lt;&lt;</span> <span class="dv">2</span><span class="op">);</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">// Pin 2 auf LOW setzen</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>GPIO_OUT_CLR <span class="op">=</span> <span class="op">(</span><span class="dv">1</span> <span class="op">&lt;&lt;</span> <span class="dv">2</span><span class="op">);</span></span></code></pre></div>
+<p><strong>Das Schlüsselwort <code>volatile</code>:</strong> Teilt dem
+Compiler mit, dass sich der Wert an dieser Adresse jederzeit ändern kann
+(durch Hardware oder Interrupt). Ohne <code>volatile</code> könnte der
+Compiler Zugriffe wegoptimieren.</p>
+<h3 id="register-und-bitmanipulation">2.2 | Register und
+Bitmanipulation</h3>
+<p><strong>Regel:</strong> Embedded-Entwickler arbeiten ständig mit
+einzelnen Bits in Registern.</p>
+<p><strong>Standardoperationen:</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Bit setzen (auf 1)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dt">register</span> <span class="op">|=</span> <span class="op">(</span><span class="dv">1</span> <span class="op">&lt;&lt;</span> bit_position<span class="op">);</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Bit löschen (auf 0)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="dt">register</span> <span class="op">&amp;=</span> <span class="op">~(</span><span class="dv">1</span> <span class="op">&lt;&lt;</span> bit_position<span class="op">);</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Bit umschalten (toggle)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="dt">register</span> <span class="op">^=</span> <span class="op">(</span><span class="dv">1</span> <span class="op">&lt;&lt;</span> bit_position<span class="op">);</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Bit lesen</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="dt">bool</span> is_set <span class="op">=</span> <span class="op">(</span><span class="dt">register</span> <span class="op">&gt;&gt;</span> bit_position<span class="op">)</span> <span class="op">&amp;</span> <span class="dv">1</span><span class="op">;</span></span></code></pre></div>
+<p><strong>Beispiel – UART-Statusregister auslesen:</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define UART_STATUS_REG   </span><span class="op">(*(</span><span class="dt">volatile</span><span class="pp"> </span><span class="dt">uint32_t</span><span class="pp"> </span><span class="op">*)</span><span class="bn">0x60000004</span><span class="op">)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define UART_TX_EMPTY_BIT </span><span class="dv">5</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#define UART_RX_READY_BIT </span><span class="dv">0</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Warten, bis Sendepuffer leer</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(!((</span>UART_STATUS_REG <span class="op">&gt;&gt;</span> UART_TX_EMPTY_BIT<span class="op">)</span> <span class="op">&amp;</span> <span class="dv">1</span><span class="op">))</span> <span class="op">{</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// busy-wait</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<hr />
+<h2 id="speichermodell-und-datentypen">3 | Speichermodell und
+Datentypen</h2>
+<h3 id="speicherbereiche">3.1 | Speicherbereiche</h3>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│ Flash (nicht-flüchtig)                                  │
+│   .text    – ausführbarer Code                          │
+│   .rodata  – Konstanten, Strings (const char[])         │
+├─────────────────────────────────────────────────────────┤
+│ RAM (flüchtig)                                          │
+│   .data    – initialisierte globale/statische Variablen │
+│   .bss     – nicht-initialisierte globale/statische     │
+│   Heap     – dynamische Allokation (malloc)             │
+│   Stack    – lokale Variablen, Rücksprungadressen       │
+└─────────────────────────────────────────────────────────┘</code></pre>
+<p><strong>Konsequenz für die Praxis:</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Im Flash (spart RAM):</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="dt">const</span> <span class="dt">char</span> VERSION<span class="op">[]</span> <span class="op">=</span> <span class="st">&quot;1.0.0&quot;</span><span class="op">;</span>              <span class="co">// .rodata</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">const</span> <span class="dt">uint8_t</span> LOOKUP_TABLE<span class="op">[</span><span class="dv">256</span><span class="op">]</span> <span class="op">=</span> <span class="op">{};</span> <span class="co">// .rodata</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Im RAM:</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="dt">char</span> buffer<span class="op">[</span><span class="dv">64</span><span class="op">];</span>           <span class="co">// .bss (nicht initialisiert)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> counter <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>           <span class="co">// .data (initialisiert)</span></span></code></pre></div>
+<h3 id="datentypen-mit-fester-breite">3.2 | Datentypen mit fester
+Breite</h3>
+<p><strong>Problem:</strong> <code>int</code> hat auf verschiedenen
+Plattformen unterschiedliche Größen (16, 32 oder 64 Bit).</p>
+<p><strong>Lösung:</strong> Verwende Typen aus
+<code>&lt;stdint.h&gt;</code>:</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Typ</th>
+<th>Größe</th>
+<th>Wertebereich</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>uint8_t</code></td>
+<td>1 Byte</td>
+<td>0 – 255</td>
+</tr>
+<tr>
+<td><code>int8_t</code></td>
+<td>1 Byte</td>
+<td>−128 – 127</td>
+</tr>
+<tr>
+<td><code>uint16_t</code></td>
+<td>2 Byte</td>
+<td>0 – 65.535</td>
+</tr>
+<tr>
+<td><code>int16_t</code></td>
+<td>2 Byte</td>
+<td>−32.768 – 32.767</td>
+</tr>
+<tr>
+<td><code>uint32_t</code></td>
+<td>4 Byte</td>
+<td>0 – 4.294.967.295</td>
+</tr>
+<tr>
+<td><code>int32_t</code></td>
+<td>4 Byte</td>
+<td>±2,147 Mrd.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Regel:</strong> In Embedded-Code verwenden wir ausschließlich
+Typen mit expliziter Breite, wenn Speicherlayout oder Protokolle
+relevant sind.</p>
+<hr />
+<h2 id="interrupts-und-nebenläufige-ausführung">4 | Interrupts und
+nebenläufige Ausführung</h2>
+<h3 id="konzept">4.1 | Konzept</h3>
+<p><strong>Definition:</strong> Ein Interrupt ist ein Hardware-Signal,
+das den normalen Programmfluss unterbricht und eine spezielle Funktion
+(ISR, Interrupt Service Routine) ausführt.</p>
+<pre><code>Normaler Ablauf              Mit Interrupt
+────────────────────         ────────────────────────────────
+main() {                     main() {
+  while(1) {                   while(1) {
+    task_a();                    task_a();
+    task_b();      ──────►       ║ ← Interrupt!
+    task_c();                    ╠══► ISR ausführen
+  }                              ║    (schnell!)
+}                                ╚══► zurück zu task_a()
+                                   task_b();
+                                   task_c();
+                               }
+                             }</code></pre>
+<h3 id="isr-regeln-kritisch">4.2 | ISR-Regeln (kritisch)</h3>
+<p><strong>Regel 1:</strong> ISRs müssen kurz sein – Mikrosekunden,
+nicht Millisekunden.</p>
+<p><strong>Regel 2:</strong> Keine blockierenden Operationen in ISRs
+(kein <code>printf</code>, kein <code>malloc</code>, keine Mutexe).</p>
+<p><strong>Regel 3:</strong> Kommunikation mit Hauptprogramm über
+<code>volatile</code>-Variablen oder RTOS-Mechanismen.</p>
+<p><strong>Beispiel – Button-Entprellung:</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">volatile</span> <span class="dt">bool</span> button_pressed <span class="op">=</span> <span class="kw">false</span><span class="op">;</span>  <span class="co">// volatile: ISR schreibt, main liest</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> IRAM_ATTR button_isr_handler<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    button_pressed <span class="op">=</span> <span class="kw">true</span><span class="op">;</span>  <span class="co">// nur Flag setzen, nichts weiter</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> app_main<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// GPIO und Interrupt konfigurieren ...</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>button_pressed<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>            button_pressed <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Hier die eigentliche Verarbeitung</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            handle_button_event<span class="op">();</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">10</span><span class="op">));</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong><code>IRAM_ATTR</code>:</strong> Auf ESP32 müssen ISRs im RAM
+liegen (nicht im Flash), weil Flash-Zugriffe während Interrupts
+problematisch sein können.</p>
+<hr />
+<h2 id="peripherie-kommunikation">5 | Peripherie-Kommunikation</h2>
+<h3 id="gpio-general-purpose-inputoutput">5.1 | GPIO (General Purpose
+Input/Output)</h3>
+<p><strong>Grundoperationen:</strong></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ESP-IDF Abstraktion</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>gpio_config_t io_conf <span class="op">=</span> <span class="op">{</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>pin_bit_mask <span class="op">=</span> <span class="op">(</span><span class="dv">1</span><span class="bu">ULL</span> <span class="op">&lt;&lt;</span> GPIO_NUM_2<span class="op">),</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>mode <span class="op">=</span> GPIO_MODE_OUTPUT<span class="op">,</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>pull_up_en <span class="op">=</span> GPIO_PULLUP_DISABLE<span class="op">,</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>pull_down_en <span class="op">=</span> GPIO_PULLDOWN_DISABLE<span class="op">,</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">.</span>intr_type <span class="op">=</span> GPIO_INTR_DISABLE</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>gpio_config<span class="op">(&amp;</span>io_conf<span class="op">);</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>gpio_set_level<span class="op">(</span>GPIO_NUM_2<span class="op">,</span> <span class="dv">1</span><span class="op">);</span>  <span class="co">// HIGH</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>gpio_set_level<span class="op">(</span>GPIO_NUM_2<span class="op">,</span> <span class="dv">0</span><span class="op">);</span>  <span class="co">// LOW</span></span></code></pre></div>
+<h3 id="serielle-protokolle-übersicht">5.2 | Serielle Protokolle
+(Übersicht)</h3>
+<table class="table table-compact">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 28%" />
+<col style="width: 29%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr>
+<th>Protokoll</th>
+<th>Leitungen</th>
+<th>Geschwindigkeit</th>
+<th>Typische Anwendung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UART</td>
+<td>2 (TX, RX)</td>
+<td>9600 – 921600 Baud</td>
+<td>Debug-Konsole, GPS</td>
+</tr>
+<tr>
+<td>SPI</td>
+<td>4 (MOSI, MISO, CLK, CS)</td>
+<td>1 – 80 MHz</td>
+<td>Display, SD-Karte, Flash</td>
+</tr>
+<tr>
+<td>I²C</td>
+<td>2 (SDA, SCL)</td>
+<td>100 – 400 kHz (Standard)</td>
+<td>Sensoren, EEPROMs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Dein Selection-Panel-Projekt verwendet:</strong> -
+<strong>SPI-ähnliche Signale</strong> für Schieberegister (CLK, DATA,
+LATCH) - <strong>UART</strong> für die Kommunikation mit dem Raspberry
+Pi</p>
+<hr />
+<h2 id="timing-und-echtzeit">6 | Timing und Echtzeit</h2>
+<h3 id="zeitquellen">6.1 | Zeitquellen</h3>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Methode</th>
+<th>Auflösung</th>
+<th>Anwendung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vTaskDelay()</code></td>
+<td>1 ms (Tick)</td>
+<td>Nicht-kritische Wartezeiten</td>
+</tr>
+<tr>
+<td>Hardware-Timer</td>
+<td>µs – ns</td>
+<td>Präzise PWM, Messungen</td>
+</tr>
+<tr>
+<td><code>esp_timer_get_time()</code></td>
+<td>1 µs</td>
+<td>Zeitmessung, Profiling</td>
+</tr>
+</tbody>
+</table>
+<h3 id="echtzeit-anforderungen">6.2 | Echtzeit-Anforderungen</h3>
+<p><strong>Harte Echtzeit:</strong> Deadline-Verletzung = Systemversagen
+(z. B. Airbag-Auslösung).</p>
+<p><strong>Weiche Echtzeit:</strong> Gelegentliche Verletzungen
+tolerierbar (z. B. Videostreaming – ein Frame-Drop ist akzeptabel).</p>
+<p><strong>Dein AMR-Projekt:</strong> Motor-Control ist weiche Echtzeit
+mit Ziel &lt;10 ms Latenz; Safety-Watchdog ist tendenziell härtere
+Echtzeit.</p>
+<hr />
+<h2 id="fehlerbehandlung-und-robustheit">7 | Fehlerbehandlung und
+Robustheit</h2>
+<h3 id="defensives-programmieren">7.1 | Defensives Programmieren</h3>
+<p><strong>Regel:</strong> Vertraue keiner Eingabe – validiere
+Parameter, prüfe Rückgabewerte.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>esp_err_t sensor_read<span class="op">(</span><span class="dt">uint8_t</span> <span class="op">*</span>data<span class="op">,</span> <span class="dt">size_t</span> len<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Parametervalidierung</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>data <span class="op">==</span> NULL <span class="op">||</span> len <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> ESP_ERR_INVALID_ARG<span class="op">;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    esp_err_t ret <span class="op">=</span> i2c_master_read<span class="op">(...);</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>ret <span class="op">!=</span> ESP_OK<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        ESP_LOGE<span class="op">(</span>TAG<span class="op">,</span> <span class="st">&quot;I2C read failed: </span><span class="sc">%s</span><span class="st">&quot;</span><span class="op">,</span> esp_err_to_name<span class="op">(</span>ret<span class="op">));</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> ret<span class="op">;</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ESP_OK<span class="op">;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="watchdog">7.2 | Watchdog</h3>
+<p><strong>Prinzip:</strong> Ein Hardware-Timer, der das System neu
+startet, wenn er nicht regelmäßig „gefüttert” wird.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ESP-IDF Task Watchdog</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>esp_task_wdt_add<span class="op">(</span>NULL<span class="op">);</span>  <span class="co">// aktuellen Task überwachen</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="op">(</span><span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    do_work<span class="op">();</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    esp_task_wdt_reset<span class="op">();</span>  <span class="co">// Watchdog füttern</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">100</span><span class="op">));</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Konsequenz:</strong> Wenn <code>do_work()</code> hängt,
+startet der Watchdog das System nach Timeout (konfigurierbar, typisch
+5–30 s).</p>
+<hr />
+<h2 id="entwicklungswerkzeuge">8 | Entwicklungswerkzeuge</h2>
+<h3 id="toolchain-übersicht">8.1 | Toolchain-Übersicht</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│ Quellcode (.c, .h)                                          │
+└──────────────────────────┬──────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│ Compiler (xtensa-esp32s3-elf-gcc)                           │
+│   → Objektdateien (.o)                                      │
+└──────────────────────────┬──────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│ Linker                                                      │
+│   → ELF-Binary mit Speicherlayout                           │
+└──────────────────────────┬──────────────────────────────────┘
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│ Flash-Tool (esptool.py)                                     │
+│   → Binary auf Mikrocontroller übertragen                   │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+</div>
+</body>
+</html>

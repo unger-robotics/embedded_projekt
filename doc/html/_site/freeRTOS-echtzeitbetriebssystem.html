@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>freeRTOS-echtzeitbetriebssystem.mathjax_tmp</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="main-container">
+<h1 id="freertos-echtzeitbetriebssystem-für-mikrocontroller">FreeRTOS –
+Echtzeitbetriebssystem für Mikrocontroller</h1>
+<h2 id="begriffe-und-rahmen">0 | Begriffe und Rahmen</h2>
+<p><strong>FreeRTOS</strong> (Free Real-Time Operating System) ist ein
+Open-Source-Echtzeitkernel für Mikrocontroller. Er verwaltet mehrere
+Programmteile (Tasks), die scheinbar gleichzeitig laufen, obwohl nur ein
+oder zwei Prozessorkerne vorhanden sind.</p>
+<p><strong>Zielplattform für dieses Dokument:</strong> ESP32-S3
+(Dual-Core, 240 MHz, Xtensa LX7).</p>
+<hr />
+<h2 id="kernproblem-warum-ein-rtos">1 | Kernproblem: Warum ein
+RTOS?</h2>
+<p><strong>Beobachtung:</strong> Ein klassisches
+<code>while(1)</code>-Programm (Superloop) führt Aufgaben sequenziell
+aus. Wenn eine Aufgabe blockiert – etwa auf einen Sensorwert wartet –,
+steht das gesamte System still.</p>
+<p><strong>Konsequenz:</strong> Bei zeitkritischen Anwendungen
+(Motorsteuerung, Kommunikation, Sensorik) reicht Superloop nicht
+aus.</p>
+<p><strong>Regel:</strong> Ein RTOS teilt die CPU-Zeit in Scheiben
+(Zeitschlitze) und wechselt zwischen Tasks, sodass jede Aufgabe ihren
+Anteil erhält.</p>
+<pre><code>Superloop                         FreeRTOS-Scheduler
+─────────────────────────────     ─────────────────────────────
+┌──────────────────────────┐      ┌─────┐ ┌─────┐ ┌─────┐
+│ Sensor lesen             │      │Task1│ │Task2│ │Task3│
+│ Motor ansteuern          │  →   └──┬──┘ └──┬──┘ └──┬──┘
+│ Kommunikation            │         │       │       │
+│ ... alles in Reihe       │      ───┴───────┴───────┴───► Zeit
+└──────────────────────────┘          Scheduler wechselt</code></pre>
+<hr />
+<h2 id="zentrale-konzepte">2 | Zentrale Konzepte</h2>
+<h3 id="task-aufgabe">2.1 | Task (Aufgabe)</h3>
+<p><strong>Definition:</strong> Ein Task ist eine eigenständige Funktion
+mit eigenem Stack, die vom Scheduler verwaltet wird.</p>
+<p><strong>Struktur:</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> vMotorTask<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>pvParameters<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Initialisierung (einmalig)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    motor_init<span class="op">();</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span>                          <span class="co">// Endlosschleife – Task endet nie</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        motor_update<span class="op">();</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        vTaskDelay<span class="op">(</span>pdMS_TO_TICKS<span class="op">(</span><span class="dv">10</span><span class="op">));</span>  <span class="co">// 10 ms warten, CPU freigeben</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Anwendung:</strong> Du erstellst den Task mit:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>xTaskCreatePinnedToCore<span class="op">(</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    vMotorTask<span class="op">,</span>       <span class="co">// Funktion</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;MotorTask&quot;</span><span class="op">,</span>      <span class="co">// Name (Debug)</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="dv">4096</span><span class="op">,</span>             <span class="co">// Stack in Bytes</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    NULL<span class="op">,</span>             <span class="co">// Parameter</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="dv">5</span><span class="op">,</span>                <span class="co">// Priorität (höher = wichtiger)</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">&amp;</span>xMotorHandle<span class="op">,</span>    <span class="co">// Handle für spätere Steuerung</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>                 <span class="co">// Core (0 oder 1 beim ESP32-S3)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="op">);</span></span></code></pre></div>
+<h3 id="scheduler-und-prioritäten">2.2 | Scheduler und Prioritäten</h3>
+<p><strong>Regel:</strong> Der Scheduler aktiviert immer den Task mit
+der höchsten Priorität, der bereit (ready) ist.</p>
+<p><strong>Task-Zustände:</strong></p>
+<pre><code>         ┌────────────┐
+         │  Running   │ ← CPU führt diesen Task aus
+         └─────┬──────┘
+    Preemption │ ▲ Dispatch
+               ▼ │
+         ┌────────────┐
+         │   Ready    │ ← wartet auf CPU-Zeit
+         └─────┬──────┘
+     Block     │ ▲ Unblock (Event/Timeout)
+               ▼ │
+         ┌────────────┐
+         │  Blocked   │ ← wartet auf Ressource/Zeit
+         └────────────┘</code></pre>
+<p><strong>Beispiel:</strong> Ein Task mit Priorität 10 unterbricht
+(preemption) einen laufenden Task mit Priorität 5, sobald er ready
+wird.</p>
+<h3 id="tick-und-zeitbasis">2.3 | Tick und Zeitbasis</h3>
+<p><strong>Definition:</strong> Der Tick ist der Herzschlag des RTOS –
+ein periodischer Timer-Interrupt.</p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Typischer Wert (ESP-IDF)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>configTICK_RATE_HZ</code></td>
+<td>1000 Hz</td>
+</tr>
+<tr>
+<td>Tick-Periode</td>
+<td>1 ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Konsequenz:</strong>
+<code>vTaskDelay(pdMS_TO_TICKS(50))</code> blockiert den Task für 50
+Ticks = 50 ms. Während dieser Zeit kann der Scheduler andere Tasks
+ausführen.</p>
+<hr />
+<h2 id="synchronisation-und-kommunikation">3 | Synchronisation und
+Kommunikation</h2>
+<p>Wenn mehrere Tasks auf gemeinsame Ressourcen zugreifen, entstehen
+<strong>Race Conditions</strong>. FreeRTOS bietet drei Mechanismen:</p>
+<h3 id="mutex-mutual-exclusion">3.1 | Mutex (Mutual Exclusion)</h3>
+<p><strong>Zweck:</strong> Exklusiver Zugriff auf eine Ressource.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>SemaphoreHandle_t xI2CMutex <span class="op">=</span> xSemaphoreCreateMutex<span class="op">();</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">// In Task A und B:</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>xSemaphoreTake<span class="op">(</span>xI2CMutex<span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">100</span><span class="op">))</span> <span class="op">==</span> pdTRUE<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    i2c_master_write<span class="op">(...);</span>  <span class="co">// geschützter Bereich</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    xSemaphoreGive<span class="op">(</span>xI2CMutex<span class="op">);</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Grenze:</strong> Mutex schützt nur, wenn <em>alle</em>
+beteiligten Tasks ihn verwenden.</p>
+<h3 id="queue-warteschlange">3.2 | Queue (Warteschlange)</h3>
+<p><strong>Zweck:</strong> Daten sicher zwischen Tasks übertragen.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>QueueHandle_t xSensorQueue <span class="op">=</span> xQueueCreate<span class="op">(</span><span class="dv">10</span><span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>SensorData_t<span class="op">));</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">// Sender-Task:</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>SensorData_t data <span class="op">=</span> <span class="op">{.</span>temp <span class="op">=</span> <span class="fl">23.5</span><span class="op">,</span> <span class="op">.</span>timestamp <span class="op">=</span> xTaskGetTickCount<span class="op">()};</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>xQueueSend<span class="op">(</span>xSensorQueue<span class="op">,</span> <span class="op">&amp;</span>data<span class="op">,</span> portMAX_DELAY<span class="op">);</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Empfänger-Task:</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>SensorData_t received<span class="op">;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(</span>xQueueReceive<span class="op">(</span>xSensorQueue<span class="op">,</span> <span class="op">&amp;</span>received<span class="op">,</span> pdMS_TO_TICKS<span class="op">(</span><span class="dv">100</span><span class="op">))</span> <span class="op">==</span> pdTRUE<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    process<span class="op">(</span>received<span class="op">);</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p><strong>Vorteil:</strong> Queues sind Thread-sicher; kein
+zusätzlicher Mutex nötig.</p>
+<h3 id="semaphore-zählerbinär">3.3 | Semaphore (Zähler/Binär)</h3>
+<p><strong>Zweck:</strong> Signalisierung zwischen Tasks oder von ISR zu
+Task.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>SemaphoreHandle_t xButtonSem <span class="op">=</span> xSemaphoreCreateBinary<span class="op">();</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">// ISR (Interrupt Service Routine):</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> IRAM_ATTR button_isr_handler<span class="op">(</span><span class="dt">void</span> <span class="op">*</span>arg<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    BaseType_t xHigherPriorityTaskWoken <span class="op">=</span> pdFALSE<span class="op">;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    xSemaphoreGiveFromISR<span class="op">(</span>xButtonSem<span class="op">,</span> <span class="op">&amp;</span>xHigherPriorityTaskWoken<span class="op">);</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    portYIELD_FROM_ISR<span class="op">(</span>xHigherPriorityTaskWoken<span class="op">);</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Task:</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="op">(;;)</span> <span class="op">{</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>xSemaphoreTake<span class="op">(</span>xButtonSem<span class="op">,</span> portMAX_DELAY<span class="op">)</span> <span class="op">==</span> pdTRUE<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        handle_button_press<span class="op">();</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<hr />
+<h2 id="speicher-und-stack">4 | Speicher und Stack</h2>
+<p><strong>Problem:</strong> Jeder Task benötigt eigenen Stack. Zu wenig
+Stack führt zu Stack Overflow (undefiniertes Verhalten), zu viel
+verschwendet RAM.</p>
+<p><strong>Faustregel für ESP32-S3:</strong></p>
+<table class="table table-compact">
+<thead>
+<tr>
+<th>Task-Typ</th>
+<th>Stack-Empfehlung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Minimal (LED-Blinken)</td>
+<td>2048 Bytes</td>
+</tr>
+<tr>
+<td>Standard (Sensorik)</td>
+<td>4096 Bytes</td>
+</tr>
+<tr>
+<td>Komplex (micro-ROS, WiFi)</td>
+<td>8192–16384 Bytes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Diagnose:</strong>
+<code>uxTaskGetStackHighWaterMark(NULL)</code> gibt den minimalen freien
+Stack in Words zurück. Bleibt weniger als 10–20 % übrig, vergrößere den
+Stack.</p>
+<hr />
+<h2 id="esp32-s3-dual-core-besonderheiten">5 | ESP32-S3:
+Dual-Core-Besonderheiten</h2>
+<p>Der ESP32-S3 hat zwei Kerne (Core 0 und Core 1). ESP-IDF startet
+standardmäßig WiFi/BT auf Core 0.</p>
+<p><strong>Empfehlung für dein AMR-Projekt:</strong></p>
+<pre><code>Core 0                          Core 1
+──────────────────────────      ──────────────────────────
+WiFi-Stack (System)             Motor-Control (Echtzeit)
+micro-ROS Transport             Sensor-Fusion
+Logging                         Safety-Watchdog</code></pre>
+<p><strong>Pinning:</strong>
+<code>xTaskCreatePinnedToCore(..., 1)</code> bindet einen Task an Core
+1. Ohne Pinning verteilt der Scheduler frei.</p>
+</div>
+</body>
+</html>
