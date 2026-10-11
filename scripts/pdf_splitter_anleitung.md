@@ -1,5 +1,3 @@
-Hier ist die aktualisierte Anleitung, angepasst auf die neue Ordnerstruktur und die rekursive Arbeitsweise des Skripts.
-
 ### 1. Python-Umgebung erstellen (Virtual Environment)
 
 Zuerst erstellen wir einen isolierten Ordner (`.venv`), der die Python-Installation und Bibliotheken für dieses Projekt enthält.
